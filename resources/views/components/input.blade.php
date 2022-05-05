@@ -8,5 +8,4 @@
     @endphp
     
     
-        <input type="{{$type}}" class="form-control" ng-model="{{$name}}" @if($required) required @endif />
 </div>
