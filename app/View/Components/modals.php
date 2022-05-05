@@ -15,7 +15,7 @@ class Modals extends Component
     public $title;
     public $size;
 
-    public function __construct($title, $id, $size = "")
+    public function __construct($title, $id, $size = "modal-lg")
     {
         $this->title = $title;
         $this->id = $id;
