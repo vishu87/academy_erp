@@ -19,7 +19,7 @@ class Input extends Component
     public $placeholder;
     public $rows;
 
-    public function __construct($label="", $required, $name, $type = "text", $ng = true, $placeholder = "", $rows="2")
+    public function __construct($label="", $required = false, $name, $type = "text", $ng = true, $placeholder = "", $rows="2")
     {
         $this->label = $label;
         $this->required = $required;
