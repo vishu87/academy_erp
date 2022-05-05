@@ -13,7 +13,7 @@
 					<x-input type="text" label="Name" name="formData.name" :required="true" />
 				</div>
 				<div class="col-md-6">
-					<x-dob label="Date of Birth" name="formData" :required="true" />
+					<x-dob label="Date of Birth" name="formData" :required="true" year="2019" />
 				</div>
 			</div>
 			<div class="row">
