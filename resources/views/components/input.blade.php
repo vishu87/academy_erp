@@ -4,11 +4,7 @@
     @endif
     @php
         $valiadtion = "";
-        if($type == "mobile") {
-            $type = "text"; $validation = "mobile";
-        } else if($type == "pin_code") {
-            $type = "text"; $validation = "pincode";
-        }
+        
     @endphp
     
     @if($type == "textarea")
