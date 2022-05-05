@@ -10,7 +10,7 @@
 		<x-ngform name="addForm" ng-submit="onSubmit(addForm.$valid)">
 			<div class="row">
 				<div class="col-md-6 ">
-					<x-input label="Name" name="formData.name" :required="true" />
+					<x-input type="text" label="Name" name="formData.name" :required="true" />
 				</div>
 				<div class="col-md-6">
 					<x-dob label="Date of Birth" name="formData" :required="true" />
