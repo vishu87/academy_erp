@@ -1,0 +1,328 @@
+<?php
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+
+
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserAPIController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\LeadsController;
+use App\Http\Controllers\GeneralController;
+use App\Http\Controllers\WebController;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\StudentPerformanceController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PayTypeCategoryController;
+use App\Http\Controllers\PayPriceTypeController;
+use App\Http\Controllers\CouponController;
+use App\Http\Controllers\MasterLeadsController;
+use App\Http\Controllers\CityController;
+use App\Http\Controllers\CenterController;
+use App\Http\Controllers\ParameterController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\InventoryController;
+
+
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| is assigned the "api" middleware group. Enjoy building your API!
+|
+*/
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::group([], function(){
+
+    Route::post('/getAge',[LeadsController::class, 'getAge']);
+    Route::post('/checkLogin',[UserController::class, 'checkLogin']);
+    
+    Route::get('/get-city-list',[GeneralController::class, 'getCityListData']);
+
+    Route::get('/states',[GeneralController::class, 'getStates']);
+    Route::get('/cities/{state_id}',[GeneralController::class, 'getCities']);
+
+    Route::post('/get-state-city-center-data',[GeneralController::class, 'get_state_city_center_data']);
+
+    Route::group(["prefix"=>"upload"], function(){
+        Route::post('/photo',[GeneralController::class, 'uploadPhoto']);
+    });
+
+    Route::group(["prefix"=>"student"], function(){
+        
+        Route::post('/get-list',[StudentController::class, 'student_list']);
+        Route::get('/get-info/{id}',[StudentController::class, 'getStudentInfo']);
+        Route::post('/get-document-type',[StudentController::class, 'getDocType']);
+        Route::post('/get-inactive-reason',[StudentController::class, 'getInactiveReason']);
+
+        Route::post('/details',[StudentController::class, 'studentDetails']);
+        
+        // Route::post('/get-student-details-for-update',[StudentController::class, 'get_update_student']);
+        
+        Route::post('/edit-student',[StudentController::class, 'editStudent']);
+        Route::post('/delete-student',[StudentController::class, 'deleteStudent']);
+
+        Route::post('/group-change',[StudentController::class, 'groupChange']);
+        Route::post('/save-inactive',[StudentController::class, 'saveInactive']);
+        Route::post('/delete-inactive',[StudentController::class, 'deleteInactive']);
+        Route::post('/save-injury',[StudentController::class, 'saveInjury']);
+        Route::post('/delete-injury',[StudentController::class, 'deleteInjury']);
+        Route::post('/save-documents',[StudentController::class, 'saveDocuments']);
+        Route::post('/delete-document',[StudentController::class, 'deleteDocument']); 
+
+        Route::post('/add-student',[StudentController::class, 'add_student_data']);
+        Route::post('/change-profile-pic',[StudentController::class, 'changeProfilePicture']);
+        
+        // Route::post('/getfull-details',[StudentController::class, 'student_full_detail']);
+        // Route::post('/delete-group-shift',[StudentController::class, 'deleteGroupShift']); 
+
+
+        Route::group(["prefix"=>"performance"], function(){
+            Route::post('/students',[StudentPerformanceController::class, 'getStudents']);
+            Route::post('/student-record',[StudentPerformanceController::class, 'getStudentRecord']);
+
+            Route::post('/save-score',[StudentPerformanceController::class, 'saveScore']);
+            Route::post('/update-score',[StudentPerformanceController::class, 'updateScore']);
+            Route::post('/add-session',[StudentPerformanceController::class, 'addSession']);
+            Route::get('/get-session-list',[StudentPerformanceController::class, 'getSessionList']);
+            Route::post('/delete-session',[StudentPerformanceController::class, 'deleteSession']);
+        });
+
+        Route::group(["prefix"=>"attendance"], function(){
+            Route::post('/',[AttendanceController::class, 'init']);
+            Route::post('/save-attendance',[AttendanceController::class, 'saveAttendance']);
+        });
+
+        Route::group(["prefix"=>"payment"], function(){
+            Route::post('/init',[PaymentController::class, 'paymentInit']);
+            Route::get('/get-type/{sport_id}',[PaymentController::class, 'getPayType']);
+            Route::post('/get-amount',[PaymentController::class, 'getAmount']);
+            Route::post('/save-payment',[PaymentController::class, 'savePayment']);
+            Route::post('/edit-payment',[PaymentController::class, 'editPayment']);
+            Route::get('/view-payment/{payment_id}',[PaymentController::class, 'viewPayment']);
+
+            Route::post('/get-coupons',[PaymentController::class, 'getCoupons']);
+            Route::post('/apply-coupon',[PaymentController::class, 'applyCoupon']);
+        });
+
+        Route::group(["prefix"=>"subscription"], function(){
+            Route::get('/view/{id}',[PaymentController::class, 'subscriptionDetails']);
+            Route::post('/save',[PaymentController::class, 'subscriptionAdd']);
+            Route::post('/approve',[PaymentController::class, 'approvePauseRequest']);
+            Route::post('/delete',[PaymentController::class, 'deletePauseRequest']);
+        });
+    });
+
+    Route::group(["prefix"=>"payments"], function(){
+        Route::post('/',[PaymentController::class, 'paymentList']);
+    });
+
+    Route::group(["prefix"=>"users"], function(){
+
+        Route::get('/get-roles',[UserAPIController::class, 'getRoles']);
+        Route::post('/list',[UserAPIController::class, 'getUsers']);
+        Route::post('/delete',[UserAPIController::class, 'deleteUser']);
+
+        Route::get('/edit/{user_id}',[UserAPIController::class, 'editUser']);
+        Route::post('/save',[UserAPIController::class, 'saveUser']);
+        
+        
+        Route::post('/access-rights-loc',[UserAPIController::class, 'accessRightsLocation']);
+        Route::post('/access-rights-loc/add',[UserAPIController::class, 'addAccessRightsLocation']);
+        Route::post('/access-rights-loc/delete',[UserAPIController::class, 'deleteAccessRightsLocation']);
+        Route::post('/access-rights-loc/copy',[UserAPIController::class, 'copyAccessRightsLocation']);
+
+        Route::group(["prefix"=>"attendance"], function(){
+            Route::post('/',[AttendanceController::class, 'initStaff']);
+            Route::post('/save-attendance',[AttendanceController::class, 'saveStaffAttendance']);
+        });
+
+        Route::group(["prefix"=>"roles"], function(){
+            Route::post('/list',[UserAPIController::class, 'listRoles']);
+            Route::post('/add',[UserAPIController::class, 'addRoles']);
+            Route::post('/delete',[UserAPIController::class, 'deleteRoles']);
+        });
+
+        // Route::group(["prefix"=>"access-rights"], function(){
+        //  Route::post('list',[UserController::class, 'getRightsListForRoles']);
+        //  Route::post('add',[UserController::class, 'addAccessRights']);
+        //  Route::post('update',[UserController::class, 'updateAccessRights']);
+        //  Route::post('delete',[UserController::class, 'deleteAccessRights']);
+            
+        // });
+
+    });
+
+    Route::group(["prefix"=>"centers"], function(){
+        Route::get('/params',[CenterController::class, 'getCentersParams']);
+
+        Route::post('/list',[CenterController::class, 'getCentersListData']);
+        Route::post('/add',[CenterController::class, 'createNewCenter']);
+
+        Route::post('/edit',[CenterController::class, 'editCenter']);
+        Route::get('/images/{center_id}',[CenterController::class, 'images']);
+        Route::get('/groups/{center_id}',[CenterController::class, 'groups']);
+        Route::post('/add-group',[CenterController::class, 'addGroup']);
+        Route::get('/edit-group/{group_id}',[CenterController::class, 'editGroup']);
+
+        Route::post('/remove-image',[CenterController::class, 'removeImage']);
+        Route::post('/save-image',[CenterController::class, 'saveImage']);
+
+        Route::post('/update/',[CenterController::class, 'updateCenter']);
+        
+        Route::get('/delete-center/{id}',[CenterController::class, 'deleteCenter']);
+        Route::post('/group/schedule',[CenterController::class, 'groupSchedule']);
+        Route::post('/addGroupTiming',[CenterController::class, 'addGroupTiming']);
+        Route::post('/deleteTiming',[CenterController::class, 'deleteTiming']);
+        Route::post('/add-contact-person',[CenterController::class, 'addContactPerson']);
+
+        });
+
+    Route::group(["prefix"=>"groups"],function(){
+        Route::post('/init',[GroupController::class, 'init']);
+        Route::post('/add',[GroupController::class, 'add']);
+        Route::post('/delete',[GroupController::class, 'delete']);
+    });
+
+    Route::group(["prefix"=>"pay-type-price"], function(){
+        Route::post('/get-pay-type-data',[PayPriceTypeController::class, 'getPayType']);  
+        Route::post('/list',[PayPriceTypeController::class, 'getList']);  
+        Route::post('/add',[PayPriceTypeController::class, 'add']);   
+        Route::post('/delete',[PayPriceTypeController::class, 'delete']); 
+        Route::post('update',[PayPriceTypeController::class, 'update']);  
+    });
+
+    Route::group(["prefix"=>"pay-type-category"], function(){
+        Route::post('/list',[PayTypeCategoryController::class, 'getList']);   
+        Route::post('/add-category',[PayTypeCategoryController::class, 'addCategory']);   
+        Route::post('/disable-category',[PayTypeCategoryController::class, 'disableCategory']);   
+        Route::post('/delete-category',[PayTypeCategoryController::class, 'deleteCategory']); 
+
+        Route::post('/add',[PayTypeCategoryController::class, 'add']);    
+        Route::post('/update',[PayTypeCategoryController::class, 'add']); 
+        Route::post('/delete',[PayTypeCategoryController::class, 'delete']);  
+        
+    });
+
+    Route::group(["prefix"=>"coupons"], function(){
+        Route::post('/get-coupons-list',[CouponController::class, 'getCouponList']);
+        Route::post('/add',[CouponController::class, 'addCoupon']);
+        Route::get('/delete-coupon/{id}',[CouponController::class, 'deleteCoupon']);
+        Route::post('/add-availibility',[CouponController::class, 'addAvailibility']);
+        Route::get('/delete-availibility/{id}',[CouponController::class, 'deleteAvailibility']);
+    });
+
+    Route::group(["prefix"=>"inventory"], function(){
+        Route::post('/items-list',[InventoryController::class, 'itemsList']);
+        Route::post('/get-units',[InventoryController::class, 'getUnits']);   
+        Route::post('/add-items',[InventoryController::class, 'addItems']);   
+        Route::post('/delete-items',[InventoryController::class, 'deleteItems']); 
+    });
+
+    Route::group(["prefix"=>"events"], function(){
+        Route::post('/getList',[EventsController::class, 'getList']); 
+        Route::post('/init',[EventsController::class, 'init']);   
+        Route::post('/add',[EventsController::class, 'add']); 
+        Route::post('/uploadFile',[EventsController::class, 'uploadFile']);
+        Route::post('/upload-galary-image',[EventsController::class, 'uploadGalaryImage']);
+    });
+
+    Route::group(["prefix"=>"leads"], function(){
+        Route::post('/',[LeadsController::class, 'init']);
+        Route::get('/params',[LeadsController::class, 'parameters']);
+        Route::post('/store',[LeadsController::class, 'storeLead']);  
+        Route::post('/history/{lead_id}',[LeadsController::class, 'history']);
+
+        // Route::post('/getfull-details',[LeadsController::class, 'getLeadsFullDetails']);
+        // Route::post('/filter',[LeadsController::class, 'filter']); 
+        Route::post('/autoFillByPincode',[LeadsController::class, 'autoFillByPincode']);  
+        
+        Route::post('/getCampaignId',[LeadsController::class, 'getCampaignId']);  
+        
+        Route::post('/updateLead',[LeadsController::class, 'updateLead']);    
+        Route::post('/addNote',[LeadsController::class, 'addNote']);
+        Route::post('/transferLead',[LeadsController::class, 'transferLead']);
+        Route::post('check_advance_options',[LeadsController::class, 'checkAdvanceOptions']);
+        Route::post('/bulk-lead',[LeadsController::class, 'bulk_upload']);
+        Route::post('selectAllFilterLeads',[LeadsController::class, 'selectAllFilterLeads']);
+
+    });
+
+    Route::group(["prefix"=>"master-leads"], function(){
+        Route::get('/leads-for',[MasterLeadsController::class, 'leadsFor']);
+        Route::get('/lead-status',[MasterLeadsController::class, 'leadsStatus']);
+        Route::get('/lead-reasons',[MasterLeadsController::class, 'leadsReasons']);
+        Route::get('/lead-sources',[MasterLeadsController::class, 'leadsSources']);
+        Route::post('/lead-for-store',[MasterLeadsController::class, 'leadForStore']);
+        Route::get('/lead-for-delete/{lead_for_id}',[MasterLeadsController::class, 'leadsForDelete']);
+        Route::post('/lead-status',[MasterLeadsController::class, 'leadStatusStore']);
+        Route::post('/lead-reason',[MasterLeadsController::class, 'leadReasonStore']);
+        Route::get('/lead-reason-delete/{lead_for_id}',[MasterLeadsController::class, 'leadsReasonDelete']);
+        Route::post('/lead-source',[MasterLeadsController::class, 'leadSourceStore']);
+        Route::get('/lead-source-delete/{lead_source_id}',[MasterLeadsController::class, 'leadsSourceDelete']);
+    }); 
+
+
+    Route::group(["prefix"=>"accounts"], function(){
+        Route::post('/list',[AccountsController::class, 'listData']); 
+        Route::post('/save',[AccountsController::class, 'save']); 
+        Route::post('/delete',[AccountsController::class, 'delete']); 
+    });
+
+    Route::group(["prefix"=>"clients"], function(){
+        Route::post('/list',[ClientsController::class, 'getList']);
+        Route::post('/save',[ClientsController::class, 'save']);
+        Route::post('/delete',[ClientsController::class, 'delete']);
+    });
+
+    Route::group(["prefix"=>"reports"], function(){
+        Route::post('/revenueReport',[ReportController::class, 'revenueReport']);
+        Route::post('/center/revenue',[ReportController::class, 'revenue']);
+    });
+
+    Route::group(["prefix"=>"sales-dashboard"],function(){
+        Route::post('/init',[ReportController::class, 'report']);
+    });
+
+    Route::group(["prefix"=>"city"], function(){
+        Route::post('/list',[CityController::class, 'getCityList']);
+        Route::post('/save',[CityController::class, 'saveCity']);
+        Route::post('/delete',[CityController::class, 'deleteCity']);
+    });
+
+    Route::group(["prefix"=>"parameters"], function(){
+        Route::get('/get-parameters/{sport_id}',[ParameterController::class, 'parameters']);
+        Route::post('/save-category',[ParameterController::class, 'saveCategory']);
+        Route::get('/delete-category/{id}',[ParameterController::class, 'deleteCategory']);
+        Route::post('/save-attribute',[ParameterController::class, 'saveAttribute']);
+        Route::get('/delete-attribute/{id}',[ParameterController::class, 'deleteAttribute']);
+    });
+
+    
+
+});
+
+
+Route::get('/get-state-city-center',[WebController::class, 'stateCityCenter']);
+Route::group(["prefix"=>"registrations"], function(){
+    Route::post('/store',[WebController::class, 'store']);
+    Route::post('/store-lead',[WebController::class, 'storeLead']);
+});
+
+Route::group(["prefix"=>"subscriptions"], function(){
+    Route::post('/get-payment-options',[SubscriptionController::class, 'getPaymentOptions']);
+    Route::post('/get-payment-items',[SubscriptionController::class, 'paymentItems']);
+});
