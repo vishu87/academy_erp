@@ -4,7 +4,7 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class radio extends Component
+class Radio extends Component
 {
     /**
      * Create a new component instance.

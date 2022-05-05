@@ -4,7 +4,7 @@ namespace App\View\Components\web;
 
 use Illuminate\View\Component;
 
-class container extends Component
+class Container extends Component
 {
     /**
      * Create a new component instance.

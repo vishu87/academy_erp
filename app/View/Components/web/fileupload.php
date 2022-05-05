@@ -4,7 +4,7 @@ namespace App\View\Components\web;
 
 use Illuminate\View\Component;
 
-class fileupload extends Component
+class Fileupload extends Component
 {
     /**
      * Create a new component instance.

@@ -4,7 +4,7 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class input extends Component
+class Input extends Component
 {
     /**
      * Create a new component instance.
@@ -19,7 +19,7 @@ class input extends Component
     public $placeholder;
     public $rows;
 
-    public function __construct($label="", $required = false, $name, $type, $ng = true, $placeholder = "", $rows="2")
+    public function __construct($label="", $required = false, $name, $type = "text", $ng = true, $placeholder = "", $rows="2")
     {
         $this->label = $label;
         $this->required = $required;
