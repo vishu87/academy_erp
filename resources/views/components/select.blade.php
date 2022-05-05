@@ -4,7 +4,7 @@
 <div class="form-group">
     <div class="row">
         <div class="col">
-            
+            <label>{{$label}} @if($required) <span class="text-danger">*</span> @endif</label>
         </div>
         @isset($link)
         <div class="col text-right">

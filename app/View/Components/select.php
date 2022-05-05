@@ -17,13 +17,13 @@ class select extends Component
     public $options;
     public $ng;
 
-    public function __construct($label, $required, $name, $options = [], $ng = true)
+    public function __construct($label, $required, $name, $options)
     {
         $this->label = $label;
         $this->required = $required;
         $this->name = $name;
         $this->options = $options;
-        $this->ng = $ng;
+        // $this->ng = $ng;
     }
 
     /**
