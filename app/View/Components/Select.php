@@ -17,7 +17,7 @@ class Select extends Component
     public $options;
     public $ng;
 
-    public function __construct($label, $required, $name, $options = [])
+    public function __construct($label, $required = false, $name, $options = [])
     {
         $this->label = $label;
         $this->required = $required;
