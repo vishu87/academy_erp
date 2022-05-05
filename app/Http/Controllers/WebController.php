@@ -17,7 +17,7 @@ class WebController extends Controller
         return view('web.registrations',[
             "heading" => $heading,
             "description" => $description,
-            "logo_url" => "http://bu.chethanhp.com/wp-content/uploads/2022/01/Group-60782.png",
+            "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
             "client_id" => 1
         ]);
@@ -25,7 +25,7 @@ class WebController extends Controller
 
     public function renewals(){
         return view('web.renewals',[
-            "logo_url" => "http://bu.chethanhp.com/wp-content/uploads/2022/01/Group-60782.png",
+            "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
             "client_id" => 1
         ]);
@@ -33,7 +33,7 @@ class WebController extends Controller
 
     public function demoShedule(){
         return view('web.demo_schedule',[
-            "logo_url" => "http://bu.chethanhp.com/wp-content/uploads/2022/01/Group-60782.png",
+            "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
             "client_id" => 1
         ]);
@@ -48,7 +48,7 @@ class WebController extends Controller
         return view('web.lead',[
             "heading" => $heading,
             "description" => $description,
-            "logo_url" => "http://bu.chethanhp.com/wp-content/uploads/2022/01/Group-60782.png",
+            "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
             "client_id" => 1
         ]);
