@@ -16,14 +16,7 @@
 					<x-dob label="Date of Birth" name="formData" :required="true" />
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-6">
-					<x-input type="mobile" label="Mobile" name="formData.mobile" :required="true" />
-				</div>
-				<div class="col-md-6">
-					<x-input type="email" label="Email" name="formData.email" :required="true" />
-				</div>
-			</div>
+			
 			<div class="row">
 				<div class="col-6">
 					<x-select label="City" :required="true" name="formData.city_id">
