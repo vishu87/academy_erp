@@ -179,7 +179,7 @@
 
 </x-ngform>
 
-<x-modals id="kit_size" title="Kit Size Details">
+<x-modals id="kit_size" title="Kit Size Details" size="modal-lg">
 <div style="font-size: 12px; text-align: center;">
     <table style="width: 100%">
         <tr>

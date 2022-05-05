@@ -13,13 +13,13 @@ class Modals extends Component
      */
     public $id;
     public $title;
-    public $size;
+    public $modalSize;
 
-    public function __construct($title, $id, $size = "modal-lg")
+    public function __construct($title, $id, $modalSize = "modal-lg")
     {
         $this->title = $title;
         $this->id = $id;
-        $this->size = $size;
+        $this->modalSize = $modalSize;
     }
 
     /**
