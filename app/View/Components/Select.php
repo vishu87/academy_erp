@@ -15,15 +15,15 @@ class Select extends Component
     public $required;
     public $name;
     public $options;
-    public $ng;
+    public $ngChange;
 
-    public function __construct($label, $required = false, $name, $options = [])
+    public function __construct($label, $required = false, $name, $options = [], $ngChange = null)
     {
         $this->label = $label;
         $this->required = $required;
         $this->name = $name;
         $this->options = $options;
-        // $this->ng = $ng;
+        $this->ngChange = $ngChange;
     }
 
     /**

@@ -32,8 +32,18 @@ app.controller("Reg_controller", function($scope, $http, DBService) {
 		  	}else{
 		  		bootbox.alert(data.message);	
 		  	}
-		});
+		  });
   	}
+
+    $scope.getStateCity = function(){
+      DBService.getCall("/api/get-state-city/"+$scope.formData.address_state_id).then(function(data){
+        if (data.success) {
+          $scope.state_cities = data.state_cities;
+        }else{
+          bootbox.alert(data.message);  
+        }
+      });
+    }
 
   	$scope.getPaymentOptions = function(){
 		DBService.postCall({group_id: 13},"/api/subscriptions/get-payment-options").then(function(data){
@@ -55,6 +65,8 @@ app.controller("Reg_controller", function($scope, $http, DBService) {
   		$scope.formData.payment_items = $scope.payment_items;
 	  	DBService.postCall($scope.formData,"/api/registrations/store").then(function(data){
 		  	if (data.success) {
+          $scope.reg_data = data.reg_data;
+          $scope.formData.id = $scope.reg_data.id;
 		  		$scope.tab = 2;
 		  	} else {
 		  		bootbox.alert(data.message);	

@@ -66,16 +66,16 @@
 		</div>
 
 		<div class="col-4">
-			<x-select label="State" name="formData.state_id" :required="true">
+			<x-select label="Address State" name="formData.address_state_id" :required="true" ng-change="getStateCity()">
 				<option value="">Select State</option>
 				<option ng-repeat="state in states" value="@{{state.id}}">@{{state.state_name}}</option>
 			</x-select>
 		</div>
 
 		<div class="col-4">
-			<x-select label="City" name="formData.city_id" :required="true">
+			<x-select label="Address City" name="formData.address_city_id" :required="true">
 				<option value="">Select City</option>
-				<option  ng-repeat="city in cities" value="@{{city.id}}">@{{city.city_name}}</option>
+				<option  ng-repeat="city in state_cities" value="@{{city.id}}">@{{city.city_name}}</option>
 			</x-select>
 		</div>
 
@@ -112,7 +112,7 @@
 
 	<div class="row">
 		<div class="col-12">
-			<x-select label="Kit Size" name="formData.kit" :required="true">
+			<x-select label="Kit Size" name="formData.kit_size" :required="true">
 				<x-slot name="link">
 			        <a href="" ng-click="showSizeChart()">View Details</a>
 			    </x-slot>

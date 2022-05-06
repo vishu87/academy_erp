@@ -12,7 +12,7 @@
         </div>
         @endif
     </div>
-    <select class="form-control" ng-model="{{$name}}" @if($required) required @endif>
+    <select class="form-control" ng-model="{{$name}}" @if($required) required @endif @if($ngChange) ng-change="{{$ngChange}}" @endif>
         {{$slot}}
     </select>
 </div>
