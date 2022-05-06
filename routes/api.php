@@ -23,6 +23,7 @@ use App\Http\Controllers\CenterController;
 use App\Http\Controllers\ParameterController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\CommunicationController;
 
 
 

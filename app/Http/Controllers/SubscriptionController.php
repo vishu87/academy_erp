@@ -10,6 +10,13 @@ use App\Models\PaymentHistory;
 class SubscriptionController extends Controller
 {	
 
+    private function get_key(){
+        return 'rzp_test_99Y5RZnNylx6kY';
+    }
+    private function get_secret(){
+        return 'OyIopP4QIeecC1BwqZwQJMDc';
+    }
+
     public function getPaymentOptions(Request $request){
 
         $group_id = $request->group_id;
@@ -47,6 +54,8 @@ class SubscriptionController extends Controller
         $mandatory = [ 1, 2];
         $optional = [ 3 ];
         $fixed = [ 1 => 21 ];
+        
+        $total_amount = 0;
 
         $payment_items = [];
         foreach($fixed as $fix_category_id => $fix_type_id){
@@ -73,6 +82,7 @@ class SubscriptionController extends Controller
                     "tax_perc" => $price->tax_perc,
                     "total_amount" => $price->total,
                 ];
+                $total_amount += $price->total;
             }
         }
 
@@ -80,10 +90,131 @@ class SubscriptionController extends Controller
         
         $data["success"] = true;
         $data["payment_items"] = $payment_items;
+        $data["total_amount"] = $total_amount;
 
         return Response::json($data, 200, []);
     }
 
+    public function createRzaropayOrder(Request $request){
+
+        $student_id = $request->student_id ? $request->student_id : 0;
+        $registration_id = $request->registration_id ? $request->registration_id : 0;
+        $total_amount = $request->total_amount;
+        $type = $request->type;
+        $payment_items = $request->payment_items;
+
+        $url = 'https://api.razorpay.com/v1/orders';
+
+        $payload = [
+            "amount" => $total_amount."00",
+            "currency" => "INR",
+            "payment_capture" => 1
+        ];
+
+        $payload = json_encode($payload);
+
+        $result = $this->curlRequest($url, "POST", $payload);
+
+        $order_id = $result->id;
+
+        $table_order_id = DB::table("orders")->insertGetId(array(
+            "order_id" => $order_id,
+            "student_id" => $student_id,
+            "registration_id" => $registration_id,
+            "amount" => $amount,
+            "tax" => $tax,
+            "total_amount" => $total_amount,
+        ));
+
+        foreach($payment_items as $payment_item){
+            DB::table("order_items")->insert(array(
+                "order_id" => $table_order_id,
+                "type_id" => $payment_item["type_id"],
+                "amount" => $payment_item["amount"],
+                "tax_perc" => $payment_item["tax_perc"],
+                "tax" => $payment_item["tax"],
+                "total_amount" => $payment_item["total_amount"]
+            ));
+        }
+
+        $data['success'] = true;
+        $data['order_id'] = $order_id;
+        $data['key'] = $this->get_key();
+
+        return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
+    }
+
+    public function processWebOrder(){
+
+        $order_id = Input::get("order_id");
+        $transaction_id = Input::get("transaction_id");
+
+
+        $order = DB::table("orders")->where("order_id",$order_id)->where("status",0)->first();
+
+        if($order){
+
+            DB::table("orders")->where("id",$order->id)->update(array(
+                "transaction_id" => $transaction_id,
+                "status" => 1
+            ));
+
+            $student = Student::find($order->student_id);
+
+            $kit_fee = $order->kit_fee;
+            $sub_fee = $order->amount - $kit_fee;
+
+            $sub_fee_tax = round($sub_fee*0.18);
+            $kit_fee_tax = $order->amount_tax - $sub_fee_tax;
+
+            $payment = new PaymentHistory;
+            $payment->student_id = $order->student_id;
+            $payment->group_id = $student->first_group;
+            $payment->payment_category_id = 0;
+            $payment->product_type = 1;
+            $payment->package_type = 3;
+            $payment->dor = strtotime("today");
+            $payment->reg_fee = 0;
+            $payment->sub_fee = $sub_fee;
+            $payment->kit_fee = $kit_fee;
+            $payment->reg_fee_tax = 0;
+            $payment->sub_fee_tax = $sub_fee_tax;
+            $payment->kit_fee_tax = $kit_fee_tax;
+            $payment->payment_mode = 8;
+            $payment->in_favor_of = 'TISMPL';
+            $payment->amount = $order->amount;
+            $payment->total_amount = $order->amount + $order->amount_tax;
+            $payment->months = $order->month_plan;
+            $payment->p_remark = "Razorpay payment - ".$transaction_id;
+            $payment->razorpay_id = $transaction_id;
+            $payment->user_subscription_id = 0;
+            $payment->save();
+
+            if($student->doe){
+                $payment->dos = $student->doe + 86400;
+                $student->doe = $payment->doe = $payment->dos + $order->month_plan*30*86400;
+            } else {
+                $payment->dos = $payment->dor;
+                $payment->doe = $payment->dos + $order->month_plan*30*86400;
+            }
+
+            $student->active = 0;
+
+            $student->save();
+            $payment->save();
+
+            PaymentHistory::sendReceipt($payment->id, true);
+
+            $data['success'] = true;
+            $data["datetime"] = date("d-m-Y H:i:s");
+            $data['message'] = "Your order is successfully processed";
+        } else {
+            $data['success'] = false;
+            $data['message'] = "Your order could not be processed at this time. Kindly contact us in case of any issues";
+        }
+
+        return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
+    }
 
 
 }

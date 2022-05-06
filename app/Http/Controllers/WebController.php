@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Redirect, Validator, Hash, Response, Session, DB;
-use App\Models\Lead;
+use App\Models\Lead, App\Models\Client;
 
 class WebController extends Controller
 {	
@@ -19,23 +19,30 @@ class WebController extends Controller
             "description" => $description,
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => 1
+            "client_id" => "BU_CODE",
+            "payment_gateway" => "razorpay"
         ]);
     }
 
     public function renewals(){
+
+        $heading = "Renew Subscription";
+        $description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam";
+
         return view('web.renewals',[
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => 1
+            "client_id" => "BU_CODE"
         ]);
     }
 
     public function demoShedule(){
+
         return view('web.demo_schedule',[
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => 1
+            "client_id" => "BU_CODE"
         ]);
     }
 
@@ -50,7 +57,7 @@ class WebController extends Controller
             "description" => $description,
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => 1
+            "client_id" => "BU_CODE"
         ]);
     }
 
@@ -70,6 +77,10 @@ class WebController extends Controller
     }
 
     public function store(Request $request){
+
+        $client_code = $request->header("clientId");
+        $client = Client::AuthenticateClient($client_code);
+        $client_id = $client->id;
 
         $cre = [
             "name" => $request->name,
@@ -117,28 +128,34 @@ class WebController extends Controller
             return Response::json($data, 200, []);
         } else {
 
-            $data = [
-                "name" => $request->name,
-                "dob" => $request->year.'-'.$request->month.'-'. $request->date,
-                "gender" => $request->gender,
-                "father" => $request->father_name,
-                "mother" => $request->mother_name,
-                "prim_email" => $request->prim_email,
-                "prim_mobile" => $request->prim_mobile,
-                "prim_relation_to_student" => $request->prim_relation_to_student,
-                "sec_email" => $request->sec_email,
-                "sec_mobile" => $request->sec_mobile,
-                "sec_relation_to_student" => $request->sec_relation_to_student,
-                "address" => $request->address,
-                "pin_code" => $request->pin_code,
-                "city_id" => $request->training_city_id,
-                "center_id" => $request->training_center_id,
-                "group_id" => $request->group_id,
-                "kit" => $request->kit,
-                "fee_plan" => $request->fee_plan,
-            ];
+            // $data = [
+            //     "name" => $request->name,
+            //     "dob" => $request->year.'-'.$request->month.'-'. $request->date,
+            //     "gender" => $request->gender,
+            //     "father" => $request->father_name,
+            //     "mother" => $request->mother_name,
+            //     "prim_email" => $request->prim_email,
+            //     "prim_mobile" => $request->prim_mobile,
+            //     "prim_relation_to_student" => $request->prim_relation_to_student,
+            //     "sec_email" => $request->sec_email,
+            //     "sec_mobile" => $request->sec_mobile,
+            //     "sec_relation_to_student" => $request->sec_relation_to_student,
+            //     "address" => $request->address,
+            //     "pin_code" => $request->pin_code,
+            //     "city_id" => $request->training_city_id,
+            //     "center_id" => $request->training_center_id,
+            //     "group_id" => $request->group_id,
+            //     "kit_size" => $request->kit_size,
+            //     "fee_plan" => $request->fee_plan,
+            // ];
+            // $data_id = DB::table('registrations')->insertGetId($data);
 
-            DB::table('onfield_registrations')->insert($data);
+            // DB::table("registration_items")->where("registration_id",$data_id)->delete();
+            // $payment_items = $request->payment_items;
+            // foreach($payment_items as $payment_item){
+
+            // }
+
             $data['success'] = true;
             $data["message"] ="Data successfully inserted....";
             return Response::json($data, 200, []);
@@ -148,7 +165,9 @@ class WebController extends Controller
 
     public function storeLead(Request $request){
 
-        $client_id = $request->header("clientId");
+        $client_code = $request->header("clientId");
+        $client = Client::AuthenticateClient($client_code);
+        $client_id = $client->id;
 
         $cre = [
             "name" => $request->name,

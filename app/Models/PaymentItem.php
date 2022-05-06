@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-use App\Utilities, DB;
+use App\Models\Utilities, DB;
 
 class PaymentItem extends Model
 {

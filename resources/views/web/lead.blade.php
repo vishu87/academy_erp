@@ -50,7 +50,7 @@
 			</div>
 
 			<div class="text-right mt-3">
-				<x-web.button type="submit" class="block" spin="processing">Submit Details</x-web.button>
+				<x-web.button type="submit" class="block" loading="processing">Submit Details</x-web.button>
 			</div>
 
 		</x-ngform>

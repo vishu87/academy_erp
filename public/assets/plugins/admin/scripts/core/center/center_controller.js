@@ -120,10 +120,10 @@ app.controller('CenterController',function($scope , $http, $timeout , DBService,
 	            	photo: file,
 	            	resize: 1,
 	              	crop: 0,
-	              	width: 720
+	              	width: 720,
+	              	thumb: 1
 	            }
 	        }).then(function (resp) {
-	        	// console.log(resp);
 	            if(resp.data.success){
 	            	$scope.saveImage(resp.data.path);
 	            } else {
@@ -134,7 +134,7 @@ app.controller('CenterController',function($scope , $http, $timeout , DBService,
 	            console.log('Error status: ' + resp.status);
 	            $scope.uploading = false;
 	        }, function (evt) {
-	            // $scope.uploading_percentage = parseInt(100.0 * evt.loaded / evt.total) + '%';
+	            $scope.uploading_percentage = parseInt(100.0 * evt.loaded / evt.total) + '%';
 	        });
 		}
 		$scope.imageProcessing = false;
@@ -272,9 +272,6 @@ app.controller('CenterController',function($scope , $http, $timeout , DBService,
 			$scope.open_timing.processing = false;
 		});
 	}
-
-	
-
 
 	$scope.deleteCenter  = function(id, $index){
 		bootbox.confirm("Are you sure?", (check)=>{

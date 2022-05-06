@@ -7,24 +7,20 @@
 			<h3>Master Leads</h3>
 		</div>
 	</div>
-	<div class="portlet">
-		<div class="portlet-body ng-cloak">
-			<div class="row">
-				<div class="col-md-3">
-					@include('manage.masterLeads.lead_for')
-				</div>
-				<div class="col-md-3">
-					@include('manage.masterLeads.lead_status')
-				</div>
-				<div class="col-md-3">
-					@include('manage.masterLeads.lead_reasons')
-				</div>
-				<div class="col-md-3">
-					@include('manage.masterLeads.lead_sources')
-				</div>
+		<div class="row">
+			<div class="col-md-4">
+				@include('manage.masterLeads.lead_for')
+			</div>
+			<div class="col-md-4">
+				@include('manage.masterLeads.lead_status')
+			</div>
+			<div class="col-md-4">
+				@include('manage.masterLeads.lead_reasons')
+			</div>
+			<div class="col-md-4">
+				@include('manage.masterLeads.lead_sources')
 			</div>
 		</div>
-	</div>
 	@include('manage.masterLeads.master_leads_modal')
 </div>
 @endsection
