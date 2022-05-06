@@ -16,7 +16,7 @@
     <script type="text/javascript">
         var base_url = "{{url('/')}}";
         var api_key = "";
-        var client_id = {{$client_id}};
+        var client_id = "{{$client_id}}";
     </script>
 
     <script src="{{url('assets/plugins/jquery.min.js')}}" type="text/javascript"></script>

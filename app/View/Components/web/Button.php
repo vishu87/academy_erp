@@ -12,12 +12,14 @@ class Button extends Component
      * @return void
      */
     public $type;
-    public $spin;
+    public $ngClick;
+    public $loading;
 
-    public function __construct($type = "button", $spin = "")
+    public function __construct($type = "button", $loading = "", $ngClick = "")
     {
         $this->type = $type;
-        $this->spin = $spin;
+        $this->loading = $loading;
+        $this->ngClick = $ngClick;
     }
 
     /**

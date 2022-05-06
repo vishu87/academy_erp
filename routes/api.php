@@ -23,7 +23,26 @@ use App\Http\Controllers\CenterController;
 use App\Http\Controllers\ParameterController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\InventoryController;
+<<<<<<< HEAD
 use App\Http\Controllers\AppAPIController;
+=======
+use App\Http\Controllers\CommunicationController;
+use App\Http\Controllers\WebApiController;
+
+
+
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| is assigned the "api" middleware group. Enjoy building your API!
+|
+*/
+>>>>>>> abe09ca25f0d90fd9b608842b08204f3c870cef1
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -294,14 +313,19 @@ Route::group([], function(){
         Route::post('/save-attribute',[ParameterController::class, 'saveAttribute']);
         Route::get('/delete-attribute/{id}',[ParameterController::class, 'deleteAttribute']);
     });
+<<<<<<< HEAD
 
+=======
+>>>>>>> abe09ca25f0d90fd9b608842b08204f3c870cef1
 });
 
 
-Route::get('/get-state-city-center',[WebController::class, 'stateCityCenter']);
+Route::get('/get-state-city-center',[WebApiController::class, 'stateCityCenter']);
+Route::get('/get-state-city/{state_id}',[WebApiController::class, 'stateCity']);
 Route::group(["prefix"=>"registrations"], function(){
-    Route::post('/store',[WebController::class, 'store']);
-    Route::post('/store-lead',[WebController::class, 'storeLead']);
+    Route::post('/store',[WebApiController::class, 'store']);
+    Route::post('/store-demo',[WebApiController::class, 'storeDemo']);
+    Route::post('/store-lead',[WebApiController::class, 'storeLead']);
 });
 
 Route::group(["prefix"=>"subscriptions"], function(){

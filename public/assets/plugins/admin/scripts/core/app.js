@@ -10,6 +10,7 @@ angular.module('jcs-autoValidate')
     function (defaultErrorMessageResolver) {
         defaultErrorMessageResolver.getErrorMessages().then(function (errorMessages) {
           errorMessages['PatternMobile'] = 'Please fill a valid mobile number';
+          errorMessages['PatternPin'] = 'Please fill a valid pin code';
           errorMessages['patternInt'] = 'Please fill a numeric value';
           errorMessages['patternFloat'] = 'Please fill a numeric/decimal value';
           errorMessages['patternDate'] = 'Please fill a valid date in DD-MM-YYYY format';

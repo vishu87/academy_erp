@@ -11,17 +11,19 @@ use App\Models\User;
 class GeneralController extends Controller
 {	
     public function uploadPhoto(Request $request){
+        
         include(app_path().'/libraries/resize_img.inc.php');
+        
         $name_final = '';
-        $destination = 'images/';
+        $destination = 'uploads/';
 
-        if(Input::hasFile('photo')){
-            $file = Input::file('photo');
+        if($request->file('photo')){
+            $file = $request->file('photo');
 
-            $resize = Input::has("resize") ? Input::get("resize") : 0;
-            $crop = Input::has("crop") ? Input::get("crop") : 0;
-            $width = Input::has("width") ? Input::get("width") : 0;
-            $height = Input::has("height") ? Input::get("height") : 0;
+            $resize = $request->resize ? $request->resize : 0;
+            $crop = $request->crop ? $request->crop : 0;
+            $width = $request->width ? $request->width : 0;
+            $height = $request->height ? $request->height : 0;
 
             $name = $file->getClientOriginalName();
             $name = preg_replace('/[^A-Za-z0-9_\.\-]/', '', $name);

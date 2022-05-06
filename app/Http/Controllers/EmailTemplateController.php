@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Redirect,App\Student;
 use Response,Validator,DB,Input;
 use Illuminate\Http\Request;
-use App\SMSTemplate;
+use App\Models\EMAILTemplate;
 
 class EmailTemplateController extends Controller {
 
@@ -36,17 +36,18 @@ class EmailTemplateController extends Controller {
 		$validator = Validator::make($cre ,$rules);
 
 		if($validator->passes()){
-			$data = [
-				"template_name" => $request->template_name,
-				"content" => $request->content
-			];
+
 			if($request->id){
-				DB::table('email_templates')->where('id',$request->id)->update($data);
+				$email_template = EMAILTemplate::find($request->id);
 				$data['message'] = "Data successfully updated";
 			} else {
-				DB::table('email_templates')->insert($data);
+				$email_template = new EMAILTemplate;
 				$data['message'] = "Data successfully inserted";
 			}
+
+			$email_template->template_name = $request->template_name;
+			$email_template->content = $request->content;
+			$email_template->save();
 			$data['success'] = true;
 
 		} else {

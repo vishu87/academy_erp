@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Redirect,App\Student;
 use Response,Validator,DB,Input;
 use Illuminate\Http\Request;
-use App\SMSTemplate;
+use App\Models\SMSTemplate;
 
 class SMSTemplateController extends Controller {
 
@@ -23,13 +23,13 @@ class SMSTemplateController extends Controller {
 		return Response::json($data,200,[]); 
 	}
 
-	public function store()
+	public function store(Request $request)
 	{
 		$cre = [
-			"template"=>Input::get("template"),
-			"dlt_template_id"=>Input::get("dlt_template_id"),
-			"dlt_sender_id"=>Input::get("dlt_sender_id"),
-			"dlt_pe_id"=>Input::get("dlt_pe_id"),
+			"template"=>$request->template,
+			"dlt_template_id"=>$request->dlt_template_id,
+			"dlt_sender_id"=>$request->dlt_sender_id,
+			"dlt_pe_id"=>$request->dlt_pe_id,
 		];
 		$rules = [
 			"template"=>"required",
@@ -39,17 +39,17 @@ class SMSTemplateController extends Controller {
 		];
 		$validator = Validator::make($cre ,$rules);
 		if($validator->passes()){
-			$template = SMSTemplate::find(Input::get("id"));
+			$template = SMSTemplate::find($request->id);
 			$data['message'] = 'SMS Template is updated successfully';
 			if(!$template){
 				$template = new SMSTemplate;
 				$data['message'] = 'SMS Template is added successfully';
 			}
-			$template->template = Input::get("template");
-			$template->type = Input::get("type");
-			$template->dlt_template_id = Input::get("dlt_template_id");
-			$template->dlt_sender_id = Input::get("dlt_sender_id");
-			$template->dlt_pe_id = Input::get("dlt_pe_id");
+			$template->template = $request->template;
+			$template->type = $request->type;
+			$template->dlt_template_id = $request->dlt_template_id;
+			$template->dlt_sender_id = $request->dlt_sender_id;
+			$template->dlt_pe_id = $request->dlt_pe_id;
 			$template->save();
 
 			$data['success'] = true;
