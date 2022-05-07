@@ -5,22 +5,39 @@ app.controller("Demo_controller", function($scope, $http, DBService) {
 
   $scope.init = function(){
 	DBService.getCall("/api/get-state-city-center").then(function(data){
-		  if (data.success) {
-		  	$scope.cities = data.cities;
-		  }else{
-		  		bootbox.alert(data.message);	
-		  }
-		});
+		if (data.success) {
+	  		$scope.cities = data.cities;
+	  		$scope.centers = data.centers;
+	  		$scope.groups = data.groups;
+		}else{
+		  	bootbox.alert(data.message);	
+		}
+	});
   }
 
   $scope.onSubmit = function(){
-  	$scope.formData.payment_items = $scope.payment_items;
-	  DBService.postCall($scope.formData,"/api/registrations/store-demo").then(function(data){
+    $scope.processing = true;
+  	DBService.postCall($scope.formData,"/api/registrations/store-lead").then(function(data){
+	  	if (data.success) {
+        	bootbox.alert(data.message);  
+        	$scope.tab = 2;
+	  	} else {
+	  		bootbox.alert(data.message);	
+	  	}
+      $scope.processing = false;
+	 });
+  }
+
+  	$scope.schedule = function(){
+  		DBService.getCall("/api/registrations/get-schedule/"+$scope.formData.group_id).then(function(data){
 		  if (data.success) {
-        bootbox.alert(data.message);  
+        	$scope.visit_dates  = data.visit_dates;
+        	$scope.visit_time  = data.visit_time;
+
 		  } else {
 		  	bootbox.alert(data.message);	
 		  }
-	});
-  }
+		});
+  	}
+
 });

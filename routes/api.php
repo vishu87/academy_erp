@@ -25,6 +25,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\WebApiController;
+use App\Http\Controllers\RenewalWebController;
 
 
 
@@ -322,9 +323,14 @@ Route::group(["prefix"=>"registrations"], function(){
     Route::post('/store',[WebApiController::class, 'store']);
     Route::post('/store-demo',[WebApiController::class, 'storeDemo']);
     Route::post('/store-lead',[WebApiController::class, 'storeLead']);
+    Route::get('/get-schedule/{group_id}',[WebApiController::class, 'getSchedule']);
 });
 
 Route::group(["prefix"=>"subscriptions"], function(){
     Route::post('/get-payment-options',[SubscriptionController::class, 'getPaymentOptions']);
     Route::post('/get-payment-items',[SubscriptionController::class, 'paymentItems']);
+});
+
+Route::group(["prefix"=>"renewal"], function(){
+    Route::post('/search',[RenewalWebController::class, 'searchStudent']);
 });

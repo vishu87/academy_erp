@@ -177,7 +177,11 @@ class WebApiController extends Controller
             $lead->remarks = $request->remarks;
             $lead->document = $request->document;
             $lead->client_id = $client_id;
-            $lead->action_date = date("Y-m-d");
+            if($request->visit_date){
+                $lead->action_date = Utilities::convertDateToDB($request->visit_date);
+            } else {
+                $lead->action_date = date("Y-m-d");
+            }
 
             Lead::storeOpenLead($lead);
 
@@ -187,6 +191,37 @@ class WebApiController extends Controller
             return Response::json($data, 200, []);
 
         }
+    }
+
+    public function getSchedule($group_id){
+
+        $start_date = strtotime("today");
+        $visit_time = "";
+
+        $operation_days = DB::table("operation_days")->where("group_id",$group_id)->get();
+        $days = [];
+        foreach($operation_days as $item){
+            $days[] = $item->day;
+            if(!$visit_time){
+                $visit_time = date("h:iA",strtotime($item->from_time));
+            }
+        }
+
+        $final_dates = [];
+        for ($i = 0; $i < 30; $i++) { 
+            $date = $start_date + $i*86400;
+            $day_of_week = date('w',$date) + 1;
+
+            if(in_array($day_of_week, $days)){
+                $final_dates[] = ["value"=>date("d-m-Y",$date),"label"=>date("D d-M",$date)];
+            }
+
+        }
+
+        $data['success'] = true;
+        $data['visit_dates'] = $final_dates;
+        $data['visit_time'] = $visit_time;
+        return Response::json($data, 200, []);
     }
 
     public function storeDemo(Request $request){
