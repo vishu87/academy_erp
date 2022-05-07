@@ -23,31 +23,15 @@ use App\Http\Controllers\CenterController;
 use App\Http\Controllers\ParameterController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\InventoryController;
+
+use App\Http\Controllers\AppAPIController;
 use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\WebApiController;
 use App\Http\Controllers\RenewalWebController;
 
-
-
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
-
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
 
 Route::group([], function(){
 
@@ -314,6 +298,7 @@ Route::group([], function(){
         Route::post('/save-attribute',[ParameterController::class, 'saveAttribute']);
         Route::get('/delete-attribute/{id}',[ParameterController::class, 'deleteAttribute']);
     });
+
 });
 
 
@@ -331,6 +316,15 @@ Route::group(["prefix"=>"subscriptions"], function(){
     Route::post('/get-payment-items',[SubscriptionController::class, 'paymentItems']);
 });
 
+
 Route::group(["prefix"=>"renewal"], function(){
     Route::post('/search',[RenewalWebController::class, 'searchStudent']);
 });
+
+
+Route::group(["prefix"=>"app"], function(){
+    Route::post('/login',[AppAPIController::class, 'login']);
+    
+    Route::get('/academy-data',[AppAPIController::class, 'login']);
+});
+
