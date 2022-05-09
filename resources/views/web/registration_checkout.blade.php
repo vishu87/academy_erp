@@ -30,31 +30,18 @@
 					</tr>
 				</tbody>
 			</table>
-			<table class="table">
-				<thead>
-					<tr>
-						<th>City</th>
-						<th>Center</th>
-						<th>Group</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>@{{ reg_data.trainingCity }}</td>
-						<td>@{{ reg_data.center_name }}</td>
-						<td>@{{ reg_data.group_name }}</td>
-					</tr>
-				</tbody>
-			</table>
 			<x-web.button type="button" ng-click="tab=1" loading="processing">Edit</x-web.button>
 		</div>
 
 		<div class="col-md-6">
 			<div class="" style="background: #EEE">
+				<div style="padding: 15px">
+					<b>@{{ reg_data.group_name }}, @{{ reg_data.center_name }}, @{{ reg_data.trainingCity }}</b>
+				</div>
 				<table class="table">
 					<thead>
 						<tr>
-							<th>Type</th>
+							<th>Item</th>
 							<th>Amount</th>
 							<th>Tax</th>
 							<th>Total</th>
@@ -67,11 +54,15 @@
 							<td>@{{ item.tax_perc }}%</td>
 							<td>@{{ item.total_amount }}</td>
 						</tr>
+						<tr>
+							<td colspan="3" class="text-right">Total Amount</td>
+							<td>@{{ total_amount }}</td>
+						</tr>
 					</tbody>
 				</table>
 			</div>
 
-			<x-web.button type="button" class="block" loading="placing-order">Checkout</x-web.button>
+			<x-web.button type="button" class="block" loading="placing-order" ng-click="createOrder()">Checkout</x-web.button>
 
 		</div>
 	</div>

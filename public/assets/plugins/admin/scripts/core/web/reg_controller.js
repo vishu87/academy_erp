@@ -62,6 +62,7 @@ app.controller("Reg_controller", function($scope, $http, DBService) {
 
 
   	$scope.onSubmit = function(){
+        $scope.processing = true;
   		$scope.formData.payment_items = $scope.payment_items;
 	  	DBService.postCall($scope.formData,"/api/registrations/store").then(function(data){
 		  	if (data.success) {
@@ -71,6 +72,7 @@ app.controller("Reg_controller", function($scope, $http, DBService) {
 		  	} else {
 		  		bootbox.alert(data.message);	
 		  	}
+            $scope.processing = false;
 		});
   	}
 
@@ -82,10 +84,11 @@ app.controller("Reg_controller", function($scope, $http, DBService) {
         $scope.placing_order = true;
         DBService.postCall({
             type: "registration",
+            payment_gateway: "razorpay",
             registration_id: $scope.formData.id,
             total_amount : $scope.total_amount,
             payment_items : $scope.payment_items
-        },'/api/renewal/create-order').then(function(data){
+        },'/api/subscriptions/create-order').then(function(data){
             $scope.order_id = data.order_id;
             $scope.key = data.key;
             $scope.startPayment();
@@ -96,9 +99,9 @@ app.controller("Reg_controller", function($scope, $http, DBService) {
     $scope.startPayment = function(){
         var options = {
             "key": $scope.key, 
-            "amount": $scope.sub.total_amount*100, 
+            "amount": $scope.total_amount*100, 
             "currency": "INR",
-            "name": $scope.student.name,
+            "name": $scope.reg_data.name,
             "description": "BBFS Registration Payment",
             "image": "https://www.bbfootballschools.com/images/logo.png",
             "order_id": $scope.order_id, 
@@ -110,23 +113,21 @@ app.controller("Reg_controller", function($scope, $http, DBService) {
                 DBService.postCall({
                     order_id: $scope.order_id,
                     transaction_id: response.razorpay_payment_id
-                },'/api/renewal/process-order').then(function(data){
+                },'/api/subscriptions/process-order').then(function(data){
                     $scope.datetime = data.datetime;
                     if(data.success){
                         $scope.show_success = true;
                     } else {
                         alert(data.message);
                     }
-
                     $scope.processing_order = false;
-
                 });
 
             },
             "prefill": {
-                "name": $scope.student.name,
-                "email": $scope.student.email,
-                "contact": $scope.filter.mobile_number
+                "name": $scope.reg_data.name,
+                "email": $scope.reg_data.prim_email,
+                "contact": $scope.reg_data.prim_mobile
             },
             "notes": {
                 "address": "BBFS"

@@ -136,7 +136,7 @@ class StudentController extends Controller
         if($request->export == 'export' ){
             $students = $students->get();
             if( sizeof($students) > 0 ){
-                 include(app_path().'/ExcelExport/export_student.php');
+                include(app_path().'/ExcelExport/export_student.php');
             } else {
                 return Redirect::back()->with('failure','No data found to export');
             }

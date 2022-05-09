@@ -160,6 +160,10 @@
 							<td>@{{ item.tax_perc }}%</td>
 							<td>@{{ item.total_amount }}</td>
 						</tr>
+						<tr>
+							<td colspan="3" class="text-right">Total Amount</td>
+							<td>@{{ total_amount }}</td>
+						</tr>
 					</tbody>
 				</table>
 			</div>

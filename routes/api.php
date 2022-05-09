@@ -23,26 +23,9 @@ use App\Http\Controllers\CenterController;
 use App\Http\Controllers\ParameterController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\InventoryController;
-<<<<<<< HEAD
 use App\Http\Controllers\AppAPIController;
-=======
 use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\WebApiController;
-
-
-
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
->>>>>>> abe09ca25f0d90fd9b608842b08204f3c870cef1
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -59,6 +42,7 @@ Route::group([], function(){
     Route::get('/cities/{state_id}',[GeneralController::class, 'getCities']);
 
     Route::post('/get-state-city-center-data',[GeneralController::class, 'get_state_city_center_data']);
+    Route::post('/get-locations',[GeneralController::class, 'get_state_city_center_data']);
 
     Route::group(["prefix"=>"upload"], function(){
         Route::post('/photo',[GeneralController::class, 'uploadPhoto']);
@@ -313,10 +297,7 @@ Route::group([], function(){
         Route::post('/save-attribute',[ParameterController::class, 'saveAttribute']);
         Route::get('/delete-attribute/{id}',[ParameterController::class, 'deleteAttribute']);
     });
-<<<<<<< HEAD
 
-=======
->>>>>>> abe09ca25f0d90fd9b608842b08204f3c870cef1
 });
 
 
@@ -331,11 +312,12 @@ Route::group(["prefix"=>"registrations"], function(){
 Route::group(["prefix"=>"subscriptions"], function(){
     Route::post('/get-payment-options',[SubscriptionController::class, 'getPaymentOptions']);
     Route::post('/get-payment-items',[SubscriptionController::class, 'paymentItems']);
+    Route::post('/create-order',[SubscriptionController::class, 'createOrder']);
+    Route::post('/process-order',[SubscriptionController::class, 'createOrder']);
 });
 
 
 Route::group(["prefix"=>"app"], function(){
     Route::post('/login',[AppAPIController::class, 'login']);
-    
     Route::get('/academy-data',[AppAPIController::class, 'login']);
 });

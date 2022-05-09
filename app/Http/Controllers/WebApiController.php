@@ -34,7 +34,7 @@ class WebApiController extends Controller
     }
 
     public function store(Request $request){
-
+        
         $client_code = $request->header("clientId");
         $client = Client::AuthenticateClient($client_code);
         $client_id = $client->id;
@@ -110,7 +110,6 @@ class WebApiController extends Controller
             $registration->training_center_id = $request->training_center_id;
             $registration->group_id = $request->group_id;
             $registration->kit_size = $request->kit_size;
-            $registration->fee_plan = $request->fee_plan;
             $registration->client_id = $client_id;
             $registration->type = "registration";
             $registration->save();

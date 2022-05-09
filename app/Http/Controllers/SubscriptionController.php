@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Redirect, Validator, Hash, Response, Session, DB;
 use Illuminate\Http\Request;
 
-use App\Models\PaymentHistory;
+use App\Models\PaymentHistory, App\Models\Client;
 
 class SubscriptionController extends Controller
 {	
@@ -68,8 +68,9 @@ class SubscriptionController extends Controller
                 "category" => $category->category_name,
                 "amount" => $price->price,
                 "tax_perc" => $price->tax_perc,
-                "total_amount" => $price->total
+                "total_amount" => round($price->total)
             ];
+            $total_amount += round($price->total);
             
         }
 
@@ -80,9 +81,9 @@ class SubscriptionController extends Controller
                     "category" => $category["category_name"],
                     "amount" => $price->price,
                     "tax_perc" => $price->tax_perc,
-                    "total_amount" => $price->total,
+                    "total_amount" => round($price->total),
                 ];
-                $total_amount += $price->total;
+                $total_amount += round($price->total);
             }
         }
 
@@ -95,51 +96,58 @@ class SubscriptionController extends Controller
         return Response::json($data, 200, []);
     }
 
-    public function createRzaropayOrder(Request $request){
+    public function createOrder(Request $request){
+
+        $client_code = $request->header("clientId");
+        $client = Client::AuthenticateClient($client_code);
+        $client_id = $client->id;
 
         $student_id = $request->student_id ? $request->student_id : 0;
         $registration_id = $request->registration_id ? $request->registration_id : 0;
         $total_amount = $request->total_amount;
         $type = $request->type;
+        $payment_gateway = $request->payment_gateway;
         $payment_items = $request->payment_items;
 
-        $url = 'https://api.razorpay.com/v1/orders';
+        if($payment_gateway == "razorpay"){
 
-        $payload = [
-            "amount" => $total_amount."00",
-            "currency" => "INR",
-            "payment_capture" => 1
-        ];
+            $url = 'https://api.razorpay.com/v1/orders';
+            $payload = [
+                "amount" => $total_amount."00",
+                "currency" => "INR",
+                "payment_capture" => 1
+            ];
 
-        $payload = json_encode($payload);
+            $payload = json_encode($payload);
 
-        $result = $this->curlRequest($url, "POST", $payload);
+            $result = $this->curlRequest($url, "POST", $payload);
 
-        $order_id = $result->id;
+            $order_id = $result->id;
 
-        $table_order_id = DB::table("orders")->insertGetId(array(
-            "order_id" => $order_id,
-            "student_id" => $student_id,
-            "registration_id" => $registration_id,
-            "amount" => $amount,
-            "tax" => $tax,
-            "total_amount" => $total_amount,
-        ));
-
-        foreach($payment_items as $payment_item){
-            DB::table("order_items")->insert(array(
-                "order_id" => $table_order_id,
-                "type_id" => $payment_item["type_id"],
-                "amount" => $payment_item["amount"],
-                "tax_perc" => $payment_item["tax_perc"],
-                "tax" => $payment_item["tax"],
-                "total_amount" => $payment_item["total_amount"]
+            $table_order_id = DB::table("orders")->insertGetId(array(
+                "order_id" => $order_id,
+                "student_id" => $student_id,
+                "registration_id" => $registration_id,
+                "total_amount" => $total_amount,
+                "client_id" => $client_id
             ));
-        }
 
-        $data['success'] = true;
-        $data['order_id'] = $order_id;
-        $data['key'] = $this->get_key();
+            // foreach($payment_items as $payment_item){
+            //     DB::table("order_items")->insert(array(
+            //         "order_id" => $table_order_id,
+            //         "type_id" => $payment_item["type_id"],
+            //         "amount" => $payment_item["amount"],
+            //         "tax_perc" => $payment_item["tax_perc"],
+            //         "tax" => $payment_item["tax"],
+            //         "total_amount" => $payment_item["total_amount"],
+
+            //     ));
+            // }
+
+            $data['success'] = true;
+            $data['order_id'] = $order_id;
+            $data['key'] = $this->get_key();
+        }
 
         return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
     }
@@ -148,7 +156,6 @@ class SubscriptionController extends Controller
 
         $order_id = Input::get("order_id");
         $transaction_id = Input::get("transaction_id");
-
 
         $order = DB::table("orders")->where("order_id",$order_id)->where("status",0)->first();
 
@@ -214,6 +221,29 @@ class SubscriptionController extends Controller
         }
 
         return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
+    }
+
+    private function curlRequest($url, $method, $payload = null){
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        curl_setopt($ch, CURLOPT_USERPWD, $this->get_key() . ":" . $this->get_secret());
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        
+        if($method == 'POST'){
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        } else {
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+        }
+        
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        $result = json_decode($result);
+        return $result;
+
     }
 
 
