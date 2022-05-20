@@ -327,6 +327,6 @@ Route::group(["prefix"=>"renewal"], function(){
 
 Route::group(["prefix"=>"app"], function(){
     Route::post('/login',[AppAPIController::class, 'login']);
-    Route::get('/academy-data',[AppAPIController::class, 'login']);
+    Route::get('/academy-data',[AppAPIController::class, 'academyData']);
 });
 

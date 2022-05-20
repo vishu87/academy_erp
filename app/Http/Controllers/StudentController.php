@@ -49,7 +49,7 @@ class StudentController extends Controller
         $user = User::AuthenticateUser($request->header("apiToken"));
         $user_access = User::getAccess("st-profile",$user->id);
 
-        $max_per_page = $request->max_per_page;
+        $max_per_page = $request->max_per_page ? $request->max_per_page : 20;
         $page_no = $request->page_no;
 
         $students = DB::table('students')->select('students.id','students.name','students.dob','students.gender','students.doe','students.group_id','groups.group_name','groups.center_id','center.id as center_id','center.center_name','center.city_id','city.id as city','city.city_name','center.center_name','students.inactive','students.pic');
@@ -155,6 +155,7 @@ class StudentController extends Controller
 
         $data["success"] = true;
         $data["students"] = $students;
+        $data["page_no"] = $page_no;
 
         return json_encode($data);
 
@@ -221,8 +222,14 @@ class StudentController extends Controller
         $student->group_shifts = Student::groupShiftData($id);
         $student->documents = Student::documents($id);
 
+        $student->student_tags = [];
+
+        $tags = [];
+
         $data = [
+            "success" => true,
             "student" => $student,
+            "tags" => $tags,
         ];
 
         return Response::json($data, 200, array());

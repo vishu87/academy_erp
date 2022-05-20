@@ -102,42 +102,34 @@ class GeneralController extends Controller
         
         $user = User::AuthenticateUser($request->header("apiToken"));
         $tag = $request->Tag;
+        $center_details = $request->center_details ? 1 : 0;
 
         $user_access = User::getAccess($tag,$user->id);
 
-        if ($user_access->all_access) {
-             
-            $group = DB::table('groups')->select('id as value','group_name as label','center_id')
-            ->get();
-
-            $center = DB::table('center')->select('id as value','center_name as label','city_id')
-            ->get();
-
-            $city = DB::table('city')->select('id as value','city_name as label','state_id')
-            ->get(); 
-
-        } else {
-            $city = DB::table('city')->select('id as value','city_name as label','state_id')
-            ->whereIn('id',$user_access->city_ids)->get(); 
-
-            $center = DB::table('center')->select('id as value','center_name as label','city_id')
-            ->whereIn('id',$user_access->center_ids)->get();
-
-            $group = DB::table('groups')->select('id as value','group_name as label','center_id')
-            ->whereIn('id',$user_access->group_ids)->get();
+        $group = DB::table('groups')->select('id as value','group_name as label','center_id');
+        if(!$user_access->all_access){
+            $group = $group->whereIn('id',$user_access->group_ids);
         }
+        $group = $group->where("client_id",$user->client_id)->get();
+
+        if($center_details == 0){
+            $center = DB::table('center')->select('center.id as value','center_name as label','city_id');
+        } else {
+            $center = DB::table('center')->select('center.id as value','center_name as label','city_id','city.city_name')->join("city","city.id","=","center.city_id");
+        }
+        if(!$user_access->all_access){
+            $center = $center->whereIn('center.id',$user_access->center_ids);
+        }
+        $center = $center->where("center.client_id",$user->client_id)->get();
+        
+
+        $city = DB::table('city')->select('id as value','city_name as label','state_id');
+        if(!$user_access->all_access){
+            $city = $city->whereIn('id',$user_access->city_ids);
+        }
+        $city = $city->where("client_id",$user->client_id)->get();
 
         $states = DB::table('states')->select('id as value','state_name as label')->get();
-        // $state = [];
-        // foreach ($states as $st) {
-        //     $check = 0;
-        //     foreach ($city as $ct) {
-        //         if ($st->id == $ct->state_id && $check == 0) {
-        //             $state[] = $st;
-        //             $check = 1;
-        //         }
-        //     }
-        // }
 
         $data['success'] = true;
         $data['state'] = $states;
