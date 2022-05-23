@@ -254,4 +254,16 @@ class Student extends Model
 
     }
 
+    public static function getPhoto($pic){
+        
+        $url = "http://192.168.1.39:8888/academy_erp";
+
+        if($pic){
+            $pic = $url."/images/".$pic;
+        } else {
+            $pic = url('/assets/images/student.png');
+        }
+        return $pic;
+    }
+
 }

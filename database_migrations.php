@@ -11,3 +11,103 @@ ALTER TABLE `registrations` ADD `address_state_id` INT NULL DEFAULT NULL AFTER `
 
 
 ALTER TABLE `email_templates` ADD `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `content`, ADD `created_at` TIMESTAMP NULL DEFAULT NULL AFTER `updated_at`;
+
+
+// gulzar may-20
+
+ALTER TABLE `staff_attendance` ADD `latitude` DOUBLE NULL DEFAULT NULL AFTER `created_at`, ADD `longitude` DOUBLE NULL DEFAULT NULL AFTER `latitude`;
+
+ALTER TABLE `users` ADD `pic` TEXT NULL DEFAULT NULL AFTER `gender`;
+
+// gulzar may 23
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+CREATE TABLE `student_tags` (
+  `id` int(11) NOT NULL,
+  `student_id` int(11) DEFAULT NULL,
+  `tag_id` int(11) DEFAULT NULL,
+  `user_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO `student_tags` (`id`, `student_id`, `tag_id`, `user_id`) VALUES
+(39, 2422, 1, 151),
+(40, 2422, 3, 151),
+(41, 2422, 5, 151),
+(46, 3205, 1, 151),
+(47, 3205, 3, 151),
+(48, 3205, 6, 151),
+(52, 956, 1, 151),
+(53, 956, 4, 151),
+(54, 2423, 1, 151),
+(55, 2423, 3, 151),
+(64, 3204, 1, 151),
+(65, 3204, 6, 151),
+(66, 3204, 4, 151);
+
+ALTER TABLE `student_tags`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `student_tags`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+COMMIT;
+
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+CREATE TABLE `tags` (
+  `id` int(11) NOT NULL,
+  `tag` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+INSERT INTO `tags` (`id`, `tag`) VALUES
+(1, 'Android'),
+(3, 'ios'),
+(4, 'php'),
+(5, 'c++'),
+(6, 'java');
+
+ALTER TABLE `tags`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `tags`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+COMMIT;
+
+ALTER TABLE `students` ADD `tags` TEXT NULL DEFAULT NULL AFTER `inactive`;
+
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+CREATE TABLE `guest_students` (
+  `id` int(11) NOT NULL,
+  `date` date DEFAULT NULL,
+  `full_name` varchar(200) DEFAULT NULL,
+  `contact` varchar(20) DEFAULT NULL,
+  `email` varchar(200) DEFAULT NULL,
+  `age` int(11) DEFAULT NULL,
+  `remark` text,
+  `group_id` int(11) NOT NULL DEFAULT '0',
+  `status` tinyint(1) NOT NULL DEFAULT '0',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+ALTER TABLE `guest_students`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `guest_students`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+COMMIT;

@@ -324,9 +324,29 @@ Route::group(["prefix"=>"renewal"], function(){
     Route::post('/search',[RenewalWebController::class, 'searchStudent']);
 });
 
-
 Route::group(["prefix"=>"app"], function(){
     Route::post('/login',[AppAPIController::class, 'login']);
+    Route::get('/user/profile',[AppAPIController::class, 'getUser']);
     Route::get('/academy-data',[AppAPIController::class, 'academyData']);
+    Route::post('/check-location',[AppAPIController::class, 'getLocation']);
+    Route::post('/user-profile/upload/{user_id}',[AppAPIController::class, 'uploadProfile']);
+    Route::post('/user-update',[AppAPIController::class, 'updateUser']);
+    Route::get('/coach/attendance-list',[AppAPIController::class, 'coachAttendList']);
+    Route::post('/user/update-password/{user_id}',[AppAPIController::class, 'changePassword']);
+
+    Route::group(["prefix"=>"events"], function(){
+        Route::post('/list',[AppAPIController::class, 'getEventsList']);
+        Route::get('/centers-list',[AppAPIController::class, 'getCenterList']);
+        Route::get('/groups-list/{center_id}',[AppAPIController::class, 'getGroupList']);
+        Route::get('/cancel',[AppAPIController::class, 'getGroupList']);
+        Route::get('/fetct-reason',[AppAPIController::class, 'getReasons']);
+        Route::post('/save-cancelled',[AppAPIController::class, 'cancelEvent']);
+        Route::post('/players',[AppAPIController::class, 'eventPlayers']);
+        Route::post('/save-player-attendance',[AppAPIController::class, 'savePlayerAttendance']);
+        Route::post('/guest-player-save',[AppAPIController::class, 'saveGuestPlayer']);
+        Route::get('/guest-student-remove/{student_id}',[AppAPIController::class, 'guestStudentRemove']);
+
+    });
+
 });
 
