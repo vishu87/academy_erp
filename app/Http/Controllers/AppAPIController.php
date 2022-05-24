@@ -332,6 +332,275 @@ class AppAPIController extends Controller {
         }
     }
 
+    // ************************ STUDENTS ************************
+
+    public function studentInfo(Request $request){
+    	
+    	$token  = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
+
+        $student = DB::table('students')->select("students.*",'groups.group_name','center.center_name')->join('groups', 'students.group_id','=', 'groups.id')->join('center', 'groups.center_id','=', 'center.id')->where('students.id', $request->student_id)->first();
+
+        $student_tags = DB::table('student_tags')->select('student_tags.tag_id')->join('tags', 'tags.id','=', 'student_tags.tag_id')->where('student_tags.student_id',$student->id)->pluck("student_tags.tag_id")->toArray();
+
+
+        $student->student_tags = $student_tags;
+
+        if($student->dob){
+            $student->dob = date("Y",strtotime($student->dob));
+            $student->age = date("Y",strtotime('now')) - $student->dob;
+        }
+        
+        $student->pic = Student::getPhoto($student->pic);
+
+        $yellow = "#d4d40f";
+        $green =  "#1b9439";
+        $red =  "#d84a38";
+        if($student->doe < strtotime("today")){
+            $student->pending = true;
+        } else {
+            $student->pending = false;
+        }
+
+        if($student->inactive == 0){
+            $student->color = $red;
+        } else {
+            $student->color = $student->pending ? $yellow : $green;
+        }
+
+        $student->doe = $student->doe ? date("d-m-Y",$student->doe) : "";
+
+        // if($student->father_mob){
+        //     $student->father_mob = $student->father_mob;
+        //     $student->father_mob_masked = "XXXXXX".substr($student->father_mob, -4);
+        // } else {
+        //     $student->father_mob = "-";
+        //     $student->father_mob_masked = "-";
+        // }
+        // if($student->mother_mob){
+        //     $student->mother_mob = $student->mother_mob;
+        //     $student->mother_mob_masked = "XXXXXX".substr($student->mother_mob, -4);
+        // } else {
+        //     $student->mother_mob = "-";
+        //     $student->mother_mob_masked = "-";
+        // }
+
+        $student->gender = ($student->gender == 1) ? "Male" : "Female";
+
+        $payments = DB::table("payment_history")->where("student_id",$student->id)->orderBy("invoice_date",'DESC')->limit(5)->get();
+
+        foreach($payments as $payment){
+            $payment->invoice_date = date("d-m-Y", strtotime($payment->invoice_date));
+            $payment->payment_date = date("d-m-Y", strtotime($payment->payment_date));
+        }
+        $student->payments = $payments;
+
+        $tags = DB::table("tags")->get();
+
+        if($student){
+            $data["success"] = true;
+            $data["student"] = $student;
+            $data["tags"] = $tags;
+        } else {
+            $data["success"] = false;
+            $data["message"] = "Student profile not found";
+        }
+
+        return Response::json($data,200,array());
+    }
+
+    public function saveTags(Request $request){
+    	$token  = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
+        $student_id = $request->student_id;
+        $tags_arr = $request->selected_tags_id;
+
+        DB::table('student_tags')->where('student_id',$student_id)->delete();
+
+        foreach($tags_arr as $tag_id){
+            DB::table('student_tags')->insert([
+                'student_id' => $student_id,
+                'tag_id' =>  $tag_id,
+                'user_id' => $user->id,
+            ]);
+        }
+
+        if(sizeof($tags_arr) > 0){
+            $tags = DB::table("tags")->whereIn("id",$tags_arr)->pluck("tag")->toArray();
+            $tag_names = implode(', ',$tags);
+        } else {
+            $tag_names = "";
+        }
+
+        $student = Student::find($student_id);
+        $student->tags = $tag_names;
+        $student->save();
+
+        $data['success'] = true;
+        $data['message'] = "Tags has been inserted successfully.";
+        $data['tag_names'] = $tag_names;
+        return Response::json($data, 200, []);
+    }
+
+    public function studentEdit(Request $request, $student_id){
+    	// SELECT students.name, students.email, states.state_name, city.city_name FROM students JOIN states ON students.state_id = states.id JOIN city ON city.id = students.state_city_id
+        $token  = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
+
+        $student = DB::table('students')->find($student_id);
+        if($student->dob){
+            // $student->dob = date("Y-m-d",$student->dob);
+            $student->dob = date("d-m-Y",strtotime($student->dob));
+
+        }
+        $student->pic = Student::getPhoto($student->pic);
+
+        $states  = DB::table('states')->select("id as key","state_name as label")->get();
+
+        $cities  = DB::table('cities')->select("id as key","city_name as label")
+        // ->where("state_id",$states->id)
+        ->get();
+
+        if($student){
+            $data["success"] = true;
+            $data["student"] = $student;
+            $data["states"] = $states;
+            $data["cities"] = $cities;
+        } else {
+            $data["success"] = false;
+            $data["message"] = "Student profile not found";
+        }
+
+        return Response::json($data,200,array());
+    }
+
+    public function getStateList(Request $request){
+
+        $token  = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
+
+        $states  = DB::table('states')->select("id as key","state_name as label")->get();
+        
+        $data['success'] = true;
+        $data['states'] = $states;
+        return Response::json($data,200,array());
+    }
+
+    public function getCityList(Request $request, $state_id ){
+    	
+    	$token  = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
+
+        $cities  = DB::table('cities')->select("id as key","city_name as label")->where("state_id",$state_id)->get();
+
+        $data['success'] = true;
+        $data['cities'] = $cities;
+        $data['state_id'] = $state_id;
+
+        return Response::json($data,200,array());	
+    }
+
+    public function uploadStuPic(Request $request, $student_id){
+    	$success = false;
+        $destinationPath = "../images";
+        
+        if($request->hasFile('image')){
+
+            $student_id = ($student_id != '') ? $student_id : $request->id;
+
+            $extension = $request->file('image')->getClientOriginalExtension();
+            $filename = 'image-'.$student_id.'-'.strtotime("now").'.'.$extension;
+            $request->file('image')->move($destinationPath,$filename);
+
+            $student = Student::find($student_id);
+            if($student){
+                $student->pic = $filename;
+                $student->save();
+                $success = true;
+            }
+        }
+
+        if($success){
+            // $data['pic'] = $student->pic;
+            $data['details'] = $student_id." - ".$extension;
+            $data['message'] = $filename;
+            return Response::json($data, 200); 
+        } else {
+            $data['message'] = "Not done ".$student_id." - ".$extension;
+            return Response::json($data, 409);
+        }
+    }
+
+    public function saveStudent(Request $request, $student_id){
+    	
+    	$student = $request->student;
+
+        $credentials = [
+            'name'     => $student['name'],
+            'dob'      => $student['dob'],
+            'gender'   => $student['gender'],
+            'father'   => $student['fathe'],
+
+        ];
+        $rules = [
+            'name'      => 'required',
+            'dob'       => 'required',
+            'gender'    => 'required',
+            'father'    => 'required'
+        ];
+        dd(1);// working on it
+        $validator = Validator::make($credentials, $rules);
+        if ($validator->passes()) {
+
+            if($student['id']){
+                $students = Student::find($student['id']);
+            }else{
+                $students = new Student;
+            }
+             if($request->file('pic')){
+                $destination = 'uploads/';
+                $file = $request->file('pic');
+                $extension = $file->getClientOriginalExtension();
+                $name = 'student_'.strtotime("now").'.'.strtolower($extension);
+            $file = $file->move($destination, $name);
+                $students->pic = $name;
+             }
+
+            $students->name   = $request->input('name');
+            $students->dob    = $request->input('dob') ? strtotime($request->input('dob')) : "";
+            $students->gender = $request->input('gender');
+            
+            $students->email  = $request->input('email');
+            $students->school = $request->input('school');
+            $students->mobile = $request->input('mobile');
+
+            $students->father = $request->input('father');
+            $students->father_mob = $request->input('father_mob');
+            $students->father_email = $request->input('father_email');
+
+            $students->mother = $request->input('mother');
+            $students->mother_mob = $request->input('mother_mob');
+            $students->mother_email = $request->input('mother_email');
+            
+            $students->address = $request->input('address');
+            $students->city = $request->input('city');
+            $students->state = $request->input('state');
+            $students->kit_size = $request->input('kit_size');
+
+            // $students->zip_code = $request->input('zip_code');
+
+            $students->save();
+            $data['success'] = true;
+            $data['message'] = "data inserted successfully.";
+        }else{
+            $data['success'] = false;
+            $data['message'] = "fill requied field.";            
+        }
+        return Response::json($data,200,array());
+    } 
+
+
+
     // ************************ APP EVENTS ************************
 
     public function getEventsList(Request $request){
@@ -459,50 +728,50 @@ class AppAPIController extends Controller {
 
     public function cancelEvent(Request $request){
         
-        // $token  = $request->header('apiToken');
-        // $user = User::AuthenticateUser($token);
+        $token  = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
 
-        // $credentials = [
-        //     'cancel_reason' => $request->cancel_reason,
-        // ];
-        // $rules = [
-        //     'cancel_reason' => 'required',
-        // ];
-
+        $cre = [
+            'cancel_reason' => $request->cancel_reason,
+        ];
+        $rules = [
+            'cancel_reason' => 'required',
+        ];
+        
         // if($request->cancel_reason) == "Other"){
-        //     $credentials["cancel_remarks"] = $request->cancel_remarks;
+        //     $cre["cancel_remarks"] = $request->cancel_remarks;
         //     $rules["cancel_remarks"] = 'required';
         // }
 
-        // $validator = Validator::make($credentials, $rules);
-        // $date = $request->date;
+        $validator = Validator::make($cre, $rules);
+        $date = $request->date;
 
-        // if ($validator->passes()) {
+        if ($validator->passes()) {
 
-        //     DB::table('cancel_events')->insert([
-        //         'date' => date('Y-m-d',strtotime($date)),
-        //         'cancel_reason' => $request->cancel_reason,
-        //         'cancel_remarks' => $request->cancel_remarks,
-        //         'group_id' => $request->group_id,
-        //         'op_id' => $request->operation_id,
-        //         'user_id' => $user->id,
-        //     ]);
-        //     $data["success"] = true;
-        //     $data["message"] ="Event Canceled Successfully";
+            DB::table('cancel_events')->insert([
+                'date' => date('Y-m-d',strtotime($date)),
+                'cancel_reason' => $request->cancel_reason,
+                'cancel_remarks' => $request->cancel_remarks,
+                'group_id' => $request->group_id,
+                'op_id' => $request->operation_id,
+                'user_id' => $user->id,
+            ]);
+            $data["success"] = true;
+            $data["message"] ="Event has been Canceled Successfully";
 
-        // } else {
-        //     $error = '';
-        //     $messages = $validator->messages();
-        //     foreach($messages->all() as $message){
-        //         $error = $message;
-        //         break;
-        //     }
-        //     $data["success"] = false;
-        //     $data["message"] = $error;
+        } else {
+            $error = '';
+            $messages = $validator->messages();
+            foreach($messages->all() as $message){
+                $error = $message;
+                break;
+            }
+            $data["success"] = false;
+            $data["message"] = $error;
 
-        // }
+        }
         
-        // return Response::json($data,200,array()); 
+        return Response::json($data,200,array()); 
     }
 
     public function eventPlayers(Request $request){
@@ -577,10 +846,8 @@ class AppAPIController extends Controller {
     public function savePlayerAttendance(Request $request){
         $event = $request->event;
         $students = $request->students;
-
-        $date = $event["date"];
         $group_id = $event["group_id"];
-		$date = date('y-m-d',strtotime($date));
+		$date = date('y-m-d',strtotime($event["date"]));
 
         if(isset($students)){
 
@@ -601,7 +868,7 @@ class AppAPIController extends Controller {
                             'student_id' => $student['id'],
                             'group_id' => $student['group_id'],
                             'attendance' => $student['attendance'],
-                            'date' => date('Y-m-d',strtotime($date)),
+                            'date' => $date,
                         ]);
                     }
                 } else {
@@ -610,18 +877,6 @@ class AppAPIController extends Controller {
                     ));
                 }
                 
-            }
-        }
-
-        if(isset($student['group_id'])){
-            $check = DB::table('student_attendance')->where('student_id','dm')->where('group_id',$student['group_id'])->where('date', $date)->first();
-            if(!$check){
-                DB::table('student_attendance')->insert([
-                    'student_id' => 'dm',
-                    'group_id' => $student['group_id'],
-                    'attendance' => 'A',
-                    'date' => $date,
-                ]);
             }
         }
 

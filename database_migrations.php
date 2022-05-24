@@ -111,3 +111,33 @@ ALTER TABLE `guest_students`
 ALTER TABLE `guest_students`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
+
+
+// by Gulzar 24 may
+
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+CREATE TABLE `cancel_events` (
+  `id` int(11) NOT NULL,
+  `date` date DEFAULT NULL,
+  `group_id` int(11) DEFAULT NULL,
+  `op_id` int(11) DEFAULT NULL,
+  `cancel_reason` varchar(255) DEFAULT NULL,
+  `cancel_remarks` text,
+  `user_id` int(11) DEFAULT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE `cancel_events`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `cancel_events`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+COMMIT;
+

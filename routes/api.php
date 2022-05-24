@@ -348,5 +348,16 @@ Route::group(["prefix"=>"app"], function(){
 
     });
 
+    Route::group(["prefix"=>"student"], function(){
+        Route::post('/info',[AppAPIController::class, 'studentInfo']);
+        Route::post('/save-tags',[AppAPIController::class, 'saveTags']);
+        Route::get('/edit/{student_id}',[AppAPIController::class, 'studentEdit']);
+        Route::get('/state-list',[AppAPIController::class, 'getStateList']);
+        Route::get('/city-list/{state_id}',[AppAPIController::class, 'getCityList']);
+        Route::post('/upload-student-profile/{student_id}',[AppAPIController::class,'uploadStuPic']);
+        Route::post('/save-student/{student_id}',[AppAPIController::class,'saveStudent']);
+
+    });
+
 });
 
