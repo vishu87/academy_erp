@@ -355,8 +355,13 @@ Route::group(["prefix"=>"app"], function(){
         Route::get('/state-list',[AppAPIController::class, 'getStateList']);
         Route::get('/city-list/{state_id}',[AppAPIController::class, 'getCityList']);
         Route::post('/upload-student-profile/{student_id}',[AppAPIController::class,'uploadStuPic']);
-        Route::post('/save-student/{student_id}',[AppAPIController::class,'saveStudent']);
-
+        Route::post('/save-student/{student_id}',[AppAPIController::class,'saveStudent']); 
+        Route::post('/group-shift/{student_id}',[AppAPIController::class, 'groupShift']);
+        Route::post('/view-attendance/{student_id}',[AppAPIController::class, 'studAttndList']);
+        Route::get('/get-reasion',[AppAPIController::class, 'getInActiveReasons']);
+        Route::post('/mark-inactive',[AppAPIController::class, 'markInActive']);
+        Route::get('/groups-details/{center_id}',[AppAPIController::class, 'groupDetail']);
+        
     });
 
 });

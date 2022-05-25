@@ -339,7 +339,7 @@ class AppAPIController extends Controller {
     	$token  = $request->header('apiToken');
         $user = User::AuthenticateUser($token);
 
-        $student = DB::table('students')->select("students.*",'groups.group_name','center.center_name')->join('groups', 'students.group_id','=', 'groups.id')->join('center', 'groups.center_id','=', 'center.id')->where('students.id', $request->student_id)->first();
+        $student = DB::table('students')->select("students.*",'groups.group_name','center.center_name','states.state_name', 'cities.city_name')->join('groups', 'students.group_id','=', 'groups.id')->join('center', 'groups.center_id','=', 'center.id')->join('states', 'students.state_id','=','states.id')->join('cities', 'students.state_city_id','=','cities.id')->where('students.id', $request->student_id)->first();
 
         $student_tags = DB::table('student_tags')->select('student_tags.tag_id')->join('tags', 'tags.id','=', 'student_tags.tag_id')->where('student_tags.student_id',$student->id)->pluck("student_tags.tag_id")->toArray();
 
@@ -368,7 +368,7 @@ class AppAPIController extends Controller {
             $student->color = $student->pending ? $yellow : $green;
         }
 
-        $student->doe = $student->doe ? date("d-m-Y",$student->doe) : "";
+        $student->doe = $student->doe ? date("d-m-Y",strtotime($student->doe)) : "";
 
         // if($student->father_mob){
         //     $student->father_mob = $student->father_mob;
@@ -523,7 +523,7 @@ class AppAPIController extends Controller {
         if($success){
             // $data['pic'] = $student->pic;
             $data['details'] = $student_id." - ".$extension;
-            $data['message'] = $filename;
+            $data['message'] = "The profile image ".$filename." has been uploaded Successfully";
             return Response::json($data, 200); 
         } else {
             $data['message'] = "Not done ".$student_id." - ".$extension;
@@ -532,62 +532,66 @@ class AppAPIController extends Controller {
     }
 
     public function saveStudent(Request $request, $student_id){
-    	
-    	$student = $request->student;
 
         $credentials = [
-            'name'     => $student['name'],
-            'dob'      => $student['dob'],
-            'gender'   => $student['gender'],
-            'father'   => $student['fathe'],
+            'name'     => $request->name,
+            'email'   => $request->email,
+            'dob'      => $request->dob,
+            'gender'   => $request->gender,
+            'father'   => $request->father,
+            'mother'   => $request->mother,
 
         ];
         $rules = [
             'name'      => 'required',
+            'email'      => 'required',
             'dob'       => 'required',
             'gender'    => 'required',
-            'father'    => 'required'
+            'father'    => 'required',
+            'mother'    => 'required'
         ];
-        dd(1);// working on it
+
         $validator = Validator::make($credentials, $rules);
         if ($validator->passes()) {
-
-            if($student['id']){
-                $students = Student::find($student['id']);
+            if($student_id){
+                $students = Student::find($student_id);
             }else{
                 $students = new Student;
             }
-             if($request->file('pic')){
-                $destination = 'uploads/';
+            if($request->file('pic')){
+                $destination = "../images";
                 $file = $request->file('pic');
                 $extension = $file->getClientOriginalExtension();
                 $name = 'student_'.strtotime("now").'.'.strtolower($extension);
-            $file = $file->move($destination, $name);
+            	$file = $file->move($destination, $name);
                 $students->pic = $name;
              }
 
-            $students->name   = $request->input('name');
-            $students->dob    = $request->input('dob') ? strtotime($request->input('dob')) : "";
-            $students->gender = $request->input('gender');
+            $students->name   = $request->name;
+            $students->dob    = $request->dob ? date('Y-m-d', strtotime($request->dob)) : "";
+            $students->gender = $request->gender;
             
-            $students->email  = $request->input('email');
-            $students->school = $request->input('school');
-            $students->mobile = $request->input('mobile');
+            $students->email  = $request->email;
+            $students->school = $request->school;
+            $students->mobile = $request->mobile;
 
-            $students->father = $request->input('father');
-            $students->father_mob = $request->input('father_mob');
-            $students->father_email = $request->input('father_email');
+            $students->father = $request->father;
+            // $students->father_mob = $request->father_mob;
+            // $students->father_email = $request->father_email;
 
-            $students->mother = $request->input('mother');
-            $students->mother_mob = $request->input('mother_mob');
-            $students->mother_email = $request->input('mother_email');
+            $students->mother = $request->mother;
+            // $students->mother_mob = $request->mother_mob;
+            // $students->mother_email = $request->mother_email;
             
-            $students->address = $request->input('address');
-            $students->city = $request->input('city');
-            $students->state = $request->input('state');
-            $students->kit_size = $request->input('kit_size');
+            $students->address = $request->address;
+            $students->state_city_id = $request->state_city_id;
+            $students->state_id = $request->state_id;
 
-            // $students->zip_code = $request->input('zip_code');
+            if($request->tags){
+	            $students->tags = $request->tags;
+            }
+            // $students->kit_size = $request->kit_size;
+            // $students->zip_code = $request->zip_code;
 
             $students->save();
             $data['success'] = true;
@@ -599,6 +603,150 @@ class AppAPIController extends Controller {
         return Response::json($data,200,array());
     } 
 
+    public function groupShift(Request $request, $student_id){
+    	$group_id = $request->group_id;
+        $token  = $request->header('apiToken');
+        $member = User::AuthenticateUser($token);
+        
+        DB::table('students')->where("id",$student_id)->update([
+            'group_id' => $group_id
+        ]);
+
+        $data['success'] = true;
+        $data['message'] = "Group has been shifted successfully!";
+        return Response::json($data,200,array());
+    }
+
+    public function studAttndList(Request $request, $student_id){
+    	$token  = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
+
+        $month = $request->month;
+        $year = $request->year;
+
+        if($month == "") {
+            $month = date("n");
+            $year = date("Y");
+        }
+
+        $view_attendance = DB::table('student_attendance')->select('id','date','attendance')->where('student_id',$student_id)->orderBy('date','DESC')->orderBy('date','DESC')->limit(10)->get();
+
+        $markedDates = new \stdClass;
+        
+        $month_attendance = DB::table('student_attendance')->select('id','date','attendance')->where('student_id',$student_id)->orderBy("date", "DESC")->get();
+        
+        foreach($month_attendance as $att){
+
+            $date = date('Y-m-d',strtotime($att->date));
+            $markedDates->{$date} = new \stdClass;
+            if($att->attendance == "A"){
+                $markedDates->{$date}->selected = true;
+                $markedDates->{$date}->selectedColor = "red";
+            } else {
+                $markedDates->{$date}->selected = true;
+                $markedDates->{$date}->selectedColor = "green";
+            }
+        }
+
+        $data['success']= true;
+        $data['view_attendance'] = $view_attendance;
+        $data['markedDates'] = $markedDates;
+        $data['token'] = $token;
+
+        return Response::json($data, 200, []);
+    }
+
+    public function getInActiveReasons(Request $request){
+    	$token = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
+        $reasons = DB::table('reasons')->select('id as key', 'reason as label')->get();
+
+        $data['success'] = true;
+        $data['reasons'] = $reasons;
+
+        return Response::json($data,200,array());
+    }
+
+    public function markInActive(Request $request){
+    	$token = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
+
+        $student_id = $request->student_id;
+        $reason_id = $request->reason_id;
+        $other_reason = $request->other_reason;
+        $last_class = $request->last_class;
+
+        $credentials = [
+            'reason_id'     => $reason_id,
+            'last_class'    => $last_class
+        ];
+        $rules = [
+            'reason_id'     => 'required',
+            'last_class'    => 'required',
+        ];
+        $validator = Validator::make($credentials, $rules);
+        if($validator->passes()){
+            DB::table('inactive')->insert([
+                'student_id'  => $student_id,
+                'reason_id' => $reason_id,
+                'other_reason' => $other_reason,
+                'inactive_from' => date('Y-m-d', strtotime("now")),
+                'last_class' => date('Y-m-d',strtotime ($last_class)),
+                'added_by' => $user->id
+            ]);
+
+            $data['success']= true;
+            $data['message']= "student has been the Inactive mode";
+        } else{
+            $data['success']= false;
+            $data['message']= "Please fill the requied fields";
+        }
+	    $data['success']= true;
+	    $data['last_class']=$last_class;
+        $data["token"] = $token;
+        return Response::json($data,200,array());
+    }
+
+    public function groupDetail(Request $request){
+
+        $token  = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
+
+        $groups  = DB::table('groups')->select("groups.*")->where("center_id",$center_id)->get();
+
+        $days_names = ["","Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+
+        foreach($groups as $group){
+            $group->timing = "";
+            $group->days = "";
+
+            $operation_days = DB::table("operation_days")->where("group_id",$group->id)->get();
+            if(sizeof($operation_days) > 0){
+                $group->timing = $operation_days[0]->from_time." - ".$operation_days[0]->to_time;
+                $days = [];
+                foreach($operation_days as $op_day){
+                    $days[] = isset($days_names[$op_day->day]) ? $days_names[$op_day->day] : "";
+                }
+                $group->days = implode(', ',$days);
+                $group->days = "Monday";
+
+                // $group->coaches = "Vinod, Suresh";
+                $coaches = DB::table('group_coachs')->select('members.name')->join('members','group_coachs.coach_id','=','members.id')->where('group_coachs.group_id',$group->id)->pluck('members.name')->toArray();
+                $group->coaches = implode(", ",$coaches);
+                // dd($group->coaches);
+            }
+        }
+
+        $plans = DB::table("payment_table")->where("center_id",$center_id)->orderBy("month_plan")->get();
+        
+        $url = "https://www.google.co.in/";
+        $data['success'] = true;
+        $data['groups'] = $groups;
+        $data['plans'] = $plans;
+        $data['url'] = $url;
+
+        return Response::json($data,200,array());
+    }
 
 
     // ************************ APP EVENTS ************************

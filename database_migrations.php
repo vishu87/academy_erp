@@ -141,3 +141,5 @@ ALTER TABLE `cancel_events`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
+INSERT INTO `reasons` (`id`, `reason`) VALUES (NULL, 'Other');
+
