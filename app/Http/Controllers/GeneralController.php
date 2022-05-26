@@ -121,12 +121,12 @@ class GeneralController extends Controller
             $center = $center->whereIn('center.id',$user_access->center_ids);
         }
         $center = $center->where("center.client_id",$user->client_id)->get();
-        
 
         $city = DB::table('city')->select('id as value','city_name as label','state_id');
         if(!$user_access->all_access){
             $city = $city->whereIn('id',$user_access->city_ids);
         }
+        
         $city = $city->where("client_id",$user->client_id)->get();
 
         $states = DB::table('states')->select('id as value','state_name as label')->get();

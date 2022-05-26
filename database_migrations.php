@@ -143,3 +143,26 @@ COMMIT;
 
 INSERT INTO `reasons` (`id`, `reason`) VALUES (NULL, 'Other');
 
+
+// by Gulzar 26 May
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+CREATE TABLE `group_coachs` (
+  `id` int(11) NOT NULL,
+  `group_id` int(11) DEFAULT NULL,
+  `coach_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `group_coachs` (`id`, `group_id`, `coach_id`) VALUES
+(1, 4, 1),
+(2, 5, 1),
+(3, 6, 1),
+(3, 15, 1),
+(3, 16, 1),
+(3, 17, 1);
+
+

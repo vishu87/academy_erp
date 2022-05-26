@@ -338,8 +338,9 @@ class AppAPIController extends Controller {
     	
     	$token  = $request->header('apiToken');
         $user = User::AuthenticateUser($token);
+        $student_id = $request->student_id; 
 
-        $student = DB::table('students')->select("students.*",'groups.group_name','center.center_name','states.state_name', 'cities.city_name')->join('groups', 'students.group_id','=', 'groups.id')->join('center', 'groups.center_id','=', 'center.id')->join('states', 'students.state_id','=','states.id')->join('cities', 'students.state_city_id','=','cities.id')->where('students.id', $request->student_id)->first();
+        $student = DB::table('students')->select("students.*",'groups.group_name','center.center_name','states.state_name', 'cities.city_name')->leftJoin('groups', 'students.group_id','=', 'groups.id')->leftJoin('center', 'groups.center_id','=', 'center.id')->leftJoin('states', 'students.state_id','=','states.id')->leftJoin('cities', 'students.state_city_id','=','cities.id')->where('students.id', $student_id)->first();
 
         $student_tags = DB::table('student_tags')->select('student_tags.tag_id')->join('tags', 'tags.id','=', 'student_tags.tag_id')->where('student_tags.student_id',$student->id)->pluck("student_tags.tag_id")->toArray();
 
@@ -707,7 +708,7 @@ class AppAPIController extends Controller {
         return Response::json($data,200,array());
     }
 
-    public function groupDetail(Request $request){
+    public function groupDetail(Request $request, $center_id){
 
         $token  = $request->header('apiToken');
         $user = User::AuthenticateUser($token);
@@ -715,12 +716,12 @@ class AppAPIController extends Controller {
         $groups  = DB::table('groups')->select("groups.*")->where("center_id",$center_id)->get();
 
         $days_names = ["","Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-
         foreach($groups as $group){
             $group->timing = "";
             $group->days = "";
 
             $operation_days = DB::table("operation_days")->where("group_id",$group->id)->get();
+
             if(sizeof($operation_days) > 0){
                 $group->timing = $operation_days[0]->from_time." - ".$operation_days[0]->to_time;
                 $days = [];
@@ -730,16 +731,15 @@ class AppAPIController extends Controller {
                 $group->days = implode(', ',$days);
                 $group->days = "Monday";
 
-                // $group->coaches = "Vinod, Suresh";
-                $coaches = DB::table('group_coachs')->select('members.name')->join('members','group_coachs.coach_id','=','members.id')->where('group_coachs.group_id',$group->id)->pluck('members.name')->toArray();
+                $coaches = DB::table('group_coachs')->select('users.name')->join('users','group_coachs.coach_id','=','users.id')->where('group_coachs.group_id',$group->id)->pluck('users.name')->toArray();
                 $group->coaches = implode(", ",$coaches);
-                // dd($group->coaches);
             }
         }
 
-        $plans = DB::table("payment_table")->where("center_id",$center_id)->orderBy("month_plan")->get();
+        $plans =[];
+         // DB::table("payment_table")->where("center_id",$center_id)->orderBy("month_plan")->get();
         
-        $url = "https://www.google.co.in/";
+        $url = "https://www.youtube.com/";
         $data['success'] = true;
         $data['groups'] = $groups;
         $data['plans'] = $plans;
@@ -992,6 +992,7 @@ class AppAPIController extends Controller {
 
 
     public function savePlayerAttendance(Request $request){
+        
         $event = $request->event;
         $students = $request->students;
         $group_id = $event["group_id"];
@@ -1038,7 +1039,7 @@ class AppAPIController extends Controller {
     }
 
     public function saveGuestPlayer(Request $request){
-    	 $guest_player = $request->guest_player;
+    	$guest_player = $request->guest_player;
         
         $rules = [
             'full_name' => 'required',
