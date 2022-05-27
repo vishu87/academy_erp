@@ -52,7 +52,7 @@ Route::group([], function(){
 
     Route::group(["prefix"=>"student"], function(){
         
-        Route::post('/get-list',[StudentController::class, 'student_list']);
+        Route::post('/get-list',[StudentController::class, 'studentList']);
         Route::get('/get-info/{id}',[StudentController::class, 'getStudentInfo']);
         Route::post('/get-document-type',[StudentController::class, 'getDocType']);
         Route::post('/get-inactive-reason',[StudentController::class, 'getInactiveReason']);
@@ -349,6 +349,7 @@ Route::group(["prefix"=>"app"], function(){
     });
 
     Route::group(["prefix"=>"student"], function(){
+        Route::post('/get-all-list',[AppAPIController::class, 'allStudentList']);
         Route::post('/info',[AppAPIController::class, 'studentInfo']);
         Route::post('/save-tags',[AppAPIController::class, 'saveTags']);
         Route::get('/edit/{student_id}',[AppAPIController::class, 'studentEdit']);

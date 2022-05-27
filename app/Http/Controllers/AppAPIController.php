@@ -87,7 +87,8 @@ class AppAPIController extends Controller {
 		$rec_students = $rec_students->where("students.client_id",$user->client_id)->orderBy('students.id', 'DESC')->limit(5)->get();
 
 		foreach($rec_students as $student){
-		    $student->pic = Utilities::getPicture($student->pic,'student');
+		    // $student->pic = Utilities::getPicture($student->pic,'student');
+            $student->pic = Student::getPhoto($student->pic);
 		    $student->name = (strlen($student->name) > 25) ? substr($student->name,0,25)."..." : $student->name;
 		}
 
@@ -163,15 +164,18 @@ class AppAPIController extends Controller {
 
     public function changePassword(Request $request, $user_id){
 
+        
+                
+                
         $cre = [
-            'password_o' => $request->password_o,
-            'password_n' => $request->password_n,
-            'password_c' => $request->password_c,
+            'old_password' => $request->old_password,
+            'new_password' => $request->new_password,
+            'confirm_password' => $request->confirm_password,
         ];
         $rules = [
-            'password_o' => 'required',
-            'password_n' => 'required',
-            'password_c' => 'required|same:password_n',
+            'old_password' => 'required',
+            'new_password' => 'required',
+            'confirm_password' => 'required|same:new_password',
         ];
 
         $validator = Validator::make($cre, $rules);
@@ -179,23 +183,29 @@ class AppAPIController extends Controller {
 
         if ($validator->passes()) { 
 
-        	if (Hash::check($request->password_o, $user->password )) {
-                $password = Hash::make($request->password_n);
+        	if (Hash::check($request->old_password, $user->password )) {
+                $password = Hash::make($request->new_password);
                 DB::table('users')->where("id", $user_id)->update([
                 	"password" => $password,
-                	"password_check" => $request->password_n
+                	"password_check" => $request->new_password
                 ]);
                 
 	        	$data["success"] = true;
-	        	$data["message"] ="Password has been successfully Changed";
+	        	$data["message"] ="Password has been successfully Changed!";
 	        } else {
                 $data["success"] = false;
-                $data["message"] = "The Old Password you entered is incorrect";
+                $data["message"] = "The old password you have entered is incorrect.";
 	        } 
 
         } else {
+            $error = '';
+            $messages = $validator->messages()->all();
+            foreach($messages as $message){
+                $error = $message;
+                break;
+            }
             $data["success"] = false;
-            $data["message"] ="Please enter required fields";
+            $data["message"] = $error;
         }
         
         return Response::json($data,200,array());  
@@ -333,6 +343,125 @@ class AppAPIController extends Controller {
     }
 
     // ************************ STUDENTS ************************
+
+    public function allStudentList(Request $request){
+
+        header('Access-Control-Allow-Headers: *');
+
+        $user = User::AuthenticateUser($request->header("apiToken"));
+        $user_access = User::getAccess("st-profile",$user->id);
+
+        $max_per_page = $request->max_per_page ? $request->max_per_page : 20;
+        $page_no = $request->page_no;
+
+        $students = DB::table('students')->select('students.id','students.name','students.dob','students.gender','students.doe','students.group_id','groups.group_name','groups.center_id','center.id as center_id','center.center_name','center.city_id','city.id as city','city.city_name','center.center_name','students.inactive','students.pic');
+
+        if($user_access->all_access) {
+
+        } else {
+            $students = $students->whereIn("students.group_id",$user_access->group_ids);
+        }
+
+        if($request->first_group){
+            if($request->first_group != 0){
+                $students = $students->where("group_id",$request->first_group);
+            }
+        }
+
+        if($request->center_id){
+            $groups = DB::table('groups')->where('center_id',$request->center_id)->pluck('id');
+            $students = $students->whereIn("group_id",$groups);
+        }
+
+        if($request->city_id){
+            if($request->city_id != 0){
+                $center = DB::table('center')->where('city_id',$request->city_id)->pluck('id');
+                $groups = DB::table('groups')->whereIn('center_id',$center)->pluck('id')->toArray();
+                $students = $students->whereIn("group_id",$groups);
+            }
+        }
+
+        if($request->status){
+            if($request->status){
+                $status_arr = [];
+                foreach ($request->status as $key => $value) {
+                    if ($value) {
+                        array_push($status_arr, $key);
+                    }
+                }
+                if (sizeof($status_arr) > 0) {
+                    $students = $students->whereIn("students.inactive",$status_arr);
+                }
+            }
+        }
+
+        if($request->pending_renewal){
+            $date_ref = date("Y-m-d");
+            $students = $students->where("students.doe","<=",$date_ref);
+        }
+
+        if($request->student_name){
+            if($request->student_name != ""){
+                $students = $students->where("students.name","LIKE","%".$request->student_name."%");
+            }
+        }
+
+        if($request->mobile){
+            if($request->mobile != ""){
+                $students = $students->where("mobile","LIKE","%".$request->mobile."%");
+            }
+        }
+
+        if($request->father_name){
+            if($request->father_name != ""){
+                $students = $students->where("father","LIKE","%".$request->father_name."%");
+            }
+        }
+
+        if($request->gender){
+            if(sizeof($request->gender) > 0){
+                $students = $students->whereIn("gender",$request->gender);
+            }
+        }
+
+        if( $request->subscription_expeired_from || $request->subscription_expeired_to) {
+            $students = $students->whereBetween('students.doe', [date('Y-m-d',strtotime($request->subscription_expeired_from)), date('Y-m-d',strtotime($request->subscription_expeired_to)) ]);
+        }
+
+        $students = $students->where("students.client_id",$user->client_id);
+
+        $total_students = $students->count();
+        $data['total'] = $total_students;
+
+        $students = $students->leftJoin('groups','students.group_id','=','groups.id')->leftJoin('center','groups.center_id','=','center.id')->leftJoin('city','center.city_id','=','city.id');
+
+        if($request->export == 'export' ){
+            $students = $students->get();
+            if( sizeof($students) > 0 ){
+                include(app_path().'/ExcelExport/export_student.php');
+            } else {
+                return Redirect::back()->with('failure','No data found to export');
+            }
+        }
+
+        $students = $students->limit($max_per_page)->skip(($page_no - 1)*$max_per_page)->get();
+
+        foreach ($students as $student) {
+            
+            $student->dob = Utilities::convertDate($student->dob);
+            $student->doe = Utilities::convertDate($student->doe);
+
+            $student->color = Utilities::getColor($student->doe, $student->inactive);
+            $student->pic = Student::getPhoto($student->pic);
+        }
+
+        $data["success"] = true;
+        $data["students"] = $students;
+        $data["page_no"] = $page_no;
+
+        return json_encode($data);
+
+    }
 
     public function studentInfo(Request $request){
     	

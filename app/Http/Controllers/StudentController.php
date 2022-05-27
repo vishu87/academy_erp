@@ -42,7 +42,7 @@ class StudentController extends Controller
         ]);
     }
 
-    public function student_list(Request $request){
+    public function studentList(Request $request){
 
         header('Access-Control-Allow-Headers: *');
 
