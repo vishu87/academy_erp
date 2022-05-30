@@ -165,4 +165,7 @@ INSERT INTO `group_coachs` (`id`, `group_id`, `coach_id`) VALUES
 (3, 16, 1),
 (3, 17, 1);
 
+// by pradeep 30 May
+ALTER TABLE `lead_for` ADD `slug` VARCHAR(200) NULL DEFAULT NULL AFTER `label`;
+
 

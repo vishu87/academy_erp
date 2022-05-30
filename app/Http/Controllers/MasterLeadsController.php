@@ -48,10 +48,13 @@ class MasterLeadsController extends Controller
     public function leadForStore(Request $request){
         $user = User::AuthenticateUser($request->header("apiToken"));
         $cre = [
-            "label" => $request->label
+            "label" => $request->label,
+            "slug" => $request->slug
         ];
         $rules = [
-            "label" => "required"
+            "label" => "required",
+            "slug" => "required"
+
         ];
 
         $validator = Validator::make($cre,$rules);
@@ -62,7 +65,8 @@ class MasterLeadsController extends Controller
         } else {
             $data = [
                 "label" => $request->label,
-                "client_id" => $user->client_id
+                "client_id" => $user->client_id,
+                "slug" => $request->slug
             ];
 
             if($request->id){
