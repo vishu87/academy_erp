@@ -88,21 +88,21 @@ class CommunicationController extends Controller {
 			$groups = $request->groups;
 		}
 
-		if(sizeof($request->categories) > 0){
-			$flag = true;
-			$categories = DB::table('student_categories')->whereIn('category',$request->categories);
+		// if(sizeof($request->categories) > 0){
+		// 	$flag = true;
+		// 	$categories = DB::table('student_categories')->whereIn('category',$request->categories);
 
-			if(isset($centers)){
-				$categories = $categories->whereIn('center_id',$centers);
-			}
+		// 	if(isset($centers)){
+		// 		$categories = $categories->whereIn('center_id',$centers);
+		// 	}
 
-			$categories = $categories->pluck('id')->all();
+		// 	$categories = $categories->pluck('id')->all();
 
-			if(sizeof($categories) == 0){
-				$categories = [0];
-			}
-			$students = $students->whereIn('students.category_id',$categories)->where('students.category_id','!=',0);
-		}
+		// 	if(sizeof($categories) == 0){
+		// 		$categories = [0];
+		// 	}
+		// 	$students = $students->whereIn('students.category_id',$categories)->where('students.category_id','!=',0);
+		// }
 
 		if(sizeof($groups) > 0){
 			$flag = true;
@@ -121,7 +121,7 @@ class CommunicationController extends Controller {
 				$status[] = -1;
 			}
 
-			$students = $students->whereIn("students.active",$status);
+			$students = $students->whereIn("students.inactive",$status);
 		}
 
 		if($request->date_start){
@@ -215,10 +215,10 @@ class CommunicationController extends Controller {
 				$student->mobile_trimmed = "xxxxxx".substr($student->mother_mob, 6,4);
 			}
 			if($student->dob){
-				$student->dob = date("d-m-Y",$student->dob);
+				$student->dob = date("d-m-Y",strtotime($student->dob));
 			}
 			if($student->doe){
-				$student->doe = date("d-m-Y",$student->doe);
+				$student->doe = date("d-m-Y",strtotime($student->doe));
 			}
 		}
 

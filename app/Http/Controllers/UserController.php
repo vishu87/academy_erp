@@ -132,7 +132,7 @@ class UserController extends Controller {
 		} else if($type == "admin"){
 			$link = "city";
 		}else if($type == "inventory"){
-			$link = "inventory/item";
+			$link = "inventory/request";
 		}else if($type == "communication"){
 			$link = "communications";
 		}
