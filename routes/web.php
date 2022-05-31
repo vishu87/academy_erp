@@ -21,10 +21,11 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\SMSTemplateController;
 use App\Http\Controllers\EmailTemplateController;
-use App\Http\Controllers\AccountsController;
-use App\Http\Controllers\SettingsController;
 
-
+use App\Http\Controllers\RequestController;
+use App\Http\Controllers\StockController;
+use App\Http\Controllers\InventoryReportController;
+use App\Http\Controllers\CompanyController;
 
 Route::get('/', [UserController::class,'login'])->name("login");
 Route::post('/login', [UserController::class, 'postLogin']);
@@ -115,11 +116,12 @@ Route::group(["before"=>"auth","middleware"=>["auth"]], function(){
             Route::post('/get-request',[RequestController::class,'requestList']);
             Route::post('/upload-document',[RequestController::class,'uploadDocument']);
             Route::post('/save-request',[RequestController::class,'saveRequest']);  
-            Route::get('/add-request/{id}',[RequestController::class,'addRequest']);
+            Route::get('/add-request/{id?}',[RequestController::class,'addRequest']);
             Route::get('/request-data/{id}',[RequestController::class,'requestData']);
             Route::get('/delete-data/{id}',[RequestController::class,'deleteData']);
             Route::post('/all-items',[RequestController::class,'ItemsList']);
             Route::get('/view-data/{id}',[RequestController::class,'viewData']);
+            Route::post('/approve-or-reject',[RequestController::class,'approveOrReject']);
         });
     });
 
@@ -162,10 +164,6 @@ Route::group(["before"=>"auth","middleware"=>["auth"]], function(){
 
     Route::group(["prefix"=>"coupons"], function(){
         Route::get('/',[CouponController::class,'coupons']);
-    });
-
-    Route::group(["prefix"=>"settings"], function(){
-        Route::get('/',[SettingsController::class,'index']);
     });
 
     Route::group(["prefix"=>"reports"], function(){

@@ -165,6 +165,9 @@ INSERT INTO `group_coachs` (`id`, `group_id`, `coach_id`) VALUES
 (3, 16, 1),
 (3, 17, 1);
 
+// by pradeep 30 May
+ALTER TABLE `lead_for` ADD `slug` VARCHAR(200) NULL DEFAULT NULL AFTER `label`;
+
 
 CREATE TABLE `setting_params` ( `id` INT NOT NULL AUTO_INCREMENT , `parameter` VARCHAR(255) NOT NULL , `type` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
 
@@ -417,4 +420,9 @@ ALTER TABLE `eval_parameters`
 COMMIT;
 
 
+
 ALTER TABLE `users` ADD `user_type` TINYINT NOT NULL DEFAULT '1' AFTER `api_key`;
+
+ALTER TABLE `items` ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
+ALTER TABLE `companies` ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
+

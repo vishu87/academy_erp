@@ -8,7 +8,6 @@
 					<h4 class="fs-18 bold" style="margin:0;">Companies</h4>
 				</div>
 				<div class="text-right">
-					<button class="btn btn-primary" ng-click="addCompany()">Add company</button>	
 				</div>
 			</div>
 		</div>
@@ -17,10 +16,25 @@
 @section('content')
 		
 	<div class="portlet">
+
+		<div class="portlet-head">
+	      	<div class="row">
+
+		        <div class="col-md-6">
+		          	<ul class="menu">
+			            <li class="active">
+			              <a href="#">List</a>
+			            </li>
+		          	</ul>
+		        </div>
+		        <div class="col-md-6 text-right">
+					<button class="btn btn-primary" ng-click="addCompany()"><i class="icons icon-plus"></i> Add company</button>	
+		        </div>
+
+	      	</div>
+	    </div>
 		
 		<div class="portlet-body ng-cloak">
-
-			<div table-paginate></div>
 
 			<div ng-if="loading" class="text-center mt-5 mb-5">
 				<div class="spinner-grow" role="status">
@@ -28,8 +42,6 @@
 				</div>
 			</div>
 
-
-			
 			<div class="table-responsive" ng-if="!loading && dataset.length > 0">
 				<table class="table">
 		 			<thead>
@@ -38,7 +50,7 @@
 		 					<th>Company Name</th>
 		 					<th>Contact Number</th>
 		 					<th>Address</th>
-		 					<th>#</th>
+		 					<th class="text-right">#</th>
 		 				</tr>
 		 			</thead>
 		 			<tbody>
@@ -47,8 +59,8 @@
 		 					<td>@{{data.company_name}}</td>
 		 					<td>@{{data.contact_no}}</td>
 		 					<td>@{{data.address}}</td>
-		 					<td>
-		 						<button type="button" class="btn btn-sm btn-primary" ng-click="editCompany(data)">Edit</button>&nbsp;&nbsp;
+		 					<td class="text-right">
+		 						<button type="button" class="btn btn-sm btn-light" ng-click="editCompany(data)">Edit</button>&nbsp;&nbsp;
             					<button type="button" class="btn btn-sm btn-danger" ng-click="deleteCompany(data.id, $index)">Delete</button>
 		 					</td>
 		 				</tr>

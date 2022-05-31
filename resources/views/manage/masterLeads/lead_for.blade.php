@@ -21,6 +21,7 @@
 					<tr>
 						<th>Sn</th>
 						<th>Label</th>
+						<th>Slug</th>
 						<th style="width: 120px;" class="text-right">#</th>
 					</tr>
 				</thead>
@@ -28,6 +29,7 @@
 					<tr ng-repeat="leadfor in leads_for track by $index">
 						<td>@{{$index+1}}</td>
 						<td>@{{leadfor.label}}</td>
+						<td>@{{leadfor.slug}}</td>
 						<td class="text-right">
 							<button class="btn btn-light btn-sm" ng-click="editLeadFor($index)">Edit</button>
 							<button class="btn btn-danger btn-sm" ng-click="deleteLeadFor(leadfor.id, $index)">Delete</button>

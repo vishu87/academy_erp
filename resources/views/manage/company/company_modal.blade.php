@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Company</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icons icon-close"></i></button>
             </div>
             <div class="modal-body small-form" >
                 <div class="row">
@@ -20,7 +20,9 @@
                         <input type="text" ng-model="companyData.address" class="form-control">
                     </div> 
                 </div>
-                <button type="button" ng-click="saveCompany()" class="btn btn-info">@{{companyData.id ? 'Update Company' : 'Save Company'}}</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" ng-click="saveCompany()" ng-disabled="processing_req" >@{{companyData.id ? 'Update Company' : 'Save Company'}} <span ng-show="processing_req" class="spinner-border spinner-border-sm"></span></button>
+                </div>
             </div>
         </div>
     </div>

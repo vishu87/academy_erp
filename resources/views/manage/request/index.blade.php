@@ -8,8 +8,6 @@
 					<h4 class="fs-18 bold" style="margin:0;">Inventory Request</h4>
 				</div>
 				<div class="text-right">
-					<a href="{{url('inventory/request/add-request/0')}}" class="btn btn-primary">Add Request</a>
-					<!-- <button class="btn btn-primary" ng-click="addCompany()">Add </button>	 -->
 				</div>
 			</div>
 		</div>
@@ -18,11 +16,25 @@
 @section('content')
 		
 	<div class="portlet">
-		
+
+	    <div class="portlet-head">
+	      	<div class="row">
+
+		        <div class="col-md-6">
+		          	<ul class="menu">
+			            <li class="active">
+			              <a href="#">List</a>
+			            </li>
+		          	</ul>
+		        </div>
+		        <div class="col-md-6 text-right">
+					<a href="{{url('inventory/request/add-request')}}" class="btn btn-primary"><i class="icons icon-plus"></i> Add Request</a>
+		        </div>
+
+	      	</div>
+	    </div>
+
 		<div class="portlet-body ng-cloak">
-
-			<div table-paginate></div>
-
 			<div ng-if="loading" class="text-center mt-5 mb-5">
 				<div class="spinner-grow" role="status">
 				  <span class="sr-only">Loading...</span>
@@ -37,7 +49,8 @@
 		 					<th>Company Name</th>
 		 					<th>Invoice Number</th>
 		 					<th>Remark</th>
-		 					<th>#</th>
+		 					<th>Status</th>
+		 					<th class="text-right">#</th>
 		 				</tr>
 		 			</thead>
 		 			<tbody>
@@ -49,10 +62,11 @@
 		 					<td>@{{data.companyName}}</td>
 		 					<td>@{{data.invoice_number}}</td>
 		 					<td width="800px">@{{data.remark}}</td>
-		 					<td>
-								<a href="{{url('inventory/request/add-request/')}}/@{{data.id}}" class="btn btn-sm btn-primary">Edit</a>
-            					<button type="button" class="btn btn-sm btn-danger" ng-click="deleteRequest(data.id, $index)">Delete</button>
-            					<button type="button" class="btn btn-sm btn-success" ng-click="viewInventoryRequest(data.id)">View</button>
+		 					<td>@{{data.status_name}}</td>
+		 					<td class="text-right">
+            					<button type="button" class="btn btn-sm btn-light" ng-click="viewInventoryRequest(data.id)">View</button>
+								<a href="{{url('inventory/request/add-request/')}}/@{{data.id}}" class="btn btn-sm btn-light" ng-if="data.status == 0">Edit</a>
+            					<button type="button" class="btn btn-sm btn-danger" ng-click="deleteRequest(data.id, $index)" ng-if="data.status == 0">Delete</button>
 		 					</td>
 		 				</tr>
 		 			</tbody>

@@ -13,109 +13,65 @@
 
 @section('content')
 		
-	<div class="container-fluid filters small-form">
+	<div class="portlet">
 		
-		<div ng-show="loading" class="alert alert-warning container" style="margin-top: 50px">
-			Loading...
-		</div>
-		<div ng-show="noDataFound" class="alert alert-danger container" style="margin-top: 50px">
-			No Data Found
-		</div>
+	    <div class="portlet-head">
+	      	<div class="row">
 
-		<div class="row">
-			<div class="col-md-12">
-				
-				<div ng-show="communications.length > 0" style="margin-top: 10px;">
-
-					<div class="row">
-						<div class="col-md-6 text-left">
-							Total - @{{count}} | Showing @{{ ((pn-1)*max + 1) + ' - ' }} @{{(pn*max < count) ? pn*max : count}}
-						</div>
-						<div class="col-md-6 text-right">
-							<a href="javascript:;" ng-click="prevPage()">Prev</a>
-								| @{{pn}} of @{{total_pn}} |
-							<a href="javascript:;" ng-click="nextPage()">Next</a>
-
-						</div>
-					</div>
-					
-					<div class="ng-cloak table-responsive" ng-show="communications.length > 0 && !loading" style="overflow-y: auto;">
-						<table class="table  ">
-							<tr>
-								<th>SN</th>
-								<th>Send Type</th>
-								<th>SMS Type</th>
-								<th>Subject</th>
-								<th>Message</th>
-								<th>Date</th>
-								<th>Added By</th>
-								<th></th>
-							</tr>
-							
-							<tbody>
-								<tr ng-repeat="comm in communications">
-									<td>@{{ (pn-1)*max + $index + 1}}</td>
-									<td>
-										@{{comm.send_types}}
-									</td>
-									<td>
-										@{{comm.sms_types}}
-									</td>
-									<td>
-										@{{comm.subject}}
-									</td>
-									<td>
-										@{{comm.message_show}}
-									</td>
-									<td>
-										@{{comm.c_date}}
-									</td>
-									<td>
-										@{{comm.name}}
-									</td>
-									<td>
-										<button type="button" class="btn btn-primary" ng-click="viewStudetns(comm)" >View Details</button>
-									</td>
-
-								</tr>
-							</tbody>
-						</table>	
-					</div>	
-				</div>
-			</div>
-			<div class="col-md-5">
-				
-
-				<div ng-show="show_removed_list" style="margin-top: 10px">
-
-					<span  class="btn btn-default" style="margin-right: 5px;margin-top: 5px" ng-repeat="student in removed_students">@{{student.name}} &nbsp;&nbsp;&nbsp;<button ng-click="addStudentToList(student,$index)" class="btn btn-info btn-xs">+</button></span>
-				</div>
-			</div>
-		</div>
-	</div>
-				
-	<div class="modal fade in" id="showNumber" role="dialog" >
-		<div class="modal-dialog modal-small">
-		    <div class="modal-content">
-		        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-		        <div class="modal-body">
-		            <div style="font-size:32px;" class="text-center">
-		                @{{mobile_show}}
-		            </div>
-		            
+		        <div class="col-md-6">
+		          	<ul class="menu">
+			            <li class="active">
+			              <a href="#">List</a>
+			            </li>
+		          	</ul>
 		        </div>
-		    </div>
+		        <div class="col-md-6 text-right">
+		        </div>
+
+	      	</div>
+	    </div>
+
+		<div class="portlet-body ng-cloak">
+			<div class="table-responsive" ng-if="!loading && communications.length > 0">
+				<table class="table">
+					<thead>
+						<tr>
+							<th>SN</th>
+							<th>Send Type</th>
+							<th>SMS Type</th>
+							<th>Subject</th>
+							<th>Message</th>
+							<th>Date</th>
+							<th>Added By</th>
+							<th></th>
+						</tr>
+					</thead>
+							
+					<tbody>
+						<tr ng-repeat="comm in communications">
+							<td>@{{ (pn-1)*max + $index + 1}}</td>
+							<td>@{{comm.send_types}}</td>
+							<td>@{{comm.sms_types}}</td>
+							<td>@{{comm.subject}}</td>
+							<td>@{{comm.message_show}}</td>
+							<td>@{{comm.c_date}}</td>
+							<td>@{{comm.name}}</td>
+							<td><button type="button" class="btn btn-sm btn-light" ng-click="viewStudetns(comm)" >View Details</button></td>
+						</tr>
+					</tbody>
+				</table>	
+			</div>	
 		</div>
 	</div>
 
-	<div class="modal fade in" id="students" role="dialog" data-backdrop="static">
+	<div class="modal fade in" id="students" role="dialog" >
 		<div class="modal-dialog modal-lg">
 		    <div class="modal-content">
 
-            <div class="modal-header">
-                <h4 class="modal-title">Communication Students</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-            </div>
+	        <div class="modal-header">
+	            <h4 class="modal-title">Communication Students</h4>
+	            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icons icon-close"></i></button>
+	        </div>
 
 
 		        <div class="modal-body">
@@ -176,7 +132,10 @@
 								</tr>
 							</tbody>
 						</table>
-					</div>			            
+					</div>	
+					<div class="modal-footer">
+                <button type="button" data-dismiss="modal" aria-hidden="true" class="btn btn-primary" > Close </button>
+            </div>		            
 		        </div>
 		    </div>
 		</div>

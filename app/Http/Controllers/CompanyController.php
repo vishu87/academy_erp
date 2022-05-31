@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 
-use Input, Redirect, Validator, Hash, Response, Session, DB, App\User, App\Company;
+use Input, Redirect, Validator, Hash, Response, Session, DB, App\Models\User, App\Models\Company;
 use Illuminate\Http\Request;
 
 class CompanyController extends Controller {
@@ -12,8 +12,9 @@ class CompanyController extends Controller {
 		return view('manage.company.index',["sidebar" => "companies", "menu"=>"inventory"]);
 	}
 
-	public function companiesList(){
-		$companies = DB::table('companies')->get();
+	public function companiesList(Request $request){
+		$user = User::AuthenticateUser($request->header("apiToken"));
+		$companies = DB::table('companies')->where("client_id",$user->client_id)->get();
 		$data['success'] = true;
 		$data['items'] = $companies;
 		return Response::json($data, 200, array());
@@ -22,7 +23,7 @@ class CompanyController extends Controller {
 
 	public function saveCompany(Request $request){
 
-
+		$user = User::AuthenticateUser($request->header("apiToken"));
 		$cre = [
 			"company_name" => $request->company_name
 		];
@@ -44,10 +45,12 @@ class CompanyController extends Controller {
 			$company->company_name	= $request->company_name;
 			$company->contact_no	= $request->contact_no;
 			$company->address       = $request->address;
+			$company->client_id    = $user->client_id;
+			$company->added_by     = $user->id;
 			$company->save();
 
 			$data['success'] = true;
-			$data['message'] = "item successfully inserted";
+			$data['message'] = "Company is successfully saved";
 		}else{
 			$data['success'] = false;
 			$data['message'] = $validator->errors()->first();
@@ -57,10 +60,13 @@ class CompanyController extends Controller {
 
 	}
 
-	public function deleteCompanies($id){
-		DB::table('companies')->where('id',$id)->delete();
+	public function deleteCompanies(Request $request, $id){
+
+		$user = User::AuthenticateUser($request->header("apiToken"));
+
+		DB::table('companies')->where('id',$id)->where("client_id",$user->client_id)->delete();
 		$data['success'] = true;
-		$data['message'] = "Companies deleted successfully"; 
+		$data['message'] = "Company is deleted successfully"; 
 		return Response::json($data, 200, array());
 	}
 

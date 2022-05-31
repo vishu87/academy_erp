@@ -3,7 +3,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Inventory Request</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icons icon-close"></i></button>
             </div>
             <div class="modal-body small-form" >
                 <div class="portlet-body">
@@ -83,6 +83,29 @@
                             </table>
                         </div>
                     </div>
+                    
+                    <div ng-if="viewData.status == 0">
+                        <hr>
+                        <label>Change Status</label>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <input type="radio" name="type" ng-value="1" ng-model="approveOrReject.type" > Approve &nbsp;&nbsp;&nbsp;
+                                <input type="radio" name="type" ng-value="2" ng-model="approveOrReject.type" > Reject
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 5px;">
+                            <div class="col-md-8 form-group" >
+                                <textarea ng-model="approveOrReject.remarks" class="form-control" placeholder="Enter remarks"></textarea>
+                            </div>
+                            <div class="col-md-4">
+                                <button class="btn btn-primary" ng-click="changeStatus()">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                    <button type="button" class="btn " data-dismiss="modal" aria-hidden="true"  ng-disabled="processing_req" >Close</button>
+                </div>
                 </div>
             </div>
         </div>
