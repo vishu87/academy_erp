@@ -878,6 +878,141 @@ class AppAPIController extends Controller {
     }
 
 
+    // ************************ PERFORMANCE **********************
+
+    public function performStudentList(Request $request, $group_id){
+
+        $token  = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
+
+        $students = DB::table('students')->select('students.*','groups.group_name','center.center_name')->leftJoin('groups','groups.id','=','students.group_id')->leftJoin('center','center.id','=','groups.center_id')->where('group_id','=',$group_id)->where('students.inactive','=',0)->orderBy('id','ASC')->get();
+
+        foreach($students as $student){
+            $student->dob = date("d-m-Y",strtotime($student->dob));
+            $student->pic = Student::getPhoto($student->pic);
+
+            $yellow = "#d4d40f";
+            $green =  "#03bd0b";
+            $red =  "#d84a38";
+            
+            if($student->doe < strtotime("today")){
+                $student->pending = true;
+            } else {
+                $student->pending = false;
+            }
+
+            if($student->inactive == 1){
+                $student->color = $red;
+            } else {
+                $student->color = $student->pending ? $yellow : $green;
+            }
+        }
+    
+        $data["success"] = true;
+        $data["students"] = $students;
+        $data["token"] = $token;
+
+        return Response::json($data,200,array());
+
+    }
+
+    public function performCategories(Request $request, $student_id){
+        
+        $eval = DB::table("evals")->orderBy("id","DESC")->first();
+        $evaluation_id = $eval->id;
+
+        $token  = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
+
+        $params = DB::table('evaluations')->where('evaluation_id','=',$evaluation_id)->where('student_id','=',$student_id)->get();
+
+        $categories = DB::table('eval_categories')->where("hidden",0)->orderBy("priority","DESC")->get();
+        foreach($categories as $category){
+
+            $category->remarks = "";
+
+            foreach($params as $param){
+                if($param->category_id == $category->id){
+                    $category->remarks = $param->remarks;   
+                }
+            }
+
+            $parameters = DB::table('eval_parameters')->where("no_show",0)->where("parent_category_id",$category->id)->orderBy("priority","DESC")->get();
+
+            foreach($parameters as $parameter){
+
+                $parameter->marks = 0;
+                $parameter->remarks = "";
+
+                foreach($params as $param){
+                    if($param->parameter_id == $parameter->id){
+                        $parameter->marks = $param->marks;
+                        $parameter->remarks = $param->remarks;
+                    }
+                }
+
+            }
+
+            $category->parameters = $parameters;
+        }
+        $data["success"] = true;
+        $data["categories"] = $categories;
+        $data["eval"] = $eval;
+        $data["token"] = $token;
+
+        return Response::json($data,200,array());
+    }
+
+    public function saveMarks (Request $request){
+
+        $eval = DB::table("evals")->orderBy("id","DESC")->first();
+        $evaluation_id = $eval->id; //17
+        $categories = $request->categories;
+        $student_id = $request->student_id;
+
+        $student = DB::table('students')->select('group_id')->where('id','=',$student_id)->first();
+
+        $group_id = $student->group_id;
+
+       DB::table('evaluations')->where('evaluation_id','=',$evaluation_id)->where('student_id','=',$student_id)->delete();
+
+        foreach($categories as $category){
+            $c_remarks = isset($category['remarks']) ? $category['remarks'] : "";
+            if($c_remarks) {
+                DB::table('evaluations')->insert([
+                    'group_id' => $group_id,
+                    'student_id' => $student_id,
+                    'evaluation_id' => $evaluation_id,
+                    'category_id' => $category["id"],
+                    'marks' => 0,
+                    'remarks' => $c_remarks,
+                ]);
+            }
+
+            $parameters = $category['parameters'];
+
+            foreach($parameters as $parameter){
+                if($parameter['marks'] > 0){
+                    DB::table('evaluations')->insert([
+                        'group_id' => $group_id,
+                        'student_id' => $student_id,
+                        'evaluation_id' => $evaluation_id,
+                        'parameter_id' => $parameter['id'],
+                        'marks' => $parameter['marks'],
+                        'remarks' => isset($parameter['remarks']) ? $parameter['remarks'] : "",
+                    ]);
+                }
+            }
+        }
+
+        $data["success"] = true;
+        $data["message"] ="Student marks has been updated successfully.";
+        
+        return Response::json($data,200,array()); 
+    }
+
+
+
     // ************************ APP EVENTS ************************
 
     public function getEventsList(Request $request){
