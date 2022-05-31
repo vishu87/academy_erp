@@ -365,5 +365,13 @@ Route::group(["prefix"=>"app"], function(){
         
     });
 
+    Route::group(["prefix"=>"performance"], function(){
+        Route::get('/get-student-list/{group_id}',[AppAPIController::class, 'performStudentList']);
+        Route::get('/categories/{student_id}',[AppAPIController::class, 'performCategories']);
+        Route::post('/save-marks',[AppAPIController::class, 'saveMarks']);
+        
+        
+    });
+
 });
 
