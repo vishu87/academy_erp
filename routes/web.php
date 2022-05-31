@@ -21,6 +21,8 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\SMSTemplateController;
 use App\Http\Controllers\EmailTemplateController;
+use App\Http\Controllers\AccountsController;
+use App\Http\Controllers\SettingsController;
 
 
 
@@ -160,6 +162,10 @@ Route::group(["before"=>"auth","middleware"=>["auth"]], function(){
 
     Route::group(["prefix"=>"coupons"], function(){
         Route::get('/',[CouponController::class,'coupons']);
+    });
+
+    Route::group(["prefix"=>"settings"], function(){
+        Route::get('/',[SettingsController::class,'index']);
     });
 
     Route::group(["prefix"=>"reports"], function(){
