@@ -166,3 +166,9 @@ INSERT INTO `group_coachs` (`id`, `group_id`, `coach_id`) VALUES
 (3, 17, 1);
 
 
+
+CREATE TABLE `setting_params` ( `id` INT NOT NULL AUTO_INCREMENT , `parameter` VARCHAR(255) NOT NULL , `type` VARCHAR(255) NOT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+
+CREATE TABLE `setting_values` ( `id` INT NOT NULL AUTO_INCREMENT , `client_id` INT NULL , `param_id` INT NULL , `value` TEXT NULL , `modified_by` INT NULL , `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP , `created_by` TIMESTAMP NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+

@@ -28,7 +28,11 @@
     <a href="{{url('/parameters')}}"><i class="icon-settings icons "></i> <span>Parameters</span></a>
 </li>
 
-<li class="parent @if($sidebar == 'reports') active @endif">
+<li class="parent @if($sidebar == 'settings') active @endif">
+    <a href="{{url('/settings')}}"><i class="icon-settings icons "></i> <span>Settings</span></a>
+</li>
+
+<!-- <li class="parent @if($sidebar == 'reports') active @endif">
     <a><i class="icon-list icons "></i> <span>Reports</span></a>
     <ul>
         <li>
@@ -48,4 +52,4 @@
             Leads</a>
         </li>
     </ul>
-</li>
+</li> -->
