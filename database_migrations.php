@@ -418,3 +418,9 @@ ALTER TABLE `eval_parameters`
 ALTER TABLE `eval_parameters`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
 COMMIT;
+
+
+ALTER TABLE `items` ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
+ALTER TABLE `companies` ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
+
+

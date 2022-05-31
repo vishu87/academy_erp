@@ -66,7 +66,7 @@ app.directive('tablePaginate', ['$compile', function ($compile) {
         </div>\
         <div class="col-md-6" style="text-align: right;">\
           <button class="btn fl-btn" ng-click="filter.show = (filter.show ? false:true )" ng-class=" filter.show ? \'open\' :\'\' "><i class="icons icon-grid"></i> Filter</button>\
-          <ul class="pagination" ng-if="filter.max_page > 0">\
+          <ul class="pagination" ng-if="filter.max_page > 1">\
             <li class="page-item">\
               <a class="page-link" href="javascript:;" ng-click="setPage(1)"> << </a>\
             </li>\

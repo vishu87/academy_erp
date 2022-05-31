@@ -69,9 +69,8 @@ app.controller('Company_controller', function($scope, $http, DBService){
   }
 
   $scope.saveCompany = function(){
-    $scope.loading = true;
-    DBService.postCall($scope.companyData,'/inventory/companies/save-company')
-    .then(function(data){
+    $scope.processing_req = true;
+    DBService.postCall($scope.companyData,'/inventory/companies/save-company').then(function(data){
       if (data.success) {
         bootbox.alert(data.message);
         $("#company_modal").modal('hide');
@@ -79,7 +78,7 @@ app.controller('Company_controller', function($scope, $http, DBService){
         bootbox.alert(data.message);
       }
       $scope.init();
-      $scope.loading = false;
+      $scope.processing_req = false;
     });
   }
 
@@ -90,17 +89,17 @@ app.controller('Company_controller', function($scope, $http, DBService){
   }
 
   $scope.deleteCompany = function(id, index){
-    if(confirm("Are you sure")){
-      $scope.loading = true;
-      DBService.getCall('/inventory/companies/delete-companies/'+id)
-      .then(function(data){
-        if (data.success) {
-          bootbox.alert(data.message);
-          $scope.dataset.splice(index,1);
-          $scope.loading = false;
+    bootbox.confirm("Are you sure?", (check)=>{
+        if(check){
+          DBService.getCall('/inventory/companies/delete-companies/'+id).then(function(data){
+            if (data.success) {
+              bootbox.alert(data.message);
+              $scope.dataset.splice(index,1);
+              $scope.loading = false;
+            }
+          });
         }
-      });
-    }
+    });
   }
 
 });

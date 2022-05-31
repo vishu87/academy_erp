@@ -2,10 +2,11 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
   
   $scope.loading = false;
   $scope.dataset = [];
-  $scope.items = [{}];
   $scope.price_type ={};
   $scope.viewData = {};
-  $scope.requestData = {};
+  $scope.requestData = {
+    items:[{}]
+  };
   $scope.fileObj = {
     document : '',
     link : ''
@@ -20,7 +21,8 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
     export: false,
     show: false
   }
-  $scope.total = 0
+  $scope.total = 0;
+  $scope.approveOrReject = {};
 
   $scope.init = function(){
     $scope.loading = true;
@@ -91,7 +93,7 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
 
 
   $scope.addItem = function(){
-    $scope.items.push(JSON.parse(JSON.stringify($scope.optionItem)));
+    $scope.requestData.items.push(JSON.parse(JSON.stringify($scope.optionItem)));
   }
 
   $scope.removeItem = function(index){
@@ -119,10 +121,7 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
   $scope.saveRequest = function(){
 
     $scope.loading = true;
-    DBService.postCall({
-      data:$scope.requestData,
-      items:$scope.items,
-      file:$scope.fileObj.document},'/inventory/request/save-request')
+    DBService.postCall($scope.requestData,'/inventory/request/save-request')
     .then(function(data){
       if (data.success) {
         window.location = base_url+"/inventory/request"
@@ -136,13 +135,11 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
   $scope.formData = function(id){
 
     DBService.getCall('/inventory/request/request-data/'+id).then(function(data){
-        if (data.success) {
-            if(data.request){
-              $scope.items       = data.items;
+        if(data.success) {
+            if(id != 0){
               $scope.requestData = data.request;
-              $scope.fileObj.document = data.request.document;
             }
-        } 
+        }
         $scope.company();
         $scope.getStateCityCenter();
         $scope.allItems();
@@ -151,7 +148,7 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
 
 
   $scope.viewInventoryRequest = function(id){
-
+    $scope.rowId = id;
     DBService.getCall('/inventory/request/view-data/'+id).then(function(data){
         if (data.success) {
           $scope.viewData  = data.request;
@@ -161,16 +158,35 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
     });
   }
 
-  $scope.deleteRequest = function(id, index){
+  $scope.changeStatus = function(){
+    $scope.approveOrReject.id = $scope.rowId;
+    DBService.postCall($scope.approveOrReject,'/inventory/request/approve-or-reject').then(function(data){
+      if (data.success) {
+        bootbox.alert(data.message);
+        $("#request-view-modal").modal('hide');
+        for (var i = 0; i < $scope.dataset.length; i++) {
+          if($scope.dataset[i].id == $scope.rowId){
+            $scope.dataset[i].status = data.new_status;
+          }
+        }
+      } else {
+        bootbox.alert(data.message);
+      }
+      $scope.init();
+    });
+  }
 
-    if(confirm("Are you sure")){
-      DBService.getCall('/inventory/request/delete-data/'+id).then(function(data){
-          if (data.success) {
-              bootbox.alert(data.message);
-              $scope.dataset.splice(index,1);
-          } 
-      });
-    }
+  $scope.deleteRequest = function(id, index){
+    bootbox.confirm("Are you sure?", (check)=>{
+        if(check){
+          DBService.getCall('/inventory/request/delete-data/'+id).then(function(data){
+              if(data.success){
+                bootbox.alert(data.message);
+                $scope.dataset.splice(index,1);
+              } 
+          });
+        }
+    });
   }
 
   $scope.allItems = function(){
