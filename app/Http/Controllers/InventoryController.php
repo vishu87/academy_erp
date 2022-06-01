@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 
-use Input, Redirect, Validator, Hash, Response, Session, DB, App\User, App\Item;
+use Input, Redirect, Validator, Hash, Response, Session, DB, App\Models\User, App\Models\Item;
 use Illuminate\Http\Request;
 
 class InventoryController extends Controller {
@@ -19,9 +19,13 @@ class InventoryController extends Controller {
 		return Response::json($data, 200, array());
 	}
 
-	public function itemsList (){
+	public function itemsList (Request $request){
+
+		$user = User::AuthenticateUser($request->header("apiToken"));
+
 		$items = DB::table('items')->select('items.id','items.item_name','items.unit_id','items.min_quantity','items.added_by','units.unit')
-		->leftJoin('units', 'items.unit_id', '=', 'units.id')->get();
+		->leftJoin('units', 'items.unit_id', '=', 'units.id')->where("client_id",$user->client_id)->get();
+
 		$units = DB::table('units')->get();
 		$data['success'] = true;
 		$data['items'] = $items;
@@ -32,6 +36,7 @@ class InventoryController extends Controller {
 
 	public function saveItem(Request $request){
 
+		$user = User::AuthenticateUser($request->header("apiToken"));
 
 		$cre = [
 			"item_name" => $request->item_name,
@@ -62,11 +67,13 @@ class InventoryController extends Controller {
 			$item->item_name	= $request->item_name;
 			$item->unit_id		= $request->unit_id;
 			$item->min_quantity = $request->min_quantity;
+			$item->client_id    = $user->client_id;
+			$item->added_by     = $user->id;
 			$item->save();
 
 			$data['success'] = true;
-			$data['message'] = "item successfully inserted";
-		}else{
+			$data['message'] = "Item is successfully saved";
+		} else {
 
 			$data['success'] = false;
 			$data['message'] = $validator->errors()->first();
@@ -76,11 +83,13 @@ class InventoryController extends Controller {
 
 	}
 
-	public function deleteItems($id){
+	public function deleteItems(Request $request, $id){
 		
-		DB::table('items')->where('id',$id)->delete();
+		$user = User::AuthenticateUser($request->header("apiToken"));
+
+		DB::table('items')->where('id',$id)->where("client_id",$user->client_id)->delete();
 		$data['success'] = true;
-		$data['message'] = "Item deleted successfully"; 
+		$data['message'] = "Item is deleted successfully"; 
 		return Response::json($data, 200, array());
 	}
 

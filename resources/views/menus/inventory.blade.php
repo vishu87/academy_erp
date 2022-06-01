@@ -12,12 +12,12 @@
 	</a>
 </li>
 
-<li class="parent @if($sidebar == 'report') active @endif" >
+<!-- <li class="parent @if($sidebar == 'report') active @endif" >
 	<a  href="{{url('/inventory/inventory-report')}}">
 		<i class="icon-check icons "></i>
 		<span>Report</span>
 	</a>
-</li>
+</li> -->
 
 <li class="parent @if($sidebar == 'companies') active @endif" >
 	<a  href="{{url('/inventory/companies')}}">

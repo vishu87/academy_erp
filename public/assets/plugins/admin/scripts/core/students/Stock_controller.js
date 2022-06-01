@@ -4,7 +4,7 @@ app.controller('stock_controller', function($scope, $http, DBService, Upload){
   $scope.dataset = [];
   $scope.filter = {
     page_no : 1,
-    max_per_page : 10,
+    max_per_page : 1,
     max_page: 1,
     order_by: '',
     order_type: 'ASC',
@@ -38,17 +38,17 @@ app.controller('stock_controller', function($scope, $http, DBService, Upload){
     });
   }
 
-    $scope.getStateCityCenter = function(tag){
-      DBService.postCall({Tag:tag},
-       "/api/get-state-city-center-data")
-      .then(function (data){  
-        if (data.success) {
-          $scope.state_city_center = data;
-        }
-      });
-    } 
+  $scope.getStateCityCenter = function(tag){
+    DBService.postCall({Tag:tag},
+     "/api/get-state-city-center-data")
+    .then(function (data){  
+      if (data.success) {
+        $scope.state_city_center = data;
+      }
+    });
+  } 
 
-    $scope.getStateCityCenter();
+  $scope.getStateCityCenter();
 
   $scope.searchList = function(){
     $scope.filter.page_no = 1;

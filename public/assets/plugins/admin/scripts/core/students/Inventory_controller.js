@@ -5,7 +5,7 @@ app.controller('Inventory_controller', function($scope, $http, DBService){
 
   $scope.filter = {
     page_no : 1,
-    max_per_page : 20,
+    max_per_page : 1,
     max_page: 1,
     order_by: '',
     order_type: 'ASC',
@@ -25,9 +25,8 @@ app.controller('Inventory_controller', function($scope, $http, DBService){
         } else {
           $scope.dataset = data.items;
           $scope.units = data.units;
-          console.log($scope.units);
-          $scope.total = data.total;
-          $scope.filter.max_page = Math.ceil($scope.total/$scope.filter.max_per_page)
+          // $scope.total = data.total;
+          // $scope.filter.max_page = Math.ceil($scope.total/$scope.filter.max_per_page)
         }
       } else {
         bootbox.alert(data.message);
@@ -37,7 +36,7 @@ app.controller('Inventory_controller', function($scope, $http, DBService){
       $scope.filter.clearing = false;
       $scope.filter.exporting = false;
       $scope.filter.export = false;
-      $scope.setPagination();
+      // $scope.setPagination();
     });
   }
 
@@ -70,7 +69,7 @@ app.controller('Inventory_controller', function($scope, $http, DBService){
   }
 
   $scope.saveItem = function(){
-    $scope.loading = true;
+    $scope.processing_req = true;
     DBService.postCall($scope.itemData,'/inventory/save-items')
     .then(function(data){
       if (data.success) {
@@ -80,7 +79,7 @@ app.controller('Inventory_controller', function($scope, $http, DBService){
         bootbox.alert(data.message);
       }
       $scope.init();
-      $scope.loading = false;
+      $scope.processing_req = false;
     });
   }
 
@@ -91,17 +90,19 @@ app.controller('Inventory_controller', function($scope, $http, DBService){
   }
 
   $scope.deleteItem = function(id, index){
-    if(confirm("Are yor sure")){
-      $scope.loading = true;
-      DBService.getCall('/inventory/delete-items/'+id)
-      .then(function(data){
-        if (data.success) {
-          bootbox.alert(data.message);
-          $scope.dataset.splice(index,1);
-          $scope.loading = false;
-        }
-      });
-    }
+    bootbox.confirm("Are you sure?", (check)=>{
+      if(check){
+        $scope.loading = true;
+        DBService.getCall('/inventory/delete-items/'+id)
+        .then(function(data){
+          if (data.success) {
+            bootbox.alert(data.message);
+            $scope.dataset.splice(index,1);
+            $scope.loading = false;
+          }
+        });
+      }
+    });
   }
 
 });
