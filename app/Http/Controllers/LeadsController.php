@@ -156,7 +156,7 @@ class LeadsController extends Controller{
         $data['reasons'] = Lead::reasons();
         $data['lead_sources'] = Lead::lead_sources();
         // $data['sub_lead_sources'] = Lead::sub_lead_sources();
-        $data['lead_for'] = Lead::lead_for();
+        $data['lead_for'] = Lead::lead_for_types();
         $data['states'] = Lead::states();
         // $data['relevance_list'] = Lead::relevance_list();
         $data['members'] = User::select('id as value','name as label')->where('role','!=',1)->orderBy('username','asc')->get();

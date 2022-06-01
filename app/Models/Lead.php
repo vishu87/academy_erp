@@ -20,9 +20,9 @@ class Lead extends Model
     	return DB::table('lead_sources')->select("id as value","source as label")->where('parent_id',0)->get();
     }
 
-    // public static function lead_for(){
-    //     return DB::table('lead_sources')->select("id as value","source as label")->where('parent_id',0)->limit(3)->get();
-    // }
+    public static function lead_for_types(){
+        return DB::table('lead_sources')->select("id as value","source as label")->where('parent_id',0)->limit(3)->get();
+    }
 
     public static function sub_lead_sources(){
         return DB::table('lead_sources')->where('parent_id','!=',0)->get();

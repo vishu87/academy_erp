@@ -971,42 +971,41 @@ class AppAPIController extends Controller {
         $eval = DB::table("evals")->orderBy("id","DESC")->first();
         $evaluation_id = $eval->id; 
 
-        // $student = DB::table('students')->select('group_id')->where('id','=', $student_id)->first();
+        $student = DB::table('students')->select('group_id')->where('id','=', $student_id)->first();
 
-        // $group_id = $student->group_id;
+        $group_id = $student->group_id;
 
-        // DB::table('evaluations')->where('evaluation_id','=',$evaluation_id)->where('student_id','=',$student_id)->delete();
+        DB::table('evaluations')->where('evaluation_id','=',$evaluation_id)->where('student_id','=',$student_id)->delete();
 
-        // foreach($categories as $category){
-        //     $c_remarks = isset($category['remarks']) ? $category['remarks'] : "";
-        //     if($c_remarks) {
-        //         DB::table('evaluations')->insert([
-        //             'group_id' => $group_id,
-        //             'student_id' => $student_id,
-        //             'evaluation_id' => $evaluation_id,
-        //             'category_id' => $category["id"],
-        //             'marks' => 0,
-        //             'remarks' => $c_remarks,
-        //         ]);
-        //     }
+        foreach($categories as $category){
+            $c_remarks = isset($category['remarks']) ? $category['remarks'] : "";
+            if($c_remarks) {
+                DB::table('evaluations')->insert([
+                    'group_id' => $group_id,
+                    'student_id' => $student_id,
+                    'evaluation_id' => $evaluation_id,
+                    'category_id' => $category["id"],
+                    'marks' => 0,
+                    'remarks' => $c_remarks,
+                ]);
+            }
 
-        //     $parameters = $category['parameters'];
+            $parameters = $category['parameters'];
 
-        //     foreach($parameters as $parameter){
-        //         if($parameter['marks'] > 0){
-        //             DB::table('evaluations')->insert([
-        //                 'group_id' => $group_id,
-        //                 'student_id' => $student_id,
-        //                 'evaluation_id' => $evaluation_id,
-        //                 'parameter_id' => $parameter['id'],
-        //                 'marks' => $parameter['marks'],
-        //                 'remarks' => isset($parameter['remarks']) ? $parameter['remarks'] : "",
-        //             ]);
-        //         }
-        //     }
-        // }
-        $data['s_id'] = $student_id;
-        $data['cate'] = $categories;
+            foreach($parameters as $parameter){
+                if($parameter['marks'] > 0){
+                    DB::table('evaluations')->insert([
+                        'group_id' => $group_id,
+                        'student_id' => $student_id,
+                        'evaluation_id' => $evaluation_id,
+                        'parameter_id' => $parameter['id'],
+                        'marks' => $parameter['marks'],
+                        'remarks' => isset($parameter['remarks']) ? $parameter['remarks'] : "",
+                    ]);
+                }
+            }
+        }
+        
         $data["success"] = true;
         $data["message"] ="Student marks has been updated successfully.";
         
