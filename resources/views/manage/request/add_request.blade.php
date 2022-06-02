@@ -97,13 +97,13 @@
                     <div class="row">
                         <div class="col-md-6 form-group">
                             <label>Document</label>
-    				        <button type ="button" class ="form-control" ng-if =" fileObj.document == '' " ngf-select ="uploadDocument($file)" >Choose Document</button>
-    				        <div ng-if ="fileObj.document != '' ">
+    				        <button type ="button" class ="form-control" ng-if ="!requestData.document" ngf-select ="uploadDocument($file)" >Choose Document</button>
+    				        <div ng-if ="requestData.document">
                                 <div ng-if="requestData.id" >
-                                    <a ng-href="{{ url('/') }}/@{{fileObj.document}}"  target="_blank" class="btn-sm btn">View</a>
+                                    <a ng-href="{{ url('/') }}/@{{requestData.document}}"  target="_blank" class="btn-sm btn-primary btn">View</a>
                                 </div>
                                 <div ng-if="!requestData.id" >
-                                    <a ng-href="@{{fileObj.link}}"  target="_blank" class="btn-sm btn">View</a>
+                                    <a ng-href="@{{requestData.link}}"  target="_blank" class="btn-sm btn btn-primary">View</a>
                                 </div>
     				              <button type ="button" class="btn btn-sm btn-danger" ng-click="removeFile()" >Remove</button>
     				        </div>

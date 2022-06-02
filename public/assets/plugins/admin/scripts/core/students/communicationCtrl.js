@@ -5,6 +5,7 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 	$scope.count = 0;
 	$scope.checkAll = false;
 	$scope.show_list = false;
+	$scope.send_type_check = 1;
 	$scope.removed_students = [];
 	$scope.formData = {demo_check:false};
 	$scope.filter = {
@@ -16,7 +17,6 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 		categories: [],
 		batch_types: []
 	};
-
 	$scope.template_lists = [];
 
 	$scope.popTemplateList = function(){
@@ -27,6 +27,16 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 			}
 		}
 	}
+
+	$scope.changeType = function(type){
+		if(type == 1){
+			$scope.send_type_check = 1;
+			$scope.formData.send_type = 1;
+		} if(type == 2){
+			$scope.send_type_check = 2;
+			$scope.formData.send_type = 2;
+		}
+	} 
 
 	$scope.check_all = function(prop){
 
@@ -68,35 +78,20 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 			}
 		}
 
-		if(prop == 4){
-			if($scope.check_all_category){
-				$scope.filter.categories = [];
-				for (var i = $scope.student_categories.length - 1; i >= 0; i--) {
-					$scope.filter.categories.push($scope.student_categories[i]);
-				}
-			}else{
-				$scope.filter.categories = [];
-
-			}
-		}
-
 		$scope.getStudents();
 	}
 
 	$scope.init = function(){
-		$scope.loading = true;
 		DBService.postCall({api_key:api_key, only_active : $scope.filter.only_active},'/communications/send-message/init').then(function(data){
 			if(data.success){
-				
 				$scope.cities = data.cities;
 				$scope.centers = data.centers;
 				$scope.groups = data.groups;
 				$scope.student_categories = data.student_categories;
 				$scope.batch_types = data.batch_types;
 				$scope.templates = data.templates;
-
+				$scope.email_templates = data.email_templates;
 			}
-			$scope.loading = false;
 		});
 	}
 
@@ -108,22 +103,17 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 	}
 
 	$scope.listing = function(){
-		$scope.loading = true;
 		DBService.postCall({api_key:api_key},'/communications/send-message/listing').then(function(data){
 			if(data.success){
-				
 				$scope.communications = data.communications;
 				$scope.count = data.count;
-				
 			}
-			$scope.loading = false;
 		});
 	}
 
 	$scope.viewStudetns = function(comm){
 		$scope.comm_pn = 1;
 		$scope.total_comm_pn = 0;
-		$scope.loading_students = true;
 		$scope.open_comm =comm;
 		$("#students").modal("show");
 		
@@ -206,7 +196,6 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 	}
 
 	$scope.getStudents = function(page_number=1){
-		$scope.loading = true;
 		$scope.filter.pn = page_number;
 		$scope.pn = page_number;
 		$scope.filter.removed_students = $scope.removed_students;
@@ -281,19 +270,8 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 
 	$scope.postMessage = function(){
 		$scope.processing = true;
-		// var students = [];
-
-		// for (var i = $scope.students.length - 1; i >= 0; i--) {
-		// 	if($scope.students[i].selected){
-		// 		students.push($scope.students[i].id);
-		// 	}
-		// }
-
-		// $scope.formData.filters = $scope.filter;
-
 		$scope.formData.student_ids = $scope.student_ids;
 		$scope.formData.removed_students = $scope.removed_students;
-
 		DBService.postCall($scope.formData,'/communications/send-message/postMessage').then(function(data){
 			if(data.success){
 

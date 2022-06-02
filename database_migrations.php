@@ -423,4 +423,10 @@ COMMIT;
 ALTER TABLE `items` ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
 ALTER TABLE `companies` ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
 
+// pradeep 02/06/22
+
+ALTER TABLE `sms_templates` ADD `added_by` INT NULL DEFAULT NULL AFTER `dlt_pe_id`, ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
+ALTER TABLE `email_templates` ADD `added_by` INT NULL DEFAULT NULL AFTER `content`, ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
+
+
 

@@ -6,7 +6,7 @@ use Redirect,App\Concept;
 use Response,Validator;
 use Illuminate\Http\Request;
 use DB,App\Models\User,App\Models\Student,App\Models\Communication,App\Models\CommunicationStudent,App\Models\MailQueue;
-use App\Lead;
+use App\Models\Lead;
 
 class CommunicationController extends Controller {
 
@@ -44,6 +44,8 @@ class CommunicationController extends Controller {
 		$data['centers'] = $centers;
 		$data['groups'] = $groups;
 		$data['templates'] = DB::table("sms_templates")->get();
+		$data['email_templates'] = DB::table("email_templates")->where('client_id',$user->client_id)->get();
+
 		$data['success'] = true;
 
 		return Response::json($data,200,array());
@@ -87,22 +89,6 @@ class CommunicationController extends Controller {
 			$flag = true;
 			$groups = $request->groups;
 		}
-
-		// if(sizeof($request->categories) > 0){
-		// 	$flag = true;
-		// 	$categories = DB::table('student_categories')->whereIn('category',$request->categories);
-
-		// 	if(isset($centers)){
-		// 		$categories = $categories->whereIn('center_id',$centers);
-		// 	}
-
-		// 	$categories = $categories->pluck('id')->all();
-
-		// 	if(sizeof($categories) == 0){
-		// 		$categories = [0];
-		// 	}
-		// 	$students = $students->whereIn('students.category_id',$categories)->where('students.category_id','!=',0);
-		// }
 
 		if(sizeof($groups) > 0){
 			$flag = true;
@@ -235,7 +221,6 @@ class CommunicationController extends Controller {
 	public function postMessage(Request $request)
 	{	
 		$user = User::AuthenticateUser($request->header("apiToken"));
-
 		$send_type = $request->send_type;
 		$types = [];
 		foreach ($send_type as $key => $value) {
@@ -246,7 +231,6 @@ class CommunicationController extends Controller {
 
 		$sms_content = $request->sms_content;
 		
-
 		if(in_array(1,$types)){
 
 			$template = DB::table("sms_templates")->where('id',$request->template_id)->first();
@@ -267,7 +251,6 @@ class CommunicationController extends Controller {
 			$demo_email = $request->demo_email;
 
 			if($demo_mobile && $template){
-				// Lead::sendSMS($demo_mobile , $request->sms_content,$request->sms_type);
 				Lead::sendSMS($demo_mobile , $sms_content, $request->sms_type, $template->dlt_template_id, $template->dlt_sender_id);
 			}
 
@@ -329,7 +312,8 @@ class CommunicationController extends Controller {
 					$final_students = [0];
 				}
 
-				$students = Student::select('id','father_mob','mother_mob','father_email','mother_email','email','mobile')->whereIn('students.id',$final_students);
+				$students = DB::table('students')->select('students.id','students.email','students.mobile','student_guardians.email as guardian_email','student_guardians.mobile as guardian_mob')
+				->leftJoin('student_guardians','student_guardians.student_id','=','students.id')->whereIn('students.id',$final_students);
 
 				$students = $students->get();
 
@@ -347,14 +331,14 @@ class CommunicationController extends Controller {
 							$mobiles[] = $student->mobile;
 						}
 
-						if($student->father_mob && !in_array($student->father_mob,$mobiles)){
-							MailQueue::createSMS($student->father_mob, $sms_content,$request->sms_type,$request->template_id);
-							$mobiles[] = $student->father_mob;
-						}
+						// if($student->father_mob && !in_array($student->father_mob,$mobiles)){
+						// 	MailQueue::createSMS($student->father_mob, $sms_content,$request->sms_type,$request->template_id);
+						// 	$mobiles[] = $student->father_mob;
+						// }
 
-						if($student->mother_mob && !in_array($student->mother_mob,$mobiles)){
-							MailQueue::createSMS($student->mother_mob, $sms_content,$request->sms_type,$request->template_id);
-						}
+						// if($student->mother_mob && !in_array($student->mother_mob,$mobiles)){
+						// 	MailQueue::createSMS($student->mother_mob, $sms_content,$request->sms_type,$request->template_id);
+						// }
 					}
 
 					if(in_array(2, $types)){
@@ -362,16 +346,16 @@ class CommunicationController extends Controller {
 						$message = Lead::getContent($request->content);
 
 						if($student->email){
-							MailQueue::createEmail($student->email,$request->subject,  $message);
+							MailQueue::createMail($student->email, null, null, $request->subject, $message);
 							$emails[] = $student->email;
 						}
-						if($student->father_email && !in_array($student->father_email,$emails)){
-							MailQueue::createEmail($student->father_email,$request->subject,  $message);
-							$emails[] = $student->father_email;
-						}
-						if($student->mother_email && !in_array($student->mother_email,$emails)){
-							MailQueue::createEmail($student->mother_email,$request->subject,  $message);
-						}
+						// if($student->father_email && !in_array($student->father_email,$emails)){
+						// 	MailQueue::createEmail($student->father_email,$request->subject,  $message);
+						// 	$emails[] = $student->father_email;
+						// }
+						// if($student->mother_email && !in_array($student->mother_email,$emails)){
+						// 	MailQueue::createEmail($student->mother_email,$request->subject,  $message);
+						// }
 					}
 				}
 
@@ -382,7 +366,7 @@ class CommunicationController extends Controller {
 
 		}
 
-		return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
+		return Response::json($data,200,[]);
 
 	}
 

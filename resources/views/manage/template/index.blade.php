@@ -56,7 +56,7 @@
 							<td>@{{template.dlt_pe_id}}</td>
 							<td style="width: 120px">
 								<button class="btn btn-sm btn-light" type="button" ng-click="edit(template)">Edit</button>
-								<button class="btn btn-sm btn-danger" type="button" ng-click="delete(template.id,$index)">Delete</button>
+								<button class="btn btn-sm btn-danger" type="button" ng-click="delete(template,$index)">Delete</button>
 							</td>
 						</tr>
 					</tbody>

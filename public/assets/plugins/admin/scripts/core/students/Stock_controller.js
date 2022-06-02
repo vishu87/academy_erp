@@ -16,7 +16,7 @@ app.controller('stock_controller', function($scope, $http, DBService, Upload){
   $scope.init = function(){
     $scope.loading = true;
 
-    DBService.postCall($scope.filter,'/inventory/current-stock/get-stock')
+    DBService.postCall($scope.filter,'/api/inventory/current-stock/get-stock')
     .then(function(data){
       if (data.success) {
         if($scope.filter.export){

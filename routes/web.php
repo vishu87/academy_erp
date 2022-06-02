@@ -90,38 +90,22 @@ Route::group(["before"=>"auth","middleware"=>["auth"]], function(){
     Route::group(["prefix"=>"inventory"], function(){
 
         Route::get('/item',[InventoryController::class,'index']);
-        Route::post('/get-items',[InventoryController::class,'itemsList']);
-        Route::post('/save-items',[InventoryController::class,'saveItem']);
-        Route::get('/delete-items/{id}',[InventoryController::class,'deleteItems']); 
 
         Route::group(["prefix"=>"companies"], function(){
             Route::get('/',[CompanyController::class,'index']);
-            Route::post('/get-companies',[CompanyController::class,'companiesList']);
-            Route::post('/save-company',[CompanyController::class,'saveCompany']);
-            Route::get('/delete-companies/{id}',[CompanyController::class,'deleteCompanies']);
         });
 
         Route::group(["prefix"=>"current-stock"], function(){
             Route::get('/',[StockController::class,'index']);
-            Route::post('/get-stock',[StockController::class,'total_stock']);
         });
 
-        Route::group(["prefix"=>"inventory-report"], function(){
-            Route::get('/',[InventoryReportController::class,'index']);
-        });
+        // Route::group(["prefix"=>"inventory-report"], function(){
+        //     Route::get('/',[InventoryReportController::class,'index']);
+        // });
 
         Route::group(["prefix"=>"request"], function(){
             Route::get('/',[RequestController::class,'index']);
-            Route::post('/get-companies',[RequestController::class,'companiesList']);
-            Route::post('/get-request',[RequestController::class,'requestList']);
-            Route::post('/upload-document',[RequestController::class,'uploadDocument']);
-            Route::post('/save-request',[RequestController::class,'saveRequest']);  
             Route::get('/add-request/{id?}',[RequestController::class,'addRequest']);
-            Route::get('/request-data/{id}',[RequestController::class,'requestData']);
-            Route::get('/delete-data/{id}',[RequestController::class,'deleteData']);
-            Route::post('/all-items',[RequestController::class,'ItemsList']);
-            Route::get('/view-data/{id}',[RequestController::class,'viewData']);
-            Route::post('/approve-or-reject',[RequestController::class,'approveOrReject']);
         });
     });
 
@@ -192,18 +176,11 @@ Route::group(["before"=>"auth","middleware"=>["auth"]], function(){
 
         Route::group(["prefix"=>"sms-template"], function(){
             Route::get('/',[SMSTemplateController::class,'index']);
-            Route::get('/init',[SMSTemplateController::class,'init']);
-            Route::post('/store',[SMSTemplateController::class,'store']);
-            Route::get('/delete/{id}',[SMSTemplateController::class,'delete']);
         }); 
 
         Route::group(["prefix"=>"email-template"], function(){
             Route::get('/',[EmailTemplateController::class,'index']);
-            Route::get('/init',[EmailTemplateController::class,'init']);
-            Route::post('/store',[EmailTemplateController::class,'store']);
-            Route::get('/delete/{id}',[EmailTemplateController::class,'delete']);
         }); 
-
 
     }); 
 

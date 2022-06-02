@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Redirect,App\Student;
+use Redirect,App\Models\Student, App\Models\User;
 use Response,Validator,DB,Input;
 use Illuminate\Http\Request;
 use App\Models\EMAILTemplate;
@@ -16,15 +16,18 @@ class EmailTemplateController extends Controller {
 	}
 
 	
-	public function init()
+	public function init(Request $request)
 	{
-		$data['templates'] = DB::table("email_templates")->get();
+		$user = User::AuthenticateUser($request->header("apiToken"));
+		$data['templates'] = DB::table("email_templates")->where("client_id",$user->client_id)->get();
 		$data['success'] = true;
 		return Response::json($data,200,[]); 
 	}
 
 	public function store(Request $request)
 	{
+		$user = User::AuthenticateUser($request->header("apiToken"));
+
 		$cre = [
 			"template_name"=>$request->template_name,
 			"content"=>$request->content
@@ -42,6 +45,8 @@ class EmailTemplateController extends Controller {
 				$data['message'] = "Data successfully updated";
 			} else {
 				$email_template = new EMAILTemplate;
+				$email_template->client_id    = $user->client_id;
+				$email_template->added_by     = $user->id;
 				$data['message'] = "Data successfully inserted";
 			}
 
@@ -57,9 +62,10 @@ class EmailTemplateController extends Controller {
 		return Response::json($data,200,[]);
 	}
 
-	public function delete($id)
+	public function delete(Request $request, $id)
 	{
-		DB::table('email_templates')->where('id',$id)->delete();
+		$user = User::AuthenticateUser($request->header("apiToken"));
+		DB::table('email_templates')->where('id',$id)->where("client_id",$user->client_id)->delete();
 		$data['success'] = true;
 		$data['message'] = "Data successfully deleted";
 		return Response::json($data,200,[]);
