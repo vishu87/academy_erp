@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 use Redirect, Validator, Hash, Response, Session, DB;
 
-use App\Models\User;
+use App\Models\User, App\Models\MailQueue;
 
 class UserController extends Controller {
 
@@ -141,6 +141,48 @@ class UserController extends Controller {
 		}
 		return Redirect::to($link);
 	}
+
+
+    public function postForgetPassword(Request $request){
+        $validator = Validator::make(["email"=>$request->email],["email"=>"required|email"]);
+        
+        if($validator->fails()){
+        	$data['success'] = false;
+			$data['message'] = $validator->errors()->first();
+			return Response::json($data, 200, array());
+        }
+        
+        $user = User::where('email',$request->email)->first();
+        
+        if(!$user){
+
+        	$data['success'] = false;
+			$data['message'] = "No user found with this email id";
+			return Response::json($data, 200, array());
+        }
+
+        $rand_pwd = User::getRandPassword();
+        
+        $user->password = Hash::make($rand_pwd);
+        $user->password_check = $rand_pwd;
+        $user->save();
+
+        $mail = new MailQueue;
+
+        if($request->email == "admin"){
+            $mail->mailto = $user->inactive_email;
+        } else {
+            $mail->mailto = $user->email;
+        }
+
+        $mail->subject = "Academy - Reset Password";
+        $mail->content = view('mails',["user"=>$user , "type"=>"password_reset"]);
+        $mail->save();
+
+        $data['success'] = false;
+		$data['message'] = "New password has been sent to your registered email id";
+		return Response::json($data, 200, array());
+    }
 
 	// public function addAccessRights(){
 	// 	$access_data = Input::get('rights_data'); 

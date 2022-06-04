@@ -39,6 +39,10 @@ Route::get('/lead/{type}', [WebController::class,'lead']);
 Route::get('/registrations',[WebController::class,'registrations']);
 
 Route::get('/sign-up', [WebController::class, 'signUp']);
+Route::get('/forget-password', [WebController::class, 'forgetPassword']);
+Route::post('/forget-password', [UserController::class, 'postForgetPassword']);
+
+
 
 Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 
