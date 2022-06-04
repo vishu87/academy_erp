@@ -275,7 +275,7 @@ class UserAPIController extends Controller {
 	    		$user_row->password = Hash::make($password);
 	    		$user_row->password_check = $password;
 	    		
-	    		$user_row->api_key = Hash::make($user_row->username);					
+	    		$user_row->api_key = Hash::make($user_row->username);
 	        	$user_row->client_id = $user->client_id;
         		$user_row->save();
 

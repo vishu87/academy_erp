@@ -38,7 +38,9 @@ Route::get('/demo-schedule', [WebController::class,'demoShedule']);
 Route::get('/lead/{type}', [WebController::class,'lead']);
 Route::get('/registrations',[WebController::class,'registrations']);
 
-Route::group(["before"=>"auth","middleware"=>["auth"]], function(){
+Route::get('/sign-up', [WebController::class, 'signUp']);
+
+Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 
     Route::get('/payment-details', [UserController::class, 'paymentDetails']);
     Route::get('/dashboard', [UserController::class, 'dashboard']);
@@ -207,5 +209,14 @@ Route::group(["before"=>"auth","middleware"=>["auth"]], function(){
 
     }); 
 
+
+});
+
+
+Route::group(["before"=>"auth","middleware"=>["auth","parents"]], function(){
+
+    Route::group(["prefix"=>"parents"], function(){
+        Route::get('/',[ParentController::class,'index']);
+    }); 
 
 });

@@ -277,8 +277,20 @@ class User extends Authenticatable {
 
     public static function sendWelcomeEmail($user, $password){
 
-        $subject = "Login Details for Academy System";
+        $subject = "Login Details for the academy";
         $content = view("mails",[
+            "type" => 'register',
+            "user" => $user,
+            "password" => $password
+        ]);
+
+        MailQueue::createMail($user->email, "", "", $subject, $content);
+    }
+
+    public static function parentWelcomeEmail($user, $password){
+
+        $subject = "Login details for the academy";
+        $content = view("mails.parent.sign_up",[
             "type" => 'register',
             "user" => $user,
             "password" => $password

@@ -10,8 +10,7 @@
         Password : {{$password}}<br>
     </p>
 
-    <p >
+    <p>
         Thanks.
     </p>
-
 @endif

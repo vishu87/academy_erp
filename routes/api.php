@@ -324,6 +324,11 @@ Route::group(["prefix"=>"renewal"], function(){
     Route::post('/search',[RenewalWebController::class, 'searchStudent']);
 });
 
+
+Route::group(["prefix"=>"sign-up"], function(){
+    Route::post('/search',[SignUpController::class, 'searchStudent']);
+});
+
 Route::group(["prefix"=>"app"], function(){
     Route::post('/login',[AppAPIController::class, 'login']);
     Route::get('/user/profile',[AppAPIController::class, 'getUser']);

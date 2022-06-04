@@ -426,3 +426,7 @@ ALTER TABLE `users` ADD `user_type` TINYINT NOT NULL DEFAULT '1' AFTER `api_key`
 ALTER TABLE `items` ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
 ALTER TABLE `companies` ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
 
+
+CREATE TABLE `user_students` ( `id` INT NOT NULL AUTO_INCREMENT , `user_id` INT NULL , `student_id` INT NULL , `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+ALTER TABLE `users`  ADD `last_login` TIMESTAMP NULL DEFAULT NULL  AFTER `is_admin`;

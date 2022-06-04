@@ -51,33 +51,36 @@ class UserController extends Controller {
 
 			if(Auth::attempt($cre)){
 
-				$user = Auth::user()->id;
-				$access_rights = User::getAccessTabs(Auth::user()->id);
-
-				if(sizeof($access_rights) == 0){
-					Auth::logout();
-					return Redirect::back("failure","You dont have access to any module, Kindly ask admin to add rights");
-				}
-
-				Session::put("access_rights",$access_rights);
-
-				$all_sports = DB::table("sports")->pluck("sport_name","id")->toArray();
-				$access_sports = DB::table("sports")->pluck("id")->toArray();
-
-				Session::put("access_sports",$access_sports);
-				Session::put("all_sports",$all_sports);
-
-				$count = 0;
-				foreach($access_rights as $key => $right){
-					if($count == 0){
-						$access_right_id = $right[0];
-						$access_right = DB::table("access_rights")->select("location")->where("id",$access_right_id)->first();
-						if($access_right){
-							return Redirect::to($access_right->location);
-						}
+				$user = Auth::user();
+				if($user->user_type == 1){
+					$access_rights = User::getAccessTabs(Auth::user()->id);
+					if(sizeof($access_rights) == 0){
+						Auth::logout();
+						return Redirect::back("failure","You dont have access to any module, Kindly ask admin to add rights");
 					}
-					$count++;
-					break;
+
+					Session::put("access_rights",$access_rights);
+
+					$all_sports = DB::table("sports")->pluck("sport_name","id")->toArray();
+					$access_sports = DB::table("sports")->pluck("id")->toArray();
+
+					Session::put("access_sports",$access_sports);
+					Session::put("all_sports",$all_sports);
+
+					$count = 0;
+					foreach($access_rights as $key => $right){
+						if($count == 0){
+							$access_right_id = $right[0];
+							$access_right = DB::table("access_rights")->select("location")->where("id",$access_right_id)->first();
+							if($access_right){
+								return Redirect::to($access_right->location);
+							}
+						}
+						$count++;
+						break;
+					}
+				} else {
+					return Redirect::to("parents");
 				}
                 
 			} else {

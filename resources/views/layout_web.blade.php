@@ -41,6 +41,7 @@
     <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/web/lead_controller.js?v='.$version)}}" ></script>
     <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/web/demo_schedule_controller.js?v='.$version)}}" ></script>
     <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/web/renewal_controller.js?v='.$version)}}" ></script>
+    <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/web/signup_controller.js?v='.$version)}}" ></script>
 
     @yield('footer_scripts')
 

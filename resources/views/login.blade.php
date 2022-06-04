@@ -32,8 +32,12 @@
                             <button type="submit" class="btn btn-block btn-primary">Login</button>
                             <br>
                             <br>
+                            <div>
+                        <a href="{{url('/sign-up')}}" class="btn btn-block btn-primary">Parent Sign-up</a>
+                    </div>
                         {{Form::close()}}
                     </div>
+                    
                 </div>  
             </div>
         </div>
