@@ -4,8 +4,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h4 class="modal-title">Add/Update Session</h4>
-          <button type="button" class="close" ng-click="hide_data_modal('session_modal')">
-          &times;</button>
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icons icon-close"></i></button>
         </div>
 
         <div class="modal-body">

@@ -29,20 +29,16 @@ app.controller("Stu_Performance_Controller", function($scope, $http, DBService, 
   // }
 
   $scope.getStudents = function(){
-    $scope.processing = true;
-    DBService.postCall({
-      group_id: $scope.filterData.group_id,
-      session_id: $scope.filterData.session_id,
-    },
-    '/api/student/performance/students')
-    .then(function(data){
+    $scope.processing_req = true;
+    DBService.postCall({group_id: $scope.filterData.group_id, session_id: $scope.filterData.session_id},'/api/student/performance/students').then(function(data){
         $scope.students = data.students;
         if(data.students.length > 0){
           $scope.studentRecord.student_id = data.students[0].id;
           $scope.studentRecord.student_name = data.students[0].name;
+          $scope.processing_req = false;
           $scope.getStudentRecord();
-          $scope.processing = false;
         }
+        $scope.processing_req = false;
     });
   } 
 
@@ -111,9 +107,8 @@ app.controller("Stu_Performance_Controller", function($scope, $http, DBService, 
   } 
 
   $scope.getSessionList = function(){
-    DBService.getCall("/api/student/performance/get-session-list")
-    .then(function(data){
-        if (data.success) {
+    DBService.getCall("/api/student/performance/get-session-list").then(function(data){
+        if(data.success) {
           $scope.sessionList = data.sessionList;
           $scope.loading = false;
         }
@@ -123,7 +118,7 @@ app.controller("Stu_Performance_Controller", function($scope, $http, DBService, 
   $scope.deleteSession =  function(id){
     bootbox.confirm("are you sure",(check)=> {
         if (check) {
-            DBService.postCall({id:id},"/api/student/performance/delete-session")
+            DBService.getCall("/api/student/performance/delete-session/"+id)
             .then(function(data){
                 if (data.success) {
                     bootbox.alert(data.message);
@@ -138,8 +133,7 @@ app.controller("Stu_Performance_Controller", function($scope, $http, DBService, 
 
   $scope.saveSession =  function(){
     $scope.processing = true;
-    DBService.postCall({session:$scope.session},"/api/student/performance/add-session")
-    .then(function(data){
+    DBService.postCall($scope.session,"/api/student/performance/add-session").then(function(data){
         if (data.success) {
             bootbox.alert(data.message);
             $scope.getSessionList();

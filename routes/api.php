@@ -95,7 +95,7 @@ Route::group([], function(){
             Route::post('/update-score',[StudentPerformanceController::class, 'updateScore']);
             Route::post('/add-session',[StudentPerformanceController::class, 'addSession']);
             Route::get('/get-session-list',[StudentPerformanceController::class, 'getSessionList']);
-            Route::post('/delete-session',[StudentPerformanceController::class, 'deleteSession']);
+            Route::get('/delete-session/{id}',[StudentPerformanceController::class, 'deleteSession']);
         });
 
         Route::group(["prefix"=>"attendance"], function(){

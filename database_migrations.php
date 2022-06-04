@@ -432,5 +432,5 @@ ALTER TABLE `companies` ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
 ALTER TABLE `sms_templates` ADD `added_by` INT NULL DEFAULT NULL AFTER `dlt_pe_id`, ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
 ALTER TABLE `email_templates` ADD `added_by` INT NULL DEFAULT NULL AFTER `content`, ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
 
-
+ALTER TABLE `sessions` ADD `added_by` INT NULL DEFAULT NULL AFTER `end_date`, ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
 
