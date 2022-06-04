@@ -256,12 +256,16 @@ class Student extends Model
 
     public static function getPhoto($pic){
         
-        $url = "http://192.168.1.39:8888/academy_erp";
+        $url = "http://192.168.1.38:8888/academy_erp";
 
         if($pic){
-            $pic = $url."/images/".$pic;
+            $pic = $url."/public/assets/images/".$pic;    
         } else {
             $pic = url('/assets/images/student.png');
+            // $pic = url('/assets/images/user-academy.png');
+            // $pic = url('/assets/images/user-red.png');
+            // $pic = url('/assets/images/user-default.png');
+
         }
         return $pic;
     }

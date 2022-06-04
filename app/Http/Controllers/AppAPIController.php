@@ -483,20 +483,7 @@ class AppAPIController extends Controller {
         
         $student->pic = Student::getPhoto($student->pic);
 
-        $yellow = "#d4d40f";
-        $green =  "#1b9439";
-        $red =  "#d84a38";
-        if($student->doe < strtotime("today")){
-            $student->pending = true;
-        } else {
-            $student->pending = false;
-        }
-
-        if($student->inactive == 0){
-            $student->color = $red;
-        } else {
-            $student->color = $student->pending ? $yellow : $green;
-        }
+        $student->color = Utilities::getColor($student->doe, $student->inactive);
 
         $student->doe = $student->doe ? date("d-m-Y",strtotime($student->doe)) : "";
 
@@ -632,7 +619,7 @@ class AppAPIController extends Controller {
 
     public function uploadStuPic(Request $request, $student_id){
     	$success = false;
-        $destinationPath = "../images";
+        $destinationPath = "../public/assets/images";
         
         if($request->hasFile('image')){
 
@@ -891,21 +878,7 @@ class AppAPIController extends Controller {
             $student->dob = date("d-m-Y",strtotime($student->dob));
             $student->pic = Student::getPhoto($student->pic);
 
-            $yellow = "#d4d40f";
-            $green =  "#03bd0b";
-            $red =  "#d84a38";
-            
-            if($student->doe < strtotime("today")){
-                $student->pending = true;
-            } else {
-                $student->pending = false;
-            }
-
-            if($student->inactive == 1){
-                $student->color = $red;
-            } else {
-                $student->color = $student->pending ? $yellow : $green;
-            }
+            $student->color = Utilities::getColor($student->doe, $student->inactive);
         }
     
         $data["success"] = true;
