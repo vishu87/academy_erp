@@ -35,7 +35,7 @@
 		          	</ul>
 		        </div>
 		        <div class="col-md-6 text-right">
-		        	<button class="btn btn-primary" ng-click="addSession()">Add</button>
+		        	<button class="btn btn-primary" ng-click="addSession()"><i class="icons icon-plus"></i> Add</button>
 		        </div>
 
 	      	</div>
@@ -50,7 +50,7 @@
 	 					<td>Name</td>
 	 					<td>Start Date</td>
 	 					<td>End Date</td>
-	 					<td>#</td>
+	 					<td class="text-right">#</td>
 	 				</tr>
 	 			</thead>
 	 			<tbody>
@@ -59,9 +59,9 @@
 	 					<td>@{{session.name}}</td>
 	 					<td>@{{session.start_date}}</td>
 	 					<td>@{{session.end_date}}</td>
-	 					<td>
-	 						<button class="btn btn-sm btn-primary" ng-click="editSession(session)">Edit</button>
-	 						<button class="btn btn-sm btn-danger" ng-click="deleteSession(session.id)">Delete</button>
+	 					<td class="text-right">
+	 						<button class="btn btn-sm btn-light" ng-click="editSession(session)">Edit</button>
+	 						<button class="btn btn-sm btn-primary" ng-click="deleteSession(session.id)">Delete</button>
 	 					</td>
 	 				</tr>
 	 			</tbody>

@@ -245,40 +245,40 @@ class Lead extends Model
 
     // }
 
-    // public static function getContent($content){
-    //     $str = '<html><body>';
-    //     $str .= $content;
+    public static function getContent($content){
+        $str = '<html><body>';
+        $str .= $content;
 
-    //     $image = "http://www.bbfootballschools.com/admin/students/images";
-    //         $str .= '
-    //       <br>
-    //       <table cellpadding="0" cellspacing="5" border="0">
-    //       <tr>
-    //         <td style="width:90px"><img src="'.$image.'/logo.jpg" style="width:80px; height:auto" ></td>
-    //         <td>
-    //         <p style="font-size:28px;">Bhaichung Bhutia<br>Football Schools</p>
-    //         </td>
-    //       </tr>
-    //       <tr>
-    //         <td colspan="2" style="font-size:18px" align="middle">
-    //           8448020010
-    //           <br><a href="http://www.bbfootballschools.com">www.bbfootballschools.com</a>
-    //         </td>
-    //       </tr>
-    //       <tr>
-    //           <td colspan="2" align="middle">
-    //           <a href="https://www.facebook.com/bbfschools/"><img src="'.$image.'/fb.png" style="width:30px; height:30px; margin-right:5px"></a>
-    //           <a href="https://twitter.com/BBFSchools"><img src="'.$image.'/twitter.png" style="width:30px; height:30px; margin-right:5px"></a>
-    //           <a href="https://www.instagram.com/bbfschools/"><img src="'.$image.'/insta.png" style="width:30px; height:30px; margin-right:5px"></a>
-    //           <a href="https://www.youtube.com/user/bbfootballschools"><img src="'.$image.'/yt.png" style="width:30px; height:30px; margin-right:5px"></a>
-    //           <a href="https://www.linkedin.com/company/bhaichung-bhutia-football-schools"><img src="'.$image.'/in.png" style="width:30px; height:30px; margin-right:5px"></a>
-    //           </td>
-    //       </tr>
-    //       </table>';
+        $image = "http://www.bbfootballschools.com/admin/students/images";
+            $str .= '
+          <br>
+          <table cellpadding="0" cellspacing="5" border="0">
+          <tr>
+            <td style="width:90px"><img src="'.$image.'/logo.jpg" style="width:80px; height:auto" ></td>
+            <td>
+            <p style="font-size:28px;">Bhaichung Bhutia<br>Football Schools</p>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" style="font-size:18px" align="middle">
+              8448020010
+              <br><a href="http://www.bbfootballschools.com">www.bbfootballschools.com</a>
+            </td>
+          </tr>
+          <tr>
+              <td colspan="2" align="middle">
+              <a href="https://www.facebook.com/bbfschools/"><img src="'.$image.'/fb.png" style="width:30px; height:30px; margin-right:5px"></a>
+              <a href="https://twitter.com/BBFSchools"><img src="'.$image.'/twitter.png" style="width:30px; height:30px; margin-right:5px"></a>
+              <a href="https://www.instagram.com/bbfschools/"><img src="'.$image.'/insta.png" style="width:30px; height:30px; margin-right:5px"></a>
+              <a href="https://www.youtube.com/user/bbfootballschools"><img src="'.$image.'/yt.png" style="width:30px; height:30px; margin-right:5px"></a>
+              <a href="https://www.linkedin.com/company/bhaichung-bhutia-football-schools"><img src="'.$image.'/in.png" style="width:30px; height:30px; margin-right:5px"></a>
+              </td>
+          </tr>
+          </table>';
 
-    //     $str .= '</body></html>';
+        $str .= '</body></html>';
 
-    //     return $str;
-    // }
+        return $str;
+    }
 }
 

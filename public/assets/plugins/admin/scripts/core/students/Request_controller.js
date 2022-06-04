@@ -1,5 +1,4 @@
 app.controller('Request_controller', function($scope, $http, DBService, Upload){
-  
   $scope.loading = false;
   $scope.dataset = [];
   $scope.price_type ={};
@@ -27,7 +26,7 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
   $scope.init = function(){
     $scope.loading = true;
 
-    DBService.postCall($scope.filter,'/inventory/request/get-request')
+    DBService.postCall($scope.filter,'/api/inventory/request/get-request')
     .then(function(data){
       if (data.success) {
         if($scope.filter.export){
@@ -50,8 +49,7 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
   }
 
     $scope.getStateCityCenter = function(tag){
-      DBService.postCall({Tag:tag},
-       "/api/get-state-city-center-data")
+      DBService.postCall({Tag:tag},"/api/get-state-city-center-data")
       .then(function (data){  
         if (data.success) {
           $scope.state_city_center = data;
@@ -60,7 +58,7 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
     } 
 
   $scope.company = function(){
-    DBService.postCall($scope.filter,'/inventory/request/get-companies')
+    DBService.postCall($scope.filter,'/api/inventory/request/get-companies')
     .then(function(data){
       if (data.success) {
           $scope.companies = data.companies;
@@ -102,26 +100,26 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
 
   $scope.uploadDocument = function (file) {
 
-      var url = base_url + '/inventory/request/upload-document';
+      var url = base_url + '/uploads/file';
       Upload.upload({
           url: url,
           data: {
-              media: file
+              file: file
           }
       }).then(function(response) { 
-          $scope.fileObj.link     = response.data.media_link;
-          $scope.fileObj.document = response.data.media;
+        console.log(response.data);
+          $scope.requestData.link     = response.data.url;
+          $scope.requestData.document = response.data.path;
       });
   }
 
   $scope.removeFile = function(){
-      $scope.fileObj.document = '';
+      $scope.requestData.document = '';
   }
 
   $scope.saveRequest = function(){
-
     $scope.loading = true;
-    DBService.postCall($scope.requestData,'/inventory/request/save-request')
+    DBService.postCall($scope.requestData,'/api/inventory/request/save-request')
     .then(function(data){
       if (data.success) {
         window.location = base_url+"/inventory/request"
@@ -134,7 +132,7 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
 
   $scope.formData = function(id){
 
-    DBService.getCall('/inventory/request/request-data/'+id).then(function(data){
+    DBService.getCall('/api/inventory/request/request-data/'+id).then(function(data){
         if(data.success) {
             if(id != 0){
               $scope.requestData = data.request;
@@ -149,7 +147,7 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
 
   $scope.viewInventoryRequest = function(id){
     $scope.rowId = id;
-    DBService.getCall('/inventory/request/view-data/'+id).then(function(data){
+    DBService.getCall('/api/inventory/request/view-data/'+id).then(function(data){
         if (data.success) {
           $scope.viewData  = data.request;
           $scope.viewitems = data.items;
@@ -160,7 +158,7 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
 
   $scope.changeStatus = function(){
     $scope.approveOrReject.id = $scope.rowId;
-    DBService.postCall($scope.approveOrReject,'/inventory/request/approve-or-reject').then(function(data){
+    DBService.postCall($scope.approveOrReject,'/api/inventory/request/approve-or-reject').then(function(data){
       if (data.success) {
         bootbox.alert(data.message);
         $("#request-view-modal").modal('hide');
@@ -179,7 +177,7 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
   $scope.deleteRequest = function(id, index){
     bootbox.confirm("Are you sure?", (check)=>{
         if(check){
-          DBService.getCall('/inventory/request/delete-data/'+id).then(function(data){
+          DBService.getCall('/api/inventory/request/delete-data/'+id).then(function(data){
               if(data.success){
                 bootbox.alert(data.message);
                 $scope.dataset.splice(index,1);
@@ -190,7 +188,7 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
   }
 
   $scope.allItems = function(){
-    DBService.postCall($scope.filter,'/inventory/request/all-items').then(function(data){
+    DBService.postCall($scope.filter,'/api/inventory/request/all-items').then(function(data){
       if(data.success){
           $scope.allItems = data.allItems;
       } 

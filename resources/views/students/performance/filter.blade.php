@@ -42,9 +42,7 @@
               </div>
               <div class="row">
                   <div class="col-md-2">
-                    <button  class="btn btn-primary" ng-click="getStudents()">
-                      Apply <span ng-show="processing" class="spinner-border spinner-border-sm"></span>
-                    </button>
+                    <button type="button" class="btn btn-primary" ng-click="getStudents()" ng-disabled="processing_req" >Apply<span ng-show="processing_req" class="spinner-border spinner-border-sm"></span></button>
                   </div>
               </div>
           </form>

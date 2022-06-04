@@ -29,6 +29,14 @@ use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\WebApiController;
 use App\Http\Controllers\RenewalWebController;
 
+use App\Http\Controllers\RequestController;
+use App\Http\Controllers\StockController;
+use App\Http\Controllers\InventoryReportController;
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\SMSTemplateController;
+use App\Http\Controllers\EmailTemplateController;
+
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -87,7 +95,7 @@ Route::group([], function(){
             Route::post('/update-score',[StudentPerformanceController::class, 'updateScore']);
             Route::post('/add-session',[StudentPerformanceController::class, 'addSession']);
             Route::get('/get-session-list',[StudentPerformanceController::class, 'getSessionList']);
-            Route::post('/delete-session',[StudentPerformanceController::class, 'deleteSession']);
+            Route::get('/delete-session/{id}',[StudentPerformanceController::class, 'deleteSession']);
         });
 
         Route::group(["prefix"=>"attendance"], function(){
@@ -325,9 +333,67 @@ Route::group(["prefix"=>"renewal"], function(){
 });
 
 
+
 Route::group(["prefix"=>"sign-up"], function(){
     Route::post('/search',[SignUpController::class, 'searchStudent']);
 });
+
+
+Route::group(["prefix"=>"inventory"], function(){
+
+    Route::post('/get-items',[InventoryController::class,'itemsList']);
+    Route::post('/save-items',[InventoryController::class,'saveItem']);
+    Route::get('/delete-items/{id}',[InventoryController::class,'deleteItems']); 
+
+    Route::group(["prefix"=>"companies"], function(){
+        Route::post('/get-companies',[CompanyController::class,'companiesList']);
+        Route::post('/save-company',[CompanyController::class,'saveCompany']);
+        Route::get('/delete-companies/{id}',[CompanyController::class,'deleteCompanies']);
+    });
+
+    Route::group(["prefix"=>"current-stock"], function(){
+        Route::post('/get-stock',[StockController::class,'total_stock']);
+    });
+
+    Route::group(["prefix"=>"request"], function(){
+        Route::post('/get-companies',[RequestController::class,'companiesList']);
+        Route::post('/get-request',[RequestController::class,'requestList']);
+        Route::post('/upload-document',[RequestController::class,'uploadDocument']);
+        Route::post('/save-request',[RequestController::class,'saveRequest']);  
+        Route::get('/request-data/{id?}',[RequestController::class,'requestData']);
+        Route::get('/delete-data/{id}',[RequestController::class,'deleteData']);
+        Route::post('/all-items',[RequestController::class,'ItemsList']);
+        Route::get('/view-data/{id}',[RequestController::class,'viewData']);
+        Route::post('/approve-or-reject',[RequestController::class,'approveOrReject']);
+    });
+});
+
+
+Route::group(["prefix"=>"communications"], function(){
+
+    // Route::group(["prefix"=>"send-message"], function(){
+    //     Route::get('/',[CommunicationController::class,'index']);
+    //     Route::post('/init',[CommunicationController::class,'init']);
+    //     Route::post('/listing',[CommunicationController::class,'listing']);
+    //     Route::post('/comm_students',[CommunicationController::class,'comm_students']);
+    //     Route::post("getStudents",[CommunicationController::class,'getStudents']);
+    //     Route::post("postMessage",[CommunicationController::class,'postMessage']);
+    // }); 
+
+    Route::group(["prefix"=>"sms-template"], function(){
+        Route::get('/init',[SMSTemplateController::class,'init']);
+        Route::post('/store',[SMSTemplateController::class,'store']);
+        Route::get('/delete/{id}',[SMSTemplateController::class,'delete']);
+    }); 
+
+    Route::group(["prefix"=>"email-template"], function(){
+        Route::get('/init',[EmailTemplateController::class,'init']);
+        Route::post('/store',[EmailTemplateController::class,'store']);
+        Route::get('/delete/{id}',[EmailTemplateController::class,'delete']);
+    }); 
+}); 
+
+
 
 Route::group(["prefix"=>"app"], function(){
     Route::post('/login',[AppAPIController::class, 'login']);

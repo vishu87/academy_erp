@@ -119,7 +119,7 @@ class RequestController extends Controller {
 
     }
 
-    public function requestData(Request $request, $id){
+    public function requestData(Request $request, $id = 0){
 
     	$user = User::AuthenticateUser($request->header("apiToken"));
 

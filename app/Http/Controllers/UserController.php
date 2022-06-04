@@ -137,7 +137,7 @@ class UserController extends Controller {
 		}else if($type == "inventory"){
 			$link = "inventory/request";
 		}else if($type == "communication"){
-			$link = "communications";
+			$link = "communications/send-message";
 		}
 		return Redirect::to($link);
 	}

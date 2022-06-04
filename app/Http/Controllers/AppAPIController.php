@@ -965,16 +965,17 @@ class AppAPIController extends Controller {
 
     public function saveMarks (Request $request){
 
-        $eval = DB::table("evals")->orderBy("id","DESC")->first();
-        $evaluation_id = $eval->id; //17
-        $categories = $request->categories;
         $student_id = $request->student_id;
+        $categories = $request->categories;
+        
+        $eval = DB::table("evals")->orderBy("id","DESC")->first();
+        $evaluation_id = $eval->id; 
 
-        $student = DB::table('students')->select('group_id')->where('id','=',$student_id)->first();
+        $student = DB::table('students')->select('group_id')->where('id','=', $student_id)->first();
 
         $group_id = $student->group_id;
 
-       DB::table('evaluations')->where('evaluation_id','=',$evaluation_id)->where('student_id','=',$student_id)->delete();
+        DB::table('evaluations')->where('evaluation_id','=',$evaluation_id)->where('student_id','=',$student_id)->delete();
 
         foreach($categories as $category){
             $c_remarks = isset($category['remarks']) ? $category['remarks'] : "";
@@ -1004,7 +1005,7 @@ class AppAPIController extends Controller {
                 }
             }
         }
-
+        
         $data["success"] = true;
         $data["message"] ="Student marks has been updated successfully.";
         

@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
-
-use Input, Redirect, Validator, Hash, Response, Session, DB, Request;
-use App\Models\User, App\Models\ParentAppEvent, App\Models\PaymentHistory;
+use Redirect, Validator, Hash, Response, Session, DB;
+use App\Models\User, App\Models\ParentAppEvent, App\Models\PaymentHistory, App\Models\SessionData;
+use Illuminate\Http\Request;
 
 class StudentPerformanceController extends Controller{
 
@@ -16,9 +16,9 @@ class StudentPerformanceController extends Controller{
         return view('students.performance.session',["menu"=>"academy","sidebar"=>"performance"]);
     }
 
-    public function getStudents(){
-        $group_id  = Input::get('group_id');
-        $session_id  = Input::get('session_id');
+    public function getStudents(Request $request){
+        $group_id  = $request->group_id;
+        $session_id  = $request->session_id;
 
         $records = DB::table('students as stu')->select('stu.id','stu.name','player_evaluation.status')->leftJoin("player_evaluation", function($query) use ($session_id) {
                 $query->on("player_evaluation.student_id",'=','stu.id')->where("player_evaluation.session_id","=",$session_id);
@@ -30,23 +30,17 @@ class StudentPerformanceController extends Controller{
         return Response::json($data, 200, array());
     }
 
-    public function getStudentRecord(){
+    public function getStudentRecord(Request $request){
 
-        $student_id  = Input::get('student_id');
-        $session_id  = Input::get('session_id');
+        $student_id  = $request->student_id;
+        $session_id  = $request->session_id;
 
         $student = DB::table("students")->find($student_id);
         $dob = new \DateTime($student->dob);
         $now = new \DateTime();
         $playerAge = $now->diff($dob)->y;
-
         $student->sport_id = 1;
-
-        // $playerAgeGroup = DB::table("performance_age_groups")->select('id')->where('min_age','<=',$playerAge)->where('max_age','>=',$playerAge)->first();
-        // $age_group_id = $playerAgeGroup->id;
-
         $role = 5;
-
         $skill_categories = DB::table("skill_categories")->where('sport_id',$student->sport_id)->get();
 
         foreach ($skill_categories as $skill_category) {
@@ -70,10 +64,10 @@ class StudentPerformanceController extends Controller{
         return Response::json($data, 200, array());
     }
 
-    public function saveScore(){
-        $studentRecord = Input::get("studentRecord");
-        $session_id = Input::get('session_id');
-        $type = Input::get('type');
+    public function saveScore(Request $request){
+        $studentRecord = $request->studentRecord;
+        $session_id = $request->session_id;
+        $type = $request->type;
         $student_id =  $studentRecord["student_id"];
 
         foreach ($studentRecord["skill_categories"] as $category) {
@@ -98,9 +92,9 @@ class StudentPerformanceController extends Controller{
         return Response::json($data, 200, []);
     }
 
-    public function updateScore(){
-        $id = Input::get('id');
-        $score = Input::get('score');
+    public function updateScore(Request $request){
+        $id = $request->id;
+        $score = $request->score;
         foreach ($score as $item) {
             if (isset($item['score'])) {
                 DB::table('student_performance')->where('student_id',$id)
@@ -119,8 +113,10 @@ class StudentPerformanceController extends Controller{
         return Response::json($data, 200, []);
     }
 
-    public function getSessionList(){
-        $sessionList = DB::table("sessions")->orderBy("end_date","DESC")->get();
+    public function getSessionList(Request $request){
+
+        $user = User::AuthenticateUser($request->header("apiToken"));
+        $sessionList = DB::table("sessions")->where('client_id',$user->client_id)->orderBy("end_date","DESC")->get();
         foreach ($sessionList as $value) {
             $value->start_date =  date('m-d-Y',strtotime($value->start_date));
             $value->end_date =  date('m-d-Y',strtotime($value->end_date));
@@ -131,37 +127,36 @@ class StudentPerformanceController extends Controller{
         return Response::json($data, 200, []);
     }
 
-    public function addSession(){
-        $sessionData = Input::get("session");
+    public function addSession(Request $request){
+
+        $user = User::AuthenticateUser($request->header("apiToken"));
         $cre = [
-            "name" => $sessionData["name"],
-            "start_date" => $sessionData["start_date"],
-            "end_date" => $sessionData["end_date"],
+            "name" => $request->name,
+            "start_date" => $request->start_date,
+            "end_date" => $request->end_date,
         ];
         $validator = Validator::make($cre,["name"=>"required","start_date"=>"required","end_date"=>"required"]);
 
         if ($validator->passes()) {
-            $sessionData["start_date"] = date('Y-m-d',strtotime($sessionData["start_date"]));
-            $sessionData["end_date"] = date('Y-m-d',strtotime($sessionData["end_date"]));
+           $request->start_date = date('Y-m-d',strtotime($request->start_date));
+           $request->end_date = date('Y-m-d',strtotime($request->end_date));
 
-            if (isset($sessionData["id"])) {
-                DB::table('sessions')->where('id',$sessionData["id"])->update([
-                    "name"=>$sessionData["name"],
-                    "start_date"=>$sessionData["start_date"],
-                    "end_date"=>$sessionData["end_date"],
-                ]);   
+            if(isset($request->id)) {
+                $sessions = SessionData::find($request->id);
                 $data["message"] = "sessions updated successfully";
-            }else{
-                DB::table('sessions')->insert([
-                    "name"=>$sessionData["name"],
-                    "start_date"=>$sessionData["start_date"],
-                    "end_date"=>$sessionData["end_date"],
-                ]);   
+            } else {
+                $sessions = new SessionData();
+                $sessions->client_id    = $user->client_id;
+                $sessions->added_by     = $user->id;
                 $data["message"] = "sessions added successfully";
             }
- 
+            $sessions->name = $request->name;
+            $sessions->start_date = $request->start_date;
+            $sessions->end_date = $request->end_date;
+            $sessions->save();
             $data["success"] = true;
-        }else{
+
+        } else {
             $data["success"] = false;
             $data["message"] = $validator->errors()->first();
         }
@@ -169,20 +164,12 @@ class StudentPerformanceController extends Controller{
         return Response::json($data, 200, []);
     }
 
-    public function deleteSession(){
-        $id = Input::get("id");
-        $check = DB::table("sessions")->find($id);
-        if ($check) {
-            DB::table("sessions")->where("id",$id)->delete();
-            $data['success'] = true;
-            $data['message'] = "session deleted successfully";
-        }else{
-            $data['success'] = false;
-            $data['message'] = "Item does not exist";
-        }
-
+    public function deleteSession(Request $request, $id){
+        $user = User::AuthenticateUser($request->header("apiToken"));
+        DB::table("sessions")->where("id",$id)->where('client_id',$user->client_id)->delete();
+        $data['success'] = true;
+        $data['message'] = "Session successfully deleted";
         return Response::json($data, 200, []);
-        
     }
 
 }

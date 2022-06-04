@@ -3,7 +3,7 @@ app.controller('emailTempCtrl',function($scope , $http, $timeout , DBService){
 	$scope.formData = {};
 
 	$scope.init = function(){
-		DBService.getCall('/communications/email-template/init').then(function(data){
+		DBService.getCall('/api/communications/email-template/init').then(function(data){
 			$scope.templates = data.templates;
 		});
 	}
@@ -15,7 +15,7 @@ app.controller('emailTempCtrl',function($scope , $http, $timeout , DBService){
 
 	$scope.onSubmit = function() {
 		$scope.processing = true;
-		DBService.postCall($scope.formData,'/communications/email-template/store').then(function(data){
+		DBService.postCall($scope.formData,'/api/communications/email-template/store').then(function(data){
 			if(data.success){
 				$("#add-template").modal("hide");
 				bootbox.alert(data.message);
@@ -35,12 +35,12 @@ app.controller('emailTempCtrl',function($scope , $http, $timeout , DBService){
 	$scope.delete  = function(template_id,index){
 		bootbox.confirm("Are you sure?", (check)=>{
       	if (check) {
-			DBService.getCall('/communications/email-template/delete/'+template_id).then(function(data){
+			DBService.getCall('/api/communications/email-template/delete/'+template_id).then(function(data){
 				if(data.success){
 					$scope.templates.splice(index,1);
-					alert(data.message);
+					bootbox.alert(data.message);
 				}else{
-					alert(data.message);
+					bootbox.alert(data.message);
 				}
 			});
 		}

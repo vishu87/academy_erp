@@ -1,6 +1,5 @@
 @extends('layout')
 
-<div class="" ng-controller="Request_controller" ng-init="init()">
 	@section('sub_header')
 		<div class="sub-header">
 			<div class="table-div full">
@@ -14,7 +13,7 @@
 	@endsection
 
 @section('content')
-		
+<div class="" ng-controller="Request_controller" ng-init="init()">		
 	<div class="portlet">
 
 	    <div class="portlet-head">

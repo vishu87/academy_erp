@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 
-use Input, Redirect, Validator, Hash, Response, Session, DB, App\User, App\Company;
+use Input, Redirect, Validator, Hash, Response, Session, DB, App\Models\User, App\Models\Company;
 use Illuminate\Http\Request;
 
 class StockController extends Controller {
