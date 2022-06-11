@@ -85,6 +85,7 @@ class UserAPIController extends Controller {
 				DB::table('roles')->insert([
 					"title"=>$request->title,
 					"access_rights"=> implode(",",$request->access_rights),
+					"added_by" => $user->id,
 					"client_id" => $user->client_id
 				]);
 			}

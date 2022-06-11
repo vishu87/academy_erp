@@ -125,7 +125,7 @@ app.controller('CenterController',function($scope , $http, $timeout , DBService,
 	            }
 	        }).then(function (resp) {
 	            if(resp.data.success){
-	            	$scope.saveImage(resp.data.path);
+	            	$scope.saveImage(resp.data.url, resp.data.url_thumb);
 	            } else {
 	            	alert(resp.data.message);
 	            }
@@ -140,9 +140,10 @@ app.controller('CenterController',function($scope , $http, $timeout , DBService,
 		$scope.imageProcessing = false;
     }
 
-    $scope.saveImage = function(path){
+    $scope.saveImage = function(path, thumb){
     	$scope.path.center_id = $scope.center.id;
     	$scope.path.path_url = path;
+    	$scope.path.thumb_url = thumb;
     	DBService.postCall($scope.path,'/api/centers/save-image').then(function(data){
     		if(data.success){
     			bootbox.alert(data.message);

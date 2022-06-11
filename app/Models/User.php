@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-use App\MailQueue;
+use App\Models\MailQueue;
 
 class User extends Authenticatable {
 
@@ -126,9 +126,8 @@ class User extends Authenticatable {
             $user_access = new UserAccess;
 
             $user = User::find($user_id);
-            $user->is_admin = 1;
             
-            if($user->is_admin == 1){
+            if($user->role == 1){
                 $user_access->all_access = true;
                 return $user_access;
             }
@@ -222,7 +221,7 @@ class User extends Authenticatable {
     public static function getAccessTabs($user_id){
 
         $user = User::find($user_id);
-        if($user->is_admin == 1){
+        if($user->role == 1){
             $access_rights = DB::table("access_rights")->select("id","type")->orderBy("priority")->get();
         } else {
             $access_right_ids = DB::table("user_location_rights")->distinct("access_rights_id")->where("user_id",$user_id)->pluck("access_rights_id")->toArray();

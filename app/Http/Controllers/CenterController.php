@@ -43,7 +43,6 @@ class CenterController extends Controller{
 
     	$user = User::AuthenticateUser($request->header("apiToken"));
 
-
     	$categories = [];
 		for ($i= 4; $i < 19; $i++) { 
 			if($i > 9){
@@ -67,7 +66,7 @@ class CenterController extends Controller{
 
 		$data['days'] = Center::days();
     	$data['cities'] = DB::table('city')->select('id','city_name')->where('client_id',$user->client_id)->get();
-    	$data['cordinators'] = DB::table('users')->select('id','name')->where('client_id',$user->client_id)->get();
+    	$data['cordinators'] = DB::table('users')->select('id','name')->where('client_id',$user->client_id)->orderBy("name")->get();
     	$data['categories'] = $categories;
 		$data['even_categories'] = $even_categories;
     	$data['success'] = true;
@@ -158,7 +157,10 @@ class CenterController extends Controller{
 			$data['message'] = $validator->errors()->first();
 		} else {
 
-			$center = Center::find($request->id);
+			$center = Center::where("id",$request->id)->where("client_id",$user->client_id)->first();
+			if(!$center){
+				dd("not authorized");
+			}
 			$center->city_id = $request->city_id;
 			$center->center_name = $request->center_name;
 			$center->center_dos = Utilities::convertDateToDB($request->center_dos);
@@ -200,7 +202,10 @@ class CenterController extends Controller{
 
 
 	public function images(Request $request, $center_id){
-		$images = DB::table('center_images')->where('center_id',$center_id)->get();
+		
+		$user = User::AuthenticateUser($request->header("apiToken"));
+
+		$images = DB::table('center_images')->select("center_images.*")->join("center","center.id","=","center_images.center_id")->where('center_id',$center_id)->where("client_id",$user->client_id)->get();
 
 		$data['images'] = $images;
 		$data['success'] = true;
@@ -213,6 +218,7 @@ class CenterController extends Controller{
         $image = new CenterImage;
         $image->center_id = $request->center_id;
         $image->image = $request->path_url;
+        $image->image_thumb = $request->thumb_url;
         $image->save();
 
         $data['success'] = true;
@@ -368,14 +374,6 @@ class CenterController extends Controller{
 			$operation->from_time = $request->from_time;
 			$operation->to_time = $request->to_time;
 			$operation->save();
-
-			if(($request->effective_date) && ($request->update)){
-				DB::table('effective_timings')->insert([
-					"effective_date" => Utilities::convertDateToDB($request->effective_date),
-					"operation_id" =>$operation->id,
-					"status" => 1 
-				]);
-			}
 			$data['success'] = true;
 		}
 		return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
@@ -383,240 +381,240 @@ class CenterController extends Controller{
 
 
 
-    public function updateCenter1(Request $request){
-        $user = User::AuthenticateUser($request->header("apiToken"));
-		$flag = false;
-		$request = $request->data;
+ //    public function updateCenter1(Request $request){
+ //        $user = User::AuthenticateUser($request->header("apiToken"));
+	// 	$flag = false;
+	// 	$request = $request->data;
 		
-		$center_validator['center_name'] = $request['center_name']; 
-		$center_validator['city_id'] = $request['city_id']; 
-		$center_validator['invoice_city'] = $request['invoice_city']; 
-		$center_validator['invoice_state'] = $request['invoice_state']; 
-		$center_validator['center_status'] = $request['center_status']; 
+	// 	$center_validator['center_name'] = $request['center_name']; 
+	// 	$center_validator['city_id'] = $request['city_id']; 
+	// 	$center_validator['invoice_city'] = $request['invoice_city']; 
+	// 	$center_validator['invoice_state'] = $request['invoice_state']; 
+	// 	$center_validator['center_status'] = $request['center_status']; 
 
-		$validator = Validator::make(
-			$center_validator,[
-			"center_name" => "required",
-			"city_id" => "required",
-			// "invoice_city" => "required",
-			// "invoice_state" => "required",
-			"center_status" => "required",
-		]);
+	// 	$validator = Validator::make(
+	// 		$center_validator,[
+	// 		"center_name" => "required",
+	// 		"city_id" => "required",
+	// 		// "invoice_city" => "required",
+	// 		// "invoice_state" => "required",
+	// 		"center_status" => "required",
+	// 	]);
 
-		if($validator->fails()){
-			$data['success'] = false;
-			$data['message'] = $validator->errors()->first();
-		}else{
-			if($request->center_status == 1){
-				$center_groups = Group::where('center_id',$request['id'])->where("group_status",0)->pluck('id')->all();
-				$active_students = Student::whereIn('first_group',$center_groups)->where('active',0)->count();
-				if($active_students > 0 || sizeof($center_groups) > 0){
-					$flag = true;
-				}
-			}
+	// 	if($validator->fails()){
+	// 		$data['success'] = false;
+	// 		$data['message'] = $validator->errors()->first();
+	// 	}else{
+	// 		if($request->center_status == 1){
+	// 			$center_groups = Group::where('center_id',$request['id'])->where("group_status",0)->pluck('id')->all();
+	// 			$active_students = Student::whereIn('first_group',$center_groups)->where('active',0)->count();
+	// 			if($active_students > 0 || sizeof($center_groups) > 0){
+	// 				$flag = true;
+	// 			}
+	// 		}
 			
-			if(!$flag){
-				if (!isset($request['id'])) {
-					$center = new Center;
-				}else{
-					$center = Center::find($request['id']);
-				}
-				$center->center_name = $request['center_name'];
-				$center->center_app_name = $request['center_app_name'];
-				$center->city_id = $request['city_id'];
-				$center->invoice_city = $request['invoice_city'];
-				$center->center_capacity = $request['center_capacity'];
-				$center->cordinator_id = $request['cordinator_id'];
-				$center->invoice_state = $request['invoice_state'];
-				$center->relationship_manager_id = isset($request['relationship_manager_id'])?$request['relationship_manager_id']:'';
-				$center->relationship_manager = (isset($request['relationship_manager_id']))?User::getMemberName($request['relationship_manager_id']):'';
-				$center->contract_start = Utilities::convertDateToDB($request->contract_start);
-				$center->contract_end = (isset($request['contract_end']))?date("Y-m-d",strtotime($request['contract_end'])):NULL;
-				$center->previous_contract = isset($request['previous_contract'])?$request['previous_contract']:'';
-				$center->center_status = $request['center_status'];
-				$center->address = $request['address'];
-				$center->longitude = isset($request['longitude'])?$request['longitude']:'';
-				$center->latitude = isset($request['latitude'])?$request['latitude']:'';
-				$center->short_url = isset($request['short_url'])?$request['short_url']:'';
-				$center->hide_on_app = ($request->hide_on_app)?$request->hide_on_app:0;
-				$center->meta_title = isset($request['meta_title'])?$request['meta_title']:'';
-				$center->meta_description = isset($request['meta_description'])?$request['meta_description']:'';
-				$center->meta_keywords = isset($request['meta_keywords'])?$request['meta_keywords']:'';
-				$center->slug = isset($request['slug'])?$request['slug']:'';
+	// 		if(!$flag){
+	// 			if (!isset($request['id'])) {
+	// 				$center = new Center;
+	// 			}else{
+	// 				$center = Center::find($request['id']);
+	// 			}
+	// 			$center->center_name = $request['center_name'];
+	// 			$center->center_app_name = $request['center_app_name'];
+	// 			$center->city_id = $request['city_id'];
+	// 			$center->invoice_city = $request['invoice_city'];
+	// 			$center->center_capacity = $request['center_capacity'];
+	// 			$center->cordinator_id = $request['cordinator_id'];
+	// 			$center->invoice_state = $request['invoice_state'];
+	// 			$center->relationship_manager_id = isset($request['relationship_manager_id'])?$request['relationship_manager_id']:'';
+	// 			$center->relationship_manager = (isset($request['relationship_manager_id']))?User::getMemberName($request['relationship_manager_id']):'';
+	// 			$center->contract_start = Utilities::convertDateToDB($request->contract_start);
+	// 			$center->contract_end = (isset($request['contract_end']))?date("Y-m-d",strtotime($request['contract_end'])):NULL;
+	// 			$center->previous_contract = isset($request['previous_contract'])?$request['previous_contract']:'';
+	// 			$center->center_status = $request['center_status'];
+	// 			$center->address = $request['address'];
+	// 			$center->longitude = isset($request['longitude'])?$request['longitude']:'';
+	// 			$center->latitude = isset($request['latitude'])?$request['latitude']:'';
+	// 			$center->short_url = isset($request['short_url'])?$request['short_url']:'';
+	// 			$center->hide_on_app = ($request->hide_on_app)?$request->hide_on_app:0;
+	// 			$center->meta_title = isset($request['meta_title'])?$request['meta_title']:'';
+	// 			$center->meta_description = isset($request['meta_description'])?$request['meta_description']:'';
+	// 			$center->meta_keywords = isset($request['meta_keywords'])?$request['meta_keywords']:'';
+	// 			$center->slug = isset($request['slug'])?$request['slug']:'';
 
-				$center->center_dos = ($request['center_dos'] != '')?date("Y-m-d",strtotime($request['center_dos'])):NULL;
-				$center->tech_lead_id = isset($request['tech_lead_id'])?$request['tech_lead_id']:'';
-				$center->mentor_id = $request['mentor_id'];
-				$center->rent_type = $request['rent_type'];
-				$center->rent_amount = $request['rent_amount'];
-				$center->ground_width = $request['ground_width'];
-				$center->ground_length = $request['ground_length'];
-				$center->match_format = $request['match_format'];
-
-
-				$center->save();
-				if (!isset($request['id'])) {
-					$data['id'] = $center->id;
-					$data['success'] = true;
-					$data['message'] = "Center details are Added successfully";
-					return Response::json($data, 200, array());
-				}
-				//revenue entries
-				if($request['years']){
-
-					$yearly = $request['years'];
-
-					CenterRevenue::where('center_id',$request['id'])->where('year',$yearly['year_id'])->delete();
-					$year_revenue = CenterRevenue::where('center_id',$request['id'])->where('year',$yearly['year_id'])->where('month',0)->where('quater',0)->first();
-					$flag_new = false;
-
-					if(!$year_revenue) $flag_new = true;
-					else {
-						if($yearly['renewals'] != $year_revenue->renewals || $yearly['new_registration'] != $year_revenue->new_registration) {
-							$flag_new = true;
-							$year_revenue->status = 1;
-							$year_revenue->save();
-						}
-					}
-					if( $flag_new ){
-						$year_revenue = new CenterRevenue;
-						$year_revenue->center_id = $request['id'];
-						$year_revenue->year = $yearly['year_id'];
-						$year_revenue->renewals = isset($yearly['renewals'])?$yearly['renewals']:'';
-						$year_revenue->new_registration = isset($yearly['new_registration'])?$yearly['new_registration']:'';
-						$year_revenue->status = 0;
-						$year_revenue->month = 0;
-						$year_revenue->quater = 0;
-						$year_revenue->total = $year_revenue->renewals + $year_revenue->new_registration;
-						$year_revenue->added_by = $user->id;
-						$year_revenue->save();
-					}
-
-				}
-
-				$monthly = $request['months'];
-				if($monthly && sizeof($monthly) > 0){
-					$flag_new = false;
-					foreach ($monthly as $key => $month) {
-						$monthly_revenue = CenterRevenue::where('center_id',$request['id'])->where("month",$key)->where('year',$yearly['year_id'])->first();
-
-						if(!$monthly_revenue) $flag_new = true;
-						else {
-							if($month['renewals'] != $monthly_revenue->renewals || $month['new_registration'] != $monthly_revenue->new_registration) {
-								$flag_new = true;
-								$monthly_revenue->status = 1;
-								$monthly_revenue->save();
-							}
-						}
-
-						if($flag_new){
-
-							$monthly_revenue = new CenterRevenue;
-							$monthly_revenue->center_id = $request['id'];
-							$monthly_revenue->year = $yearly['year_id'];
-							$monthly_revenue->month = $key;
-							$monthly_revenue->quater = 0;
-							$monthly_revenue->renewals = isset($month['renewals'])?$month['renewals']:'';
-							$monthly_revenue->new_registration = isset($month['new_registration'])?$month['new_registration']:'';
-							$monthly_revenue->total = $monthly_revenue->renewals + $monthly_revenue->new_registration;
-
-							$monthly_revenue->status = 0;
-							$monthly_revenue->added_by = $user->id;
-							$monthly_revenue->save();
-						}
+	// 			$center->center_dos = ($request['center_dos'] != '')?date("Y-m-d",strtotime($request['center_dos'])):NULL;
+	// 			$center->tech_lead_id = isset($request['tech_lead_id'])?$request['tech_lead_id']:'';
+	// 			$center->mentor_id = $request['mentor_id'];
+	// 			$center->rent_type = $request['rent_type'];
+	// 			$center->rent_amount = $request['rent_amount'];
+	// 			$center->ground_width = $request['ground_width'];
+	// 			$center->ground_length = $request['ground_length'];
+	// 			$center->match_format = $request['match_format'];
 
 
-					}
-				}
+	// 			$center->save();
+	// 			if (!isset($request['id'])) {
+	// 				$data['id'] = $center->id;
+	// 				$data['success'] = true;
+	// 				$data['message'] = "Center details are Added successfully";
+	// 				return Response::json($data, 200, array());
+	// 			}
+	// 			//revenue entries
+	// 			if($request['years']){
 
-				$quaterly = $request['quaters'];
-				if($quaterly && sizeof($quaterly) > 0){
-					foreach ($quaterly as $key=>$quater) {
-						$quaterly_revenue = CenterRevenue::where('center_id',$request['id'])->where("quater",$key)->where('year',$yearly['year_id'])->first();
+	// 				$yearly = $request['years'];
 
-						if(!$quaterly_revenue) $flag_new = true;
-						else {
-							if($quater['renewals'] != $quaterly_revenue->renewals || $quater['new_registration'] != $quaterly_revenue->new_registration) {
-								$flag_new = true;
-								$quaterly_revenue->status = 1;
-								$quaterly_revenue->save();
-							}
-						}
+	// 				CenterRevenue::where('center_id',$request['id'])->where('year',$yearly['year_id'])->delete();
+	// 				$year_revenue = CenterRevenue::where('center_id',$request['id'])->where('year',$yearly['year_id'])->where('month',0)->where('quater',0)->first();
+	// 				$flag_new = false;
 
-						if($flag_new){
+	// 				if(!$year_revenue) $flag_new = true;
+	// 				else {
+	// 					if($yearly['renewals'] != $year_revenue->renewals || $yearly['new_registration'] != $year_revenue->new_registration) {
+	// 						$flag_new = true;
+	// 						$year_revenue->status = 1;
+	// 						$year_revenue->save();
+	// 					}
+	// 				}
+	// 				if( $flag_new ){
+	// 					$year_revenue = new CenterRevenue;
+	// 					$year_revenue->center_id = $request['id'];
+	// 					$year_revenue->year = $yearly['year_id'];
+	// 					$year_revenue->renewals = isset($yearly['renewals'])?$yearly['renewals']:'';
+	// 					$year_revenue->new_registration = isset($yearly['new_registration'])?$yearly['new_registration']:'';
+	// 					$year_revenue->status = 0;
+	// 					$year_revenue->month = 0;
+	// 					$year_revenue->quater = 0;
+	// 					$year_revenue->total = $year_revenue->renewals + $year_revenue->new_registration;
+	// 					$year_revenue->added_by = $user->id;
+	// 					$year_revenue->save();
+	// 				}
 
-							$quaterly_revenue = new CenterRevenue;
-							$quaterly_revenue->center_id = $request['id'];
-							$quaterly_revenue->year = $yearly['year_id'];
-							$quaterly_revenue->quater = $key;
-							$quaterly_revenue->month = 0;
+	// 			}
 
-							$quaterly_revenue->renewals = isset($quater['renewals'])?$quater['renewals']:'';
-							$quaterly_revenue->new_registration = isset($quater['new_registration'])?$quater['new_registration']:'';
-							$quaterly_revenue->status = 0;
-							$quaterly_revenue->total = $quaterly_revenue->renewals + $quaterly_revenue->new_registration;
-							$quaterly_revenue->added_by = $user->id;
-							$quaterly_revenue->save();
-						}
+	// 			$monthly = $request['months'];
+	// 			if($monthly && sizeof($monthly) > 0){
+	// 				$flag_new = false;
+	// 				foreach ($monthly as $key => $month) {
+	// 					$monthly_revenue = CenterRevenue::where('center_id',$request['id'])->where("month",$key)->where('year',$yearly['year_id'])->first();
+
+	// 					if(!$monthly_revenue) $flag_new = true;
+	// 					else {
+	// 						if($month['renewals'] != $monthly_revenue->renewals || $month['new_registration'] != $monthly_revenue->new_registration) {
+	// 							$flag_new = true;
+	// 							$monthly_revenue->status = 1;
+	// 							$monthly_revenue->save();
+	// 						}
+	// 					}
+
+	// 					if($flag_new){
+
+	// 						$monthly_revenue = new CenterRevenue;
+	// 						$monthly_revenue->center_id = $request['id'];
+	// 						$monthly_revenue->year = $yearly['year_id'];
+	// 						$monthly_revenue->month = $key;
+	// 						$monthly_revenue->quater = 0;
+	// 						$monthly_revenue->renewals = isset($month['renewals'])?$month['renewals']:'';
+	// 						$monthly_revenue->new_registration = isset($month['new_registration'])?$month['new_registration']:'';
+	// 						$monthly_revenue->total = $monthly_revenue->renewals + $monthly_revenue->new_registration;
+
+	// 						$monthly_revenue->status = 0;
+	// 						$monthly_revenue->added_by = $user->id;
+	// 						$monthly_revenue->save();
+	// 					}
+
+
+	// 				}
+	// 			}
+
+	// 			$quaterly = $request['quaters'];
+	// 			if($quaterly && sizeof($quaterly) > 0){
+	// 				foreach ($quaterly as $key=>$quater) {
+	// 					$quaterly_revenue = CenterRevenue::where('center_id',$request['id'])->where("quater",$key)->where('year',$yearly['year_id'])->first();
+
+	// 					if(!$quaterly_revenue) $flag_new = true;
+	// 					else {
+	// 						if($quater['renewals'] != $quaterly_revenue->renewals || $quater['new_registration'] != $quaterly_revenue->new_registration) {
+	// 							$flag_new = true;
+	// 							$quaterly_revenue->status = 1;
+	// 							$quaterly_revenue->save();
+	// 						}
+	// 					}
+
+	// 					if($flag_new){
+
+	// 						$quaterly_revenue = new CenterRevenue;
+	// 						$quaterly_revenue->center_id = $request['id'];
+	// 						$quaterly_revenue->year = $yearly['year_id'];
+	// 						$quaterly_revenue->quater = $key;
+	// 						$quaterly_revenue->month = 0;
+
+	// 						$quaterly_revenue->renewals = isset($quater['renewals'])?$quater['renewals']:'';
+	// 						$quaterly_revenue->new_registration = isset($quater['new_registration'])?$quater['new_registration']:'';
+	// 						$quaterly_revenue->status = 0;
+	// 						$quaterly_revenue->total = $quaterly_revenue->renewals + $quaterly_revenue->new_registration;
+	// 						$quaterly_revenue->added_by = $user->id;
+	// 						$quaterly_revenue->save();
+	// 					}
 
 						
-					}
-				}
+	// 				}
+	// 			}
 
 
-				//revenue entries ends
+	// 			//revenue entries ends
 
-				// CenterPerson::where('center_id',$request['id'])->delete();
-				// foreach ($request['contact_persons'] as $person) {
-				// 	if($person['member_name'] && $person['member_name'] != ''){
-				// 		$contact_person = new CenterPerson;
-				// 		$contact_person->center_id = $request['id'];
-				// 		$contact_person->member_name = $person['member_name']; 
-				// 		$contact_person->designation = (isset($person['designation']))?$person['designation']:''; 
-				// 		$contact_person->email = (isset($person['email']))?$person['email']:''; 
-				// 		$contact_person->mobile = (isset($person['mobile']))?$person['mobile']:''; 
-				// 		$contact_person->save(); 
-				// 	}
-				// }
+	// 			// CenterPerson::where('center_id',$request['id'])->delete();
+	// 			// foreach ($request['contact_persons'] as $person) {
+	// 			// 	if($person['member_name'] && $person['member_name'] != ''){
+	// 			// 		$contact_person = new CenterPerson;
+	// 			// 		$contact_person->center_id = $request['id'];
+	// 			// 		$contact_person->member_name = $person['member_name']; 
+	// 			// 		$contact_person->designation = (isset($person['designation']))?$person['designation']:''; 
+	// 			// 		$contact_person->email = (isset($person['email']))?$person['email']:''; 
+	// 			// 		$contact_person->mobile = (isset($person['mobile']))?$person['mobile']:''; 
+	// 			// 		$contact_person->save(); 
+	// 			// 	}
+	// 			// }
 
-				if(sizeof($request['groups']) > 0){
-					foreach ($request['groups'] as $group) {
-						$update_group = Group::find($group['id']);
-						$update_group->capacity = $group['capacity'];
-						$update_group->save();
-					}
-				}
+	// 			if(sizeof($request['groups']) > 0){
+	// 				foreach ($request['groups'] as $group) {
+	// 					$update_group = Group::find($group['id']);
+	// 					$update_group->capacity = $group['capacity'];
+	// 					$update_group->save();
+	// 				}
+	// 			}
 
-				$data['message'] = "Center details are updated successfully";
-			}else{
-				$data['success'] = false;
-				$data['message'] = "This center could not be mark as inactive as it has active students or active groups";
-			}
+	// 			$data['message'] = "Center details are updated successfully";
+	// 		}else{
+	// 			$data['success'] = false;
+	// 			$data['message'] = "This center could not be mark as inactive as it has active students or active groups";
+	// 		}
 
 
-		}
-		return Response::json($data,200,array());
-	}
+	// 	}
+	// 	return Response::json($data,200,array());
+	// }
 
-	public function addContactPerson1(){
-		$user = User::AuthenticateUser(Request::header("apiToken"));
-		$request = Input::get('data');
-		CenterPerson::where('center_id',$request['id'])->delete();
-		foreach ($request['contact_persons'] as $person) {
-			if($person['member_name'] && $person['member_name'] != ''){
-				$contact_person = new CenterPerson;
-				$contact_person->center_id = $request['id'];
-				$contact_person->member_name = $person['member_name']; 
-				$contact_person->designation = (isset($person['designation']))?$person['designation']:''; 
-				$contact_person->email = (isset($person['email']))?$person['email']:''; 
-				$contact_person->mobile = (isset($person['mobile']))?$person['mobile']:''; 
-				$contact_person->save(); 
-			}
-		}
+	// public function addContactPerson1(){
+	// 	$user = User::AuthenticateUser(Request::header("apiToken"));
+	// 	$request = Input::get('data');
+	// 	CenterPerson::where('center_id',$request['id'])->delete();
+	// 	foreach ($request['contact_persons'] as $person) {
+	// 		if($person['member_name'] && $person['member_name'] != ''){
+	// 			$contact_person = new CenterPerson;
+	// 			$contact_person->center_id = $request['id'];
+	// 			$contact_person->member_name = $person['member_name']; 
+	// 			$contact_person->designation = (isset($person['designation']))?$person['designation']:''; 
+	// 			$contact_person->email = (isset($person['email']))?$person['email']:''; 
+	// 			$contact_person->mobile = (isset($person['mobile']))?$person['mobile']:''; 
+	// 			$contact_person->save(); 
+	// 		}
+	// 	}
 
-		$data["success"] = true;
-		return Response::json($data,200,array());
-	}
+	// 	$data["success"] = true;
+	// 	return Response::json($data,200,array());
+	// }
 
 	// public function groupSchedule(){
 
@@ -631,38 +629,38 @@ class CenterController extends Controller{
 
 
 
-    public function deleteTiming1(){
-		$user = User::AuthenticateUser(Request::header("apiToken"));
-		$request = Input::get('timing');
-		// dd($request);
-		$rules = [
-			"effective_date"=>"required|date|after:today",
-		];
-		$validator = Validator::make($request,$rules);
-		if($validator->fails()){
-			$data['success'] = false;
-			$data['message'] = $validator->errors()->first();
-		}else{
+ //    public function deleteTiming1(){
+	// 	$user = User::AuthenticateUser(Request::header("apiToken"));
+	// 	$request = Input::get('timing');
+	// 	// dd($request);
+	// 	$rules = [
+	// 		"effective_date"=>"required|date|after:today",
+	// 	];
+	// 	$validator = Validator::make($request,$rules);
+	// 	if($validator->fails()){
+	// 		$data['success'] = false;
+	// 		$data['message'] = $validator->errors()->first();
+	// 	}else{
 
-			$OperationDay  = OperationDay::find($request['id']);
-			if($OperationDay){
-				OperationCoach::where('operation_id',$request['id'])->delete();
+	// 		$OperationDay  = OperationDay::find($request['id']);
+	// 		if($OperationDay){
+	// 			OperationCoach::where('operation_id',$request['id'])->delete();
 
-				DB::table('effective_timings')->insert(["effective_date"=>date('Y-m-d',strtotime($request['effective_date'])),"operation_id"=>$request['id'] , "status"=>2 ]);//2 for delete timing
+	// 			DB::table('effective_timings')->insert(["effective_date"=>date('Y-m-d',strtotime($request['effective_date'])),"operation_id"=>$request['id'] , "status"=>2 ]);//2 for delete timing
 				
-				$OperationDay->delete();
+	// 			$OperationDay->delete();
 
-				$data['success'] = true;
-				$data['message'] = 'Timing was removed successfully';
-				$data['center'] = Center::details($request['center_id']);
-			}else{
-				$data['success'] = false;
-				$data['message'] = 'No details found for this entry please refresh your page';
-			}
-		}
+	// 			$data['success'] = true;
+	// 			$data['message'] = 'Timing was removed successfully';
+	// 			$data['center'] = Center::details($request['center_id']);
+	// 		}else{
+	// 			$data['success'] = false;
+	// 			$data['message'] = 'No details found for this entry please refresh your page';
+	// 		}
+	// 	}
 		
-		return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
-	}
+	// 	return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
+	// }
 }
 
 

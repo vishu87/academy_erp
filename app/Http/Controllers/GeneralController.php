@@ -22,6 +22,7 @@ class GeneralController extends Controller
 
             $resize = $request->resize ? $request->resize : 0;
             $crop = $request->crop ? $request->crop : 0;
+            $thumb = $request->thumb ? $request->thumb : 0;
             $width = $request->width ? $request->width : 0;
             $height = $request->height ? $request->height : 0;
 
@@ -46,13 +47,31 @@ class GeneralController extends Controller
                 }
                 $resizer->save($destination.'tn_'.$name_final);
 
-                unlink($destination.$name_final);
-                $name_final = 'tn_'.$name_final;
+                
+                $name_file = 'tn_'.$name_final;
                 
             }
 
-            $data["url"] = url($destination.$name_final);
-            $data["path"] = $destination.$name_final;
+            if($thumb == 1){
+                $resizer = new SimpleImage();
+                $resizer->load($destination.$name_final);
+                
+                $resizer->cropImage(256,256,true);
+                $resizer->save($destination.'thumb_'.$name_final);
+
+                $name_thumb = 'thumb_'.$name_final;
+
+                $data["url_thumb"] = url($destination.$name_thumb);
+                $data["path_thumb"] = $destination.$name_thumb;
+                
+            }
+
+            if($resize == 1){
+                unlink($destination.$name_final);
+            }
+
+            $data["url"] = url($destination.$name_file);
+            $data["path"] = $destination.$name_file;
         }
 
         $data["success"] = true;
@@ -77,8 +96,12 @@ class GeneralController extends Controller
         return Response::json($data, 200, array());
     }
 
-    public function getCityListData(){
-        $list = DB::table('city')->select('id','city_name')->get();
+    public function getCityListData(Request $request){
+
+        $user = User::AuthenticateUser($request->header("apiToken"));
+
+        $list = DB::table('city')->select('id','city_name')->where("client_id",$user->client_id)->get();
+
         $data['success'] = true;
         $data['data'] = $list;
         return Response::json($data, 200, array());
