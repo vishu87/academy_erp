@@ -14,18 +14,16 @@
       		<a href="{{url('users/view')}}" style="width: 150px;">
       		All Users</a>
       	</li>
-      	<!-- <li><a href="{{url('users/add')}}" style="width: 150px;">Add Users</a></li> -->
       	<li><a href="{{url('users/user-roles')}}" style="width: 150px;">Role Manager</a></li>
       	<li>
       		<a href="{{url('users/staff-attendance')}}" style="width: 150px;">Staff Attendance</a>
       	</li>
-      	<!-- <li><a href="{{url('users/user-rights')}}" style="width: 150px;">Access Rights</a></li> -->
     </ul>
 </li>
 
 
 <li class="parent @if($sidebar == 'parameter') active @endif">
-    <a href="{{url('/parameters')}}"><i class="icon-settings icons "></i> <span>Parameters</span></a>
+    <a href="{{url('/parameters')}}"><i class="icon-settings icons "></i> <span>Report Parameters</span></a>
 </li>
 
 <li class="parent @if($sidebar == 'settings') active @endif">

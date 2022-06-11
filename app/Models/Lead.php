@@ -12,16 +12,16 @@ class Lead extends Model
     	return DB::table('lead_status')->select("id as value","status_value as label","action_date_name","date_req","call_note_req","reason_req")->get();
     }
 
-    public static function reasons(){
-    	return  DB::table('lead_reasons')->orderBy('id','desc')->get();
+    public static function reasons($client_id){
+    	return  DB::table('lead_reasons')->where("client_id",$client_id)->orderBy('id','desc')->get();
     }
 
-    public static function lead_sources(){
-    	return DB::table('lead_sources')->select("id as value","source as label")->where('parent_id',0)->get();
+    public static function lead_sources($client_id){
+    	return DB::table('lead_sources')->where("client_id",$client_id)->select("id as value","source as label")->where('parent_id',0)->get();
     }
 
-    public static function lead_for_types(){
-        return DB::table('lead_sources')->select("id as value","source as label")->where('parent_id',0)->limit(3)->get();
+    public static function lead_for_types($client_id){
+        return DB::table('lead_for')->select("id as value","label")->where("client_id",$client_id)->get();
     }
 
     public static function sub_lead_sources(){

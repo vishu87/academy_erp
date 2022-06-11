@@ -446,3 +446,9 @@ ALTER TABLE `groups` CHANGE `remark` `remark` TEXT CHARACTER SET utf8mb4 COLLATE
 DROP - > groups table mein group_type_id
 
 ALTER TABLE `center_images` CHANGE `image_thumb` `image_thumb` MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+
+ALTER TABLE `inv_stocks` ADD `client_id` INT NOT NULL AFTER `quantity`;
+
+
+
+ALTER TABLE `lead_for`  ADD `page_title` VARCHAR(255) NULL  AFTER `slug`,  ADD `page_description` TEXT NULL  AFTER `page_title`;

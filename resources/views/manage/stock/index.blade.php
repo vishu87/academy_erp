@@ -12,35 +12,6 @@
 	@endsection
 
 @section('content')
-
-<div class="filters" ng-if="filter.show">
-	<div class="row">
-
-        <div class="col-sm-4 form-group">
-            <label>City</label>
-            <select ng-model="filter.city_id" class="form-control" required>
-                <option value="">Select</option>
-                <option ng-repeat="city in state_city_center.city" 
-                ng-value="@{{ city.value }}">@{{city.label}}
-                </option>
-            </select>
-        </div>
-
-        <div class="col-sm-4 form-group">
-            <label>Center</label>
-            <select ng-model="filter.center_id" class="form-control" required>
-                <option value="">Select</option>
-                <option ng-repeat="center in state_city_center.center" ng-if="center.city_id == filter.city_id" ng-value="@{{center.value}}">@{{center.label}}
-                </option>
-            </select>
-        </div>
-
-        <div class="col-sm-4">
-        	<button type="button" class="btn btn-primary" ng-click="searchList()" style="margin-top: 24px">Search</button>
-        </div>
-	</div>
-</div>
-
 		
 	<div class="portlet">
 		
@@ -54,22 +25,33 @@
 				</div>
 			</div>
 
-			<div class="portlet-head">
-		      	<div class="row">
+		    <div class="filters" ng-if="filter.show">
+				<div class="row">
 
-			        <div class="col-md-6">
-			          	<ul class="menu">
-				            <li class="active">
-				              <a href="#">List</a>
-				            </li>
-			          	</ul>
+			        <div class="col-sm-3 form-group">
+			            <label>City</label>
+			            <select ng-model="filter.city_id" class="form-control" required>
+			                <option value="">Select</option>
+			                <option ng-repeat="city in state_city_center.city" 
+			                ng-value="@{{ city.value }}">@{{city.label}}
+			                </option>
+			            </select>
 			        </div>
-			        <!-- <div class="col-md-6 text-right">
-						<a href="{{url('inventory/request/add-request/0')}}" class="btn btn-primary"><i class="icons icon-plus"></i> Add Request</a>
-			        </div> -->
 
-		      	</div>
-		    </div>
+			        <div class="col-sm-3 form-group">
+			            <label>Center</label>
+			            <select ng-model="filter.center_id" class="form-control" required>
+			                <option value="">Select</option>
+			                <option ng-repeat="center in state_city_center.center" ng-if="center.city_id == filter.city_id" ng-value="@{{center.value}}">@{{center.label}}
+			                </option>
+			            </select>
+			        </div>
+
+			        <div class="col-sm-2">
+			        	<button type="button" class="btn btn-primary" ng-click="searchList()" style="margin-top: 24px">Search</button>
+			        </div>
+				</div>
+			</div>
 			
 			<div class="table-responsive"  ng-if="!loading && dataset.length > 0">
 				<table class="table">

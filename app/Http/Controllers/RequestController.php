@@ -191,11 +191,11 @@ class RequestController extends Controller {
 
     		foreach ($items as $item) {
     			if($invRequest->in_center_id){
-					InvStock::updateStock($invRequest->in_city_id, $invRequest->in_center_id, $item->item_id, $item->quantity);
+					InvStock::updateStock($invRequest->in_city_id, $invRequest->in_center_id, $item->item_id, $item->quantity, $user->client_id);
 				}
 				
 				if($invRequest->out_center_id){
-					InvStock::updateStock($invRequest->out_city_id, $invRequest->out_center_id, $item->item_id, -1*$item->quantity);
+					InvStock::updateStock($invRequest->out_city_id, $invRequest->out_center_id, $item->item_id, -1*$item->quantity, $user->client_id);
 				}
     		}
     	}

@@ -4,7 +4,7 @@ app.controller('stock_controller', function($scope, $http, DBService, Upload){
   $scope.dataset = [];
   $scope.filter = {
     page_no : 1,
-    max_per_page : 1,
+    max_per_page : 20,
     max_page: 1,
     order_by: '',
     order_type: 'ASC',

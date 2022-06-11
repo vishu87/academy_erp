@@ -5,6 +5,6 @@
 <li class="parent @if($sidebar == 'master-lead') active @endif">
 	<a href="{{url('/master-leads')}}">
 		<i class="icon-layers icons "></i>
-		 <span>Master Leads</span>
+		 <span>Lead Variables</span>
 	</a>
 </li>

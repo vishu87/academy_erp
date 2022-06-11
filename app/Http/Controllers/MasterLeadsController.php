@@ -54,7 +54,6 @@ class MasterLeadsController extends Controller
         $rules = [
             "label" => "required",
             "slug" => "required"
-
         ];
 
         $validator = Validator::make($cre,$rules);
@@ -70,11 +69,11 @@ class MasterLeadsController extends Controller
             ];
 
             if($request->id){
-                DB::table('lead_for')->where('id',$request->id)->update($data);
-                $data["message"] = "Data successfully updated...";
+                DB::table('lead_for')->where('id',$request->id)->where("client_id",$user->client_id)->update($data);
+                $data["message"] = "Data is successfully saved.";
             } else {
                 DB::table('lead_for')->insert($data);
-                $data["message"] = "Data successfully inserted...";
+                $data["message"] = "Dats is successfully saved.";
             }
             $data["success"] = true;
             return Response::json($data, 200, []);
@@ -82,7 +81,8 @@ class MasterLeadsController extends Controller
     }
 
     public function leadsForDelete(Request $request, $lead_for_id){
-        DB::table('lead_for')->where('id',$lead_for_id)->delete();
+        $user = User::AuthenticateUser($request->header("apiToken"));
+        DB::table('lead_for')->where('id',$lead_for_id)->where("client_id",$user->client_id)->delete();
         $data["success"] = true;
         $data["message"] = "Data successfully deleted...";
         return Response::json($data, 200, []);
@@ -122,7 +122,7 @@ class MasterLeadsController extends Controller
             ];
 
             DB::table('lead_status')->where('id',$request->id)->update($data);
-            $data["message"] = "Data successfully updated...";
+            $data["message"] = "Data is successfully saved.";
             $data["success"] = true;
             return Response::json($data, 200, []);
         }
@@ -149,11 +149,11 @@ class MasterLeadsController extends Controller
             ];
 
             if($request->id){
-                DB::table('lead_reasons')->where('id',$request->id)->update($data);
-                $data["message"] = "Data successfully updated...";
+                DB::table('lead_reasons')->where('id',$request->id)->where("client_id",$user->client_id)->update($data);
+                $data["message"] = "Data is successfully saved.";
             } else {
                 DB::table('lead_reasons')->insert($data);
-                $data["message"] = "Data successfully inserted...";
+                $data["message"] = "Dats is successfully saved.";
             }
             $data["success"] = true;
             return Response::json($data, 200, []);
@@ -161,7 +161,9 @@ class MasterLeadsController extends Controller
     }
 
     public function leadsReasonDelete(Request $request, $lead_reason_id){
-        DB::table('lead_reasons')->where('id',$lead_reason_id)->delete();
+        $user = User::AuthenticateUser($request->header("apiToken"));
+
+        DB::table('lead_reasons')->where('id',$lead_reason_id)->where("client_id",$user->client_id)->delete();
         $data["success"] = true;
         $data["message"] = "Data successfully deleted...";
         return Response::json($data, 200, []);
@@ -188,11 +190,11 @@ class MasterLeadsController extends Controller
             ];
 
             if($request->id){
-                DB::table('lead_sources')->where('id',$request->id)->update($data);
-                $data["message"] = "Data successfully updated...";
+                DB::table('lead_sources')->where('id',$request->id)->where("client_id",$user->client_id)->update($data);
+                $data["message"] = "Data is successfully saved.";
             } else {
                 DB::table('lead_sources')->insert($data);
-                $data["message"] = "Data successfully inserted...";
+                $data["message"] = "Dats is successfully saved.";
             }
             $data["success"] = true;
             return Response::json($data, 200, []);
@@ -200,7 +202,10 @@ class MasterLeadsController extends Controller
     }
 
     public function leadsSourceDelete(Request $request, $lead_source_id){
-        DB::table('lead_sources')->where('id',$lead_source_id)->delete();
+
+        $user = User::AuthenticateUser($request->header("apiToken"));
+        
+        DB::table('lead_sources')->where('id',$lead_source_id)->where("client_id",$user->client_id)->delete();
         $data["success"] = true;
         $data["message"] = "Data successfully deleted...";
         return Response::json($data, 200, []);

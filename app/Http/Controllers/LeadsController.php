@@ -153,13 +153,13 @@ class LeadsController extends Controller{
         $user = User::AuthenticateUser($request->header("apiToken"));
         
         $data['status'] = Lead::status();
-        $data['reasons'] = Lead::reasons();
-        $data['lead_sources'] = Lead::lead_sources();
+        $data['reasons'] = Lead::reasons($user->client_id);
+        $data['lead_sources'] = Lead::lead_sources($user->client_id);
         // $data['sub_lead_sources'] = Lead::sub_lead_sources();
-        $data['lead_for'] = Lead::lead_for_types();
+        $data['lead_for'] = Lead::lead_for_types($user->client_id);
         $data['states'] = Lead::states();
         // $data['relevance_list'] = Lead::relevance_list();
-        $data['members'] = User::select('id as value','name as label')->where('role','!=',1)->orderBy('username','asc')->get();
+        $data['members'] = User::select('id as value','name as label')->where('role','!=',1)->where("client_id",$user->client_id)->orderBy('username','asc')->get();
 
         $data['success'] = true;
 
@@ -201,12 +201,12 @@ class LeadsController extends Controller{
         ];
 
         if( $request->id ){
-            $rules['mobile'] = "required|regex:/^([0-9\s\-\+\(\)]*)$/|digits:10|unique:leads,mobile,".$request['id'];
+            $rules['mobile'] = "required|regex:/^([0-9\s\-\+\(\)]*)$/|digits:10";
         } else {
-            $rules['mobile'] = "required|unique:leads|regex:/^([0-9\s\-\+\(\)]*)$/|digits:10";
+            $rules['mobile'] = "required|regex:/^([0-9\s\-\+\(\)]*)$/|digits:10";
         }
 
-        $messages = ["mobile.unique"=>"This mobile is already been taken in another lead ,Please try with another mobile number"];
+        $messages = [];
 
         $validator = Validator::make($values,$rules,$messages);
 
@@ -257,6 +257,15 @@ class LeadsController extends Controller{
                     $add_history = true;
 
                     $lead = Lead::where("mobile",$request->mobile)->where("client_id",$user->client_id)->first();
+
+                    if($lead){
+
+                        $data['success'] = false;
+                        $data['message'] = "This mobile is already been taken in another lead ,Please try with another mobile number";
+
+                        return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
+                    }
+
                     if(!$lead){
                         $lead = new Lead;
                         $message = 'New lead is added successfully';
@@ -337,6 +346,7 @@ class LeadsController extends Controller{
         
         $user = User::AuthenticateUser($request->header("apiToken"));
         $check_access = User::getAccess("lead_op", $user->id, -1);
+
         if(!$check_access) {
             $data = ["success" => false, "message"=>"Not allowed"]; return Response::json($data, 200 ,[]);
         }

@@ -21,6 +21,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\SMSTemplateController;
 use App\Http\Controllers\EmailTemplateController;
+use App\Http\Controllers\AccountsController;
 
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\StockController;

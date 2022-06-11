@@ -8,7 +8,7 @@
 					</li>
 				</ul>
 			</div>
-			<div class="col-md-6">
+			<div class="col-md-6 text-right">
 				<button class="btn btn-primary btn-sm text-right" style="margin-top: 10px" ng-click="createLeadReason()"><i class="icons icon-plus"></i> Add</button>
 			</div>
 		</div>
