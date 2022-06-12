@@ -7,10 +7,10 @@
 					<h4 class="fs-18 bold" style="margin:0;">Send Message</h4>
 				</div>
 				<div class="text-right">
-					<div style="margin:10px 0">
+					<div >
 						<button class="btn btn-primary" ladda="loading" ng-click="getStudents(1)">Search</button>
 					</div>
-					<div>
+					<div >
 						<div>Total Students Selected = @{{count}}  </div>
 				    	<div>Total Students Removed = @{{removed_students.length}}</div>  
 				        <div ng-if="students.length > 0 && !loading" style="margin-top: 10px">

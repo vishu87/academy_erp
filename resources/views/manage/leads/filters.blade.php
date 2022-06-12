@@ -51,7 +51,7 @@
             <select class="form-control" ng-model="filter.assign_to">
                 <option>Select</option>
                 <option value="-1">Not Assigned</option>
-                <option ng-repeat="member in members" ng-value="member.id">@{{member.name}}</option>
+                <option ng-repeat="member in parameters.members" ng-value="member.value">@{{member.label}}</option>
             </select>
           </div>
 

@@ -301,31 +301,31 @@ app.controller('leads_controller', function($scope,$http,DBService,Upload){
 		$("#messageForm").modal("show");
 	}
 
-	$scope.postMessage1 = function(){
-		$scope.processing = true;
+	// $scope.postMessage1 = function(){
+	// 	$scope.processing = true;
 
-		$scope.formData.selectedLeads = $scope.selectedLeads;
+	// 	$scope.formData.selectedLeads = $scope.selectedLeads;
 
-		DBService.postCall($scope.formData,'/api/leads/postMessage').then(function(data){
-			if(data.success){
+	// 	DBService.postCall($scope.formData,'/api/leads/postMessage').then(function(data){
+	// 		if(data.success){
 
-				if(!data.demo_check){
+	// 			if(!data.demo_check){
 
-					$scope.formData = {};
-					$scope.selectedLeads =[];
-					$("#messageForm").modal("hide");
-				}
+	// 				$scope.formData = {};
+	// 				$scope.selectedLeads =[];
+	// 				$("#messageForm").modal("hide");
+	// 			}
 
-			}
-			$scope.processing = false;
+	// 		}
+	// 		$scope.processing = false;
 
-			alert(data.message);
-		});
-	}
+	// 		alert(data.message);
+	// 	});
+	// }
 
-	$scope.getCities1 = function(){
-		DBService.getCall('/api/getCities').then(function(data){
-			$scope.cities = data.cities;
+	$scope.getCities = function(){
+		DBService.getCall('/api/cities/'+$scope.leadData.client_state_id).then(function(data){
+			$scope.parameters.cities = data.cities;
 		});
 	}
 

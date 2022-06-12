@@ -1,10 +1,11 @@
 app.controller('communicationCtrl', function($scope,$rootScope,DBService){
-	$scope.max = 200;
+	$scope.max = 100;
 	$scope.pn = 1;
 	$scope.total_pn = 0;
 	$scope.count = 0;
 	$scope.checkAll = false;
-	$scope.show_list = false;
+	$scope.show_list = true;
+	$scope.show_removed_list = true;
 	$scope.send_type_check = 1;
 	$scope.removed_students = [];
 	$scope.formData = {demo_check:false};
@@ -44,7 +45,7 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 			if($scope.check_all_city){
 				$scope.filter.cities = [];
 				for (var i = $scope.cities.length - 1; i >= 0; i--) {
-					$scope.filter.cities.push($scope.cities[i].id);
+					$scope.filter.cities.push($scope.cities[i].value);
 				}
 			}else{
 				$scope.filter.cities = [];
@@ -57,7 +58,7 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 			if($scope.check_all_center){
 				$scope.filter.centers = [];
 				for (var i = $scope.filter_centers.length - 1; i >= 0; i--) {
-					$scope.filter.centers.push($scope.filter_centers[i].id);
+					$scope.filter.centers.push($scope.filter_centers[i].value);
 				}
 			}else{
 				$scope.filter.centers = [];
@@ -70,7 +71,7 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 			if($scope.check_all_groups){
 				$scope.filter.groups = [];
 				for (var i = $scope.filter_groups.length - 1; i >= 0; i--) {
-					$scope.filter.groups.push($scope.filter_groups[i].id);
+					$scope.filter.groups.push($scope.filter_groups[i].value);
 				}
 			}else{
 				$scope.filter.groups = [];
@@ -82,19 +83,26 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 	}
 
 	$scope.init = function(){
-		DBService.postCall({api_key:api_key, only_active : $scope.filter.only_active},'/communications/send-message/init').then(function(data){
+		DBService.postCall({api_key:api_key, only_active : $scope.filter.only_active},'/api/communications/send-message/init').then(function(data){
 			if(data.success){
-				$scope.cities = data.cities;
-				$scope.centers = data.centers;
-				$scope.groups = data.groups;
-				$scope.student_categories = data.student_categories;
-				$scope.batch_types = data.batch_types;
-				$scope.templates = data.templates;
+				$scope.sms_templates = data.sms_templates;
 				$scope.email_templates = data.email_templates;
+
+				$scope.getStateCityCenter();
 			}
 		});
 	}
 
+	$scope.getStateCityCenter = function(){
+	    DBService.postCall({Tag:'comm_user'},"/api/get-locations")
+	    .then(function (data){
+	      	if(data.success) {
+	        	$scope.cities = data.city;
+	        	$scope.centers = data.center;
+	        	$scope.groups = data.group;
+	      	}
+	    });
+	 }
 
 
 	$scope.activeCenter = function(active){
@@ -103,7 +111,7 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 	}
 
 	$scope.listing = function(){
-		DBService.postCall({api_key:api_key},'/communications/send-message/listing').then(function(data){
+		DBService.postCall({api_key:api_key},'/api/communications/send-message/listing').then(function(data){
 			if(data.success){
 				$scope.communications = data.communications;
 				$scope.count = data.count;
@@ -135,7 +143,7 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 	$scope.commStudents = function(page_number){
 		$scope.open_comm.pn = page_number;
 		$scope.comm_pn = page_number;
-		DBService.postCall($scope.open_comm,'/communications/send-message/comm_students').then(function(data){
+		DBService.postCall($scope.open_comm,'/api/communications/send-message/comm_students').then(function(data){
 			$scope.open_comm.students = data.students;
 			$scope.loading_students = false;
 			$scope.total_comm_pn = data.total_pn;
@@ -199,7 +207,7 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 		$scope.filter.pn = page_number;
 		$scope.pn = page_number;
 		$scope.filter.removed_students = $scope.removed_students;
-		DBService.postCall($scope.filter,'/communications/send-message/getStudents').then(function(data){
+		DBService.postCall($scope.filter,'/api/communications/send-message/getStudents').then(function(data){
 			if(data.success){
 
 				$scope.students = data.students;
@@ -272,7 +280,7 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 		$scope.processing = true;
 		$scope.formData.student_ids = $scope.student_ids;
 		$scope.formData.removed_students = $scope.removed_students;
-		DBService.postCall($scope.formData,'/communications/send-message/postMessage').then(function(data){
+		DBService.postCall($scope.formData,'/api/communications/send-message/postMessage').then(function(data){
 			if(data.success){
 
 				if(!data.demo_check){

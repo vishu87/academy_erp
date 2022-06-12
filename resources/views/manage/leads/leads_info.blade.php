@@ -86,17 +86,17 @@
 
         <div class="col-md-6">
             <label>Address State</label>
-            <select class="form-control" ng-model="leadData.client_state_id">
-                <option >Select</option>
-                <option ng-repeat="state in states" ng-value="state.id">@{{state.state_name}}</option>
+            <select class="form-control" ng-model="leadData.client_state_id" ng-change="getCities()">
+                <option value="0">Select</option>
+                <option ng-repeat="state in parameters.state" ng-value="state.value">@{{state.label}}</option>
             </select>
         </div>
 
         <div class="col-md-6">      
             <label>Address City</label>
             <select class="form-control" ng-model="leadData.client_city_id" ng-change="getClientState()">
-                <option >Select</option>
-                <option ng-repeat="city in all_cities" ng-value="city.value">@{{city.label}}</option>
+                <option value="0">Select</option>
+                <option ng-repeat="city in parameters.cities"  ng-value="city.value">@{{city.label}}</option>
             </select>
         </div>
         
@@ -110,7 +110,7 @@
         </div>
 
         <div class="col-md-6 mt-2 form-group">
-            <label>Lead Source <span class="required">*</span></label>
+            <label>Lead Source </label>
             <select class="form-control" ng-model="leadData.lead_source">
                 <option ng-repeat="source in parameters.lead_sources" ng-value="source.value">@{{source.label}}</option>
             </select>

@@ -4,34 +4,24 @@
 		    <div class="col-md-6">
 			    <ul class="menu">
 			        <li class="active">
-			           	<a href="#">Students</a>
+			           	<a href="#">List of Students</a>
 			        </li>
 			    </ul>
 		    </div>
 		</div>
 	</div>
 	<div class="portlet-body">
-		<div ng-if="!loading" >
-			<div class="row">
-				<div class="col-md-7">
-			 		<button ng-if="students.length > 0" class="btn btn-sm btn-primary" type="button" ng-click="toggleList()">@{{show_list ? 'Hide':'Show'}} Selected Students</button>
-				</div>
-
-				<div class="col-md-5">
-					<button ng-if="removed_students.length > 0" class="btn btn-sm btn-primary" type="button" ng-click="toggleRemovedList()">@{{show_removed_list ? 'Hide':'Show'}} Removed Students</button>
-				</div>
-			</div>
-		</div>
 
 		<div ng-show="loading" class="alert alert-warning container">
 			Loading...
 		</div>
-		<div ng-show="noDataFound" class="alert alert-danger container">
+		<div ng-show="students.length == 0 && !loading" class="alert alert-danger container">
 			No Data Found
 		</div>
 
-		<div class="row">
+		<div class="row" ng-if="!loading && students.length > 0">
 			<div class="col-md-7">
+				<b>Selected Students</b>
 				<div ng-show="show_list">
 					<div class="row">
 						<div class="col-md-6 text-left">
@@ -93,6 +83,7 @@
 				</div>
 			</div>
 			<div class="col-md-5">
+				<b>Removed from List</b>
 				<div ng-show="show_removed_list" style="margin-top: 10px">
 					<span  class="btn btn-default" style="margin-right: 5px;margin-top: 5px" ng-repeat="student in removed_students">@{{student.name}} &nbsp;&nbsp;&nbsp;<button ng-click="addStudentToList(student,$index)" class="btn btn-info btn-xs">+</button></span>
 				</div>

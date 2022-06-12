@@ -118,6 +118,7 @@ class LeadsController extends Controller{
 
     private function mapLead($lead){
         $lead->mobile_trimmed = "xxxxxx".substr($lead->mobile, 6,4);
+        
         if($lead->status == 3){
             $lead->bgcolor = '#FFA500';
             $lead->fontcolor = 'color:#fff';
@@ -159,7 +160,7 @@ class LeadsController extends Controller{
         $data['lead_for'] = Lead::lead_for_types($user->client_id);
         $data['states'] = Lead::states();
         // $data['relevance_list'] = Lead::relevance_list();
-        $data['members'] = User::select('id as value','name as label')->where('role','!=',1)->where("client_id",$user->client_id)->orderBy('username','asc')->get();
+        $data['members'] = User::select('id as value','name as label')->where('role','!=',1)->where("client_id",$user->client_id)->where("inactive",0)->orderBy('username','asc')->get();
 
         $data['success'] = true;
 

@@ -42,7 +42,7 @@ class SMSTemplateController extends Controller {
 		];
 		$validator = Validator::make($cre ,$rules);
 		if($validator->passes()){
-			$template = SMSTemplate::find($request->id);
+			$template = SMSTemplate::where("id",$request->id)->where("client_id",$user->client_id)->first();
 			$data['message'] = 'SMS Template is updated successfully';
 			if(!$template){
 				$template = new SMSTemplate;

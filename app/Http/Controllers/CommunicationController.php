@@ -17,33 +17,7 @@ class CommunicationController extends Controller {
 	public function init(Request $request){
 		$user = User::AuthenticateUser($request->header("apiToken"));
 
-		$only_active = ($request->only_active == 1) ? true : false;
-		
-		$data['cities'] = DB::table('city')->select("id","city_name")->orderBy('city_name')->get();
-		
-		$centers = DB::table('center')->select("id","center_name","city_id","center_status")->orderBy('center_status')->orderBy('center_name');
-		if($only_active){
-			$centers = $centers->where("center.center_status",0);
-		}
-		$centers = $centers->get();
-
-		$groups = DB::table('groups')->select('groups.id','group_name','center.center_name','groups.center_id','groups.group_status')->join('center','groups.center_id','=','center.id');
-		if($only_active){
-			$groups = $groups->where("groups.group_status",0);
-		}
-		$groups = $groups->get();
-
-		$data['student_categories'] = DB::table('student_categories')->distinct('category')->orderBy("category")->pluck('category')->all();
-
-		$data['batch_types'] = array(
-			array( "id" => 1, "name" =>"Foundation" ),
-			array( "id" => 2, "name" =>"Development" ),
-			array( "id" => 3, "name" =>"Residential" )
-		);
-
-		$data['centers'] = $centers;
-		$data['groups'] = $groups;
-		$data['templates'] = DB::table("sms_templates")->get();
+		$data['sms_templates'] = DB::table("sms_templates")->where('client_id',$user->client_id)->get();
 		$data['email_templates'] = DB::table("email_templates")->where('client_id',$user->client_id)->get();
 
 		$data['success'] = true;
@@ -52,7 +26,9 @@ class CommunicationController extends Controller {
 	}
 
 	public function getStudents(Request $request){
+		
 		$user = User::AuthenticateUser($request->header("apiToken"));
+		
 		$max = 100;
 		$page_no = $request->pn;
 
@@ -64,12 +40,15 @@ class CommunicationController extends Controller {
 			array_push($excluded_student_ids,$student['id']);
 		}
 
-		$only_active = ($request->only_active == 1) ? true : false;
+		// $only_active = ($request->only_active == 1) ? true : false;
+		$only_active = true;
 
-		$students = Student::select("students.id",'students.name','center.center_name','students.dob','students.doe')->join("groups","groups.id",'=','students.group_id')->join('center','center.id','=','groups.center_id')->whereNotIn('students.id',$excluded_student_ids);
+		$students = Student::select("students.id",'students.name','center.center_name','students.dob','students.doe')->join("groups","groups.id",'=','students.group_id')->join('center','center.id','=','groups.center_id')->whereNotIn('students.id',$excluded_student_ids)->where("client_id",$user->client_id);
 
-		if($only_active){
-			$students = $students->where("groups.group_status",0)->where("center.center_status",0);
+		if($user->all_access){
+
+		} else {
+			$students = $students->whereIn("students.group_id",$user_access->group_ids);
 		}
 
 		$flag = false;
@@ -93,11 +72,6 @@ class CommunicationController extends Controller {
 		if(sizeof($groups) > 0){
 			$flag = true;
 			$students = $students->whereIn("students.group_id",$groups);
-		}
-
-		if(sizeof($request->batch_types) > 0){
-			$flag = true;
-			$students = $students->whereIn("groups.group_type_id",$request->batch_types);
 		}
 
 		if(sizeof($request->status) > 0){
@@ -124,14 +98,6 @@ class CommunicationController extends Controller {
 			}
 		}
 
-		if($request->paused){
-			if($request->paused == 1){
-				$students = $students->where("paused",1);
-			} elseif($request->paused == 2){
-				$students->where("paused",0);
-			}
-		}
-
 		if($request->min_renew_days){
 			if($request->min_renew_days != ""){
 				$date_ref = strtotime($request->min_renew_days);
@@ -143,17 +109,6 @@ class CommunicationController extends Controller {
 			if($request->max_renew_days != ""){
 				$date_ref = strtotime($request->max_renew_days);
 				$students = $students->where("students.doe","<=",$date_ref);
-			}
-		}
-
-		if($request->downloaded_app){
-			if($request->downloaded_app == 1){
-				$students = $students->join("webserver_studentcustomermapping","webserver_studentcustomermapping.student_id","=","students.id");
-			} else if($request->downloaded_app == 2){
-				$student_dw_ids = DB::table("webserver_studentcustomermapping")->pluck("student_id")->toArray();
-				if(sizeof($student_dw_ids) > 0){
-					$students = $students->whereNotIn("students.id",$student_dw_ids);
-				}
 			}
 		}
 
@@ -185,7 +140,7 @@ class CommunicationController extends Controller {
 				}
 			}
 			
-			$students = $students->skip(($page_no-1)*200)->limit(200)->orderBy("dob","ASC")->get();
+			$students = $students->skip(($page_no-1)*100)->limit(100)->orderBy("dob","ASC")->get();
 
 		} else {
 			$count = 0;

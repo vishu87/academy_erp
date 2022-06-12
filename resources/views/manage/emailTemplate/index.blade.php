@@ -20,7 +20,7 @@
 				<div class="col-md-6">
 					<ul class="menu">
 						<li class="active">
-							<a href="#">Email Templates</a>
+							<a href="#">List of Templates</a>
 						</li>
 					</ul>
 				</div>
