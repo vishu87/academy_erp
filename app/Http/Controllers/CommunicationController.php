@@ -14,11 +14,15 @@ class CommunicationController extends Controller {
 		return view('manage.message.index',["sidebar" => "message", "only_active" => 1,"menu"=>"communication"]);
 	}
 
+	public function communication(){
+		return view('manage.message.list',["sidebar" => "communication","menu"=>"communication"]);
+	}
+
 	public function init(Request $request){
 		$user = User::AuthenticateUser($request->header("apiToken"));
 
-		$data['sms_templates'] = DB::table("sms_templates")->where('client_id',$user->client_id)->get();
-		$data['email_templates'] = DB::table("email_templates")->where('client_id',$user->client_id)->get();
+		$data['sms_templates'] = DB::table("sms_templates")->select("id as value","name as label","type")->where('client_id',$user->client_id)->get();
+		$data['email_templates'] = DB::table("email_templates")->select("id as value","template_name as label")->where('client_id',$user->client_id)->get();
 
 		$data['success'] = true;
 
@@ -28,8 +32,9 @@ class CommunicationController extends Controller {
 	public function getStudents(Request $request){
 		
 		$user = User::AuthenticateUser($request->header("apiToken"));
+		$user_access = User::getAccess("comm_user",$user->id);
 		
-		$max = 100;
+		$max = $request->max;
 		$page_no = $request->pn;
 
 		$groups = [];
@@ -43,9 +48,9 @@ class CommunicationController extends Controller {
 		// $only_active = ($request->only_active == 1) ? true : false;
 		$only_active = true;
 
-		$students = Student::select("students.id",'students.name','center.center_name','students.dob','students.doe')->join("groups","groups.id",'=','students.group_id')->join('center','center.id','=','groups.center_id')->whereNotIn('students.id',$excluded_student_ids)->where("client_id",$user->client_id);
+		$students = Student::select("students.id",'students.name','center.center_name','students.dob','students.doe')->join("groups","groups.id",'=','students.group_id')->join('center','center.id','=','groups.center_id')->whereNotIn('students.id',$excluded_student_ids)->where("students.client_id",$user->client_id);
 
-		if($user->all_access){
+		if($user_access->all_access){
 
 		} else {
 			$students = $students->whereIn("students.group_id",$user_access->group_ids);
@@ -54,46 +59,35 @@ class CommunicationController extends Controller {
 		$flag = false;
 		if(sizeof($request->cities) > 0){
 			$flag = true;
-			$centers = DB::table('center')->whereIn('city_id',$request->cities)->pluck('id')->all();
-			$groups = DB::table('groups')->whereIn("center_id",$centers)->pluck('id')->all();
+			$students = $students->whereIn("center.city_id",$request->cities);
 		}
 		
 		if(sizeof($request->centers) > 0){
 			$flag = true;
-			$centers = $request->centers;
-			$groups =  DB::table('groups')->whereIn("center_id",$request->centers)->pluck('id')->all();
+			$students = $students->whereIn("groups.center_id",$request->centers);
 		}
 
 		if(sizeof($request->groups) > 0){
 			$flag = true;
-			$groups = $request->groups;
-		}
-
-		if(sizeof($groups) > 0){
-			$flag = true;
-			$students = $students->whereIn("students.group_id",$groups);
+			$students = $students->whereIn("students.group_id",$request->groups);
 		}
 
 		if(sizeof($request->status) > 0){
 			$flag = true;
 			$status = $request->status;
-			if(in_array(0, $request->status)){
-				$status[] = -1;
-			}
-
 			$students = $students->whereIn("students.inactive",$status);
 		}
 
 		if($request->date_start){
 			if($request->date_start){
-				$date_str = strtotime($request->date_start);
+				$date_str = date("Y-m-d",strtotime($request->date_start));
 				$students = $students->where("students.dob",">=",$date_str);
 			}
 		}
 
 		if($request->date_end){
 			if($request->date_end){
-				$date_str = strtotime($request->date_end);
+				$date_str = date("Y-m-d",strtotime($request->date_end));
 				$students = $students->where("students.dob","<=",$date_str);
 			}
 		}
@@ -112,36 +106,16 @@ class CommunicationController extends Controller {
 			}
 		}
 
-		if($request->mobile){
-			if($request->mobile != ""){
-				$mobiles = explode(',', $request->mobile);
-				$mobile_numbers = [];
-				foreach ($mobiles as $mob) {
-					if(strlen($mob) >= 10){
-						$mobile_numbers[] = trim($mob);
-					}
-				}
-				
-				$students = $students->where(function($query) use ($mobile_numbers){
-					$query->whereIn("mobile",$mobile_numbers)->orWhereIn("father_mob",$mobile_numbers)->orWhereIn("mother_mob",$mobile_numbers);
-				});
+		if($request->name){
+			if($request->name != ""){
+				$students = $students->where("students.name","LIKE",$request->name."%");
 			}
 		}
 
 		if($flag){
-
 			$student_ids = $students->pluck("id")->toArray();
-			
 			$count = $students->count();
-
-	        if($request->sort_by != ""){
-				if($request->sorting != ""){
-					$students = $students->orderBy($request->sort_by, $request->sorting);
-				}
-			}
-			
-			$students = $students->skip(($page_no-1)*100)->limit(100)->orderBy("dob","ASC")->get();
-
+			$students = $students->skip(($page_no-1)*$max)->limit($max)->orderBy("dob","ASC")->get();
 		} else {
 			$count = 0;
 			$students = [];
@@ -149,12 +123,6 @@ class CommunicationController extends Controller {
 		}
 
 		foreach ($students as $student) {
-			if($student->father_mob){
-				$student->mobile_trimmed = "xxxxxx".substr($student->father_mob, 6,4);
-			} elseif ($student->mother_mob) {
-
-				$student->mobile_trimmed = "xxxxxx".substr($student->mother_mob, 6,4);
-			}
 			if($student->dob){
 				$student->dob = date("d-m-Y",strtotime($student->dob));
 			}
@@ -167,8 +135,32 @@ class CommunicationController extends Controller {
 		$data['students'] = $students;
 		$data['student_ids'] = $student_ids;
 		$data['count'] = $count;
-		$data["total_pn"] = ceil($count/200);
+		$data["total_pn"] = ceil($count/$max);
 		$data['success'] = true;
+
+		return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
+	}
+
+	public function getContent(Request $request){
+		
+		$user = User::AuthenticateUser($request->header("apiToken"));
+		$type = $request->type;
+		$template_id = $request->template_id;
+
+		$content = "";
+
+		if($type == 1){
+			$entry = DB::table("sms_templates")->select("template as content")->where("id",$template_id)->where("client_id",$user->client_id)->first();
+		} else {
+			$entry = DB::table("email_templates")->select("content")->where("id",$template_id)->where("client_id",$user->client_id)->first();
+		}
+
+		if($entry){
+			$content = $entry->content;
+		}
+
+		$data['success'] = true;
+		$data['content'] = $content;
 
 		return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
 	}
@@ -422,10 +414,6 @@ class CommunicationController extends Controller {
 		$data['success'] = true;
 		return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
 
-	}
-
-	public function communication(){
-		return view('manage.message.list',["sidebar" => "communication","menu"=>"communication"]);
 	}
 
 }

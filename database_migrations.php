@@ -452,3 +452,4 @@ ALTER TABLE `inv_stocks` ADD `client_id` INT NOT NULL AFTER `quantity`;
 
 
 ALTER TABLE `lead_for`  ADD `page_title` VARCHAR(255) NULL  AFTER `slug`,  ADD `page_description` TEXT NULL  AFTER `page_title`;
+ALTER TABLE `sms_templates`  ADD `name` VARCHAR(255) NULL  AFTER `id`;

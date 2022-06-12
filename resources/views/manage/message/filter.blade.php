@@ -93,11 +93,15 @@
 		            </div>
 
 			        <div class="form-group col-md-12 filter-box">
-			            <label>Student Mobile <span style="font-style: italic; font-size: 11px;">(put comma for multiple)</span></label><br>
-			            <input type="text"  ng-model="filter.mobile" class=" form-control">
+			            <label>Student Name<br>
+			            <input type="text"  ng-model="filter.name" class=" form-control">
 			        </div>
 
+			        <div class="col-md-12 text-center">
+			        	<button class="btn btn-primary" ladda="loading" ng-click="getStudents(1)">Search</button>
+			        </div>
 				</div>
+
 			</form>
 		</div>
 	</div>
