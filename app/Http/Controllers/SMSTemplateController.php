@@ -33,12 +33,15 @@ class SMSTemplateController extends Controller {
 			"dlt_template_id"=>$request->dlt_template_id,
 			"dlt_sender_id"=>$request->dlt_sender_id,
 			"dlt_pe_id"=>$request->dlt_pe_id,
+			"name"=>$request->name,
+
 		];
 		$rules = [
 			"template"=>"required",
 			"dlt_template_id"=>"required",
 			"dlt_sender_id"=>"required",
 			"dlt_pe_id"=>"required",
+			"name"=>"required",
 		];
 		$validator = Validator::make($cre ,$rules);
 		if($validator->passes()){
@@ -55,6 +58,7 @@ class SMSTemplateController extends Controller {
 			$template->dlt_template_id = $request->dlt_template_id;
 			$template->dlt_sender_id = $request->dlt_sender_id;
 			$template->dlt_pe_id = $request->dlt_pe_id;
+			$template->name = $request->name;
 			$template->save();
 
 			$data['success'] = true;

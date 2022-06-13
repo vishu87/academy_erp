@@ -27,7 +27,7 @@ use App\Http\Controllers\RequestController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\CompanyController;
-use App\Http\Controllers\ParentController;
+// use App\Http\Controllers\ParentController;
 
 Route::get('/', [UserController::class,'login'])->name("login");
 Route::post('/login', [UserController::class, 'postLogin']);
@@ -196,10 +196,10 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 });
 
 
-Route::group(["before"=>"auth","middleware"=>["auth","parents"]], function(){
+// Route::group(["before"=>"auth","middleware"=>["auth","parents"]], function(){
 
-    Route::group(["prefix"=>"parents"], function(){
-        Route::get('/',[ParentController::class,'index']);
-    }); 
+//     Route::group(["prefix"=>"parents"], function(){
+//         Route::get('/',[ParentController::class,'index']);
+//     }); 
 
-});
+// });

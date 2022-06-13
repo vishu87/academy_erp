@@ -61,7 +61,7 @@ class RequestController extends Controller {
 			$invRequest->company_id	     = $request->company_id;
 			$invRequest->date            = date("Y-m-d",strtotime($request->date));
 			$invRequest->invoice_number  = $request->invoice_number;
-			$invRequest->document        = $request->file;
+			$invRequest->document        = $request->document;
 			$invRequest->remark          = $request->remark;
 			$invRequest->save();
 

@@ -65,8 +65,19 @@ class MasterLeadsController extends Controller
             $data = [
                 "label" => $request->label,
                 "client_id" => $user->client_id,
-                "slug" => $request->slug
+                "slug" => $request->slug,
+                "page_title" => $request->page_title,
+                "page_description" => $request->page_description
             ];
+
+
+            $check = DB::table('lead_for')->where('slug',$request->slug)->where("client_id",$user->client_id)->first();
+
+            if($check){
+                $data['success'] = false;
+                $data['message'] = "Slug Already exist";
+                return Response::json($data, 200, []);
+            }
 
             if($request->id){
                 DB::table('lead_for')->where('id',$request->id)->where("client_id",$user->client_id)->update($data);

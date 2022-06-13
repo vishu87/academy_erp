@@ -24,7 +24,8 @@ class StockController extends Controller {
 		$stocks = DB::table('inv_stocks')->select('inv_stocks.*','city.city_name','center.center_name','items.item_name')
     	->join('city','city.id','=','inv_stocks.city_id')
     	->join('center','center.id','=','inv_stocks.center_id')
-    	->join('items','items.id','=','inv_stocks.item_id');
+    	->join('items','items.id','=','inv_stocks.item_id')
+        ->where("inv_stocks.client_id",$user->client_id);
 
     	if(!$user_access->all_access){
     		$stocks = $stocks->whereIn("inv_stocks.center_id",$user_access->center_ids);

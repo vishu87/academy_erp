@@ -453,3 +453,7 @@ ALTER TABLE `inv_stocks` ADD `client_id` INT NOT NULL AFTER `quantity`;
 
 ALTER TABLE `lead_for`  ADD `page_title` VARCHAR(255) NULL  AFTER `slug`,  ADD `page_description` TEXT NULL  AFTER `page_title`;
 ALTER TABLE `sms_templates`  ADD `name` VARCHAR(255) NULL  AFTER `id`;
+
+// pradeep 13-06-22
+
+ALTER TABLE `companies` ADD `gst` VARCHAR(50) NULL AFTER `address`, ADD `state_id` INT NULL AFTER `gst`, ADD `state_city_id` INT NULL AFTER `state_id`;
