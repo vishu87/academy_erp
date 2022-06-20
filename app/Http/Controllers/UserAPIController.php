@@ -271,8 +271,9 @@ class UserAPIController extends Controller {
 	    		$user_row->mobile = $request->mobile;
 		        $user_row->role = $request->role;
 		        $user_row->city_id = $request->city_id;
-	    		
-	    		$password = User::getRandPassword();
+	    			
+	    		$password = $request->username;
+	    		// $password = User::getRandPassword();
 	    		$user_row->password = Hash::make($password);
 	    		$user_row->password_check = $password;
 	    		
