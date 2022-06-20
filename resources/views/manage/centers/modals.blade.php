@@ -189,3 +189,47 @@
       </div>
     </div>
 </div>
+
+
+<div class="modal" id="add_coach_modal" role="dialog" style="overflow: scroll;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Coaches</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icons icon-close"></i></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Coach</label>
+                    <select class="form-control" ng-model="coach_id" multiple>
+                      <option ng-value="0">Select</option>
+                      <option ng-repeat="coach in coachs" ng-value="coach.id">@{{coach.name}}</option>
+                    </select>
+                </div>
+
+                
+            <table class="table table-bordered" style="margin-top: 10px">
+                <thead>
+                  <tr>
+                    <th>Coach Name</th>
+                    <th>#</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="gc in group_coach">
+                      <td><b>@{{gc.name}}</b></td>
+                      <td><button class="btn btn-sm btn-primary" ng-click="removeCoach(gc.id, $index)">Delete</button></td>
+                    </tr>
+
+                </tbody>
+          </table>
+
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" ng-click="submitCoach();" ng-disabled="processingCoach">Add <span ng-show="processingCoach" class="spinner-border spinner-border-sm"></span></button>
+            </div>
+      </div>
+    </div>
+</div>

@@ -253,6 +253,9 @@ class CenterController extends Controller{
 		$groups = DB::table('groups')->select('id','group_name','capacity')->where('center_id',$center_id)->where('client_id',$user->client_id)->get();
 		
         foreach ($groups as $group) {
+
+        	$group->group_coach = DB::table('group_coachs')->select('group_coachs.*','users.name')->where('group_id',$group->id)->leftJoin('users','users.id','group_coachs.coach_id')->orderBy('id','DESC')->get();
+
             $group->operation_timings = OperationDay::where('center_id',$center_id)->where('group_id',$group->id)->orderBy('day')->get();
             $group->active_students = Student::where('group_id',$group->id)->where('inactive',0)->count();
             $group->pending_renewals = Student::where('group_id',$group->id)->where('doe','<',strtotime("today"))->where('inactive',0)->count();
@@ -661,6 +664,39 @@ class CenterController extends Controller{
 		
 	// 	return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
 	// }
+
+    public function all_coach(){
+        $coachs =  DB::table('users')->select('id','name')->get();
+        $data['success'] = true; 
+        $data['coachs']   = $coachs; 
+        return Response::json($data,200,array());
+    } 
+
+
+    public function save_coach(Request $request){
+
+        foreach ($request->coach as  $ch) {
+            DB::table('group_coachs')->insert([
+                "coach_id" => $ch,
+                "group_id" => $request->group_id,
+            ]);   
+        }
+
+        $data['success'] = true; 
+        $data['message']   = "coach successfully added"; 
+        return Response::json($data,200,array());
+
+    } 
+
+    public function remove_coach($id){
+        DB::table('group_coachs')->where('id',$id)->delete();
+        $data['success'] = true; 
+        $data['message']   = "coach successfully deleted"; 
+        return Response::json($data,200,array());
+    } 
+
+
+
 }
 
 

@@ -188,6 +188,10 @@ Route::group([], function(){
         Route::post('/deleteTiming',[CenterController::class, 'deleteTiming']);
         Route::post('/add-contact-person',[CenterController::class, 'addContactPerson']);
 
+        Route::get('/coach',[CenterController::class,'all_coach']);
+        Route::post('/save-coach',[CenterController::class,'save_coach']);
+        Route::get('/remove-coach/{id}',[CenterController::class,'remove_coach']);
+
         });
 
     Route::group(["prefix"=>"groups"],function(){
