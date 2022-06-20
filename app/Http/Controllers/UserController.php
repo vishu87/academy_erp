@@ -53,7 +53,9 @@ class UserController extends Controller {
 
 				$user = Auth::user();
 				if($user->user_type == 1){
+					
 					$access_rights = User::getAccessTabs(Auth::user()->id);
+
 					if(sizeof($access_rights) == 0){
 						Auth::logout();
 						return Redirect::back("failure","You dont have access to any module, Kindly ask admin to add rights");
