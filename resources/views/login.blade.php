@@ -24,7 +24,7 @@
                                     </div>
                                     <div class="w-50">
                                         <p class="mb-0 text-right">
-                                            <a href="{{url('/sign-up')}}" class="text-link">Parent Singup</a>
+                                            <a href="{{url('/sign-up')}}" class="text-link">Parent Sign-up</a>
                                         </p>
                                     </div>
                                 </div>
