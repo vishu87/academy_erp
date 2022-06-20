@@ -737,6 +737,9 @@ img.round {
       opacity: 0.8; }
 
 @media only screen and (max-width: 600px) {
+  .mob-mt-5 {
+    margin-top: 32px; }
+
   .login-bg .d-flex {
     display: block !important; }
   .login-bg .w-50 {

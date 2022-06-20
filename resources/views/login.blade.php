@@ -9,7 +9,7 @@
                 <div class="col-md-10 h-100">
                     <div class="d-flex h-100 align-items-center">
                         <div class="w-50">
-                            <div class="text-center mb-5">
+                            <div class="text-center mb-5 mob-mt-5">
                                 <img src="{{url('/assets/images/Group-60782.png')}}">
                             </div>
                             @if(Session::has('failure'))
@@ -50,7 +50,7 @@
                                 </div>
                             {{Form::close()}}
                         </div>
-                        <div class="h-100 w-50">
+                        <div class="w-50">
                             
                         </div>
                         
