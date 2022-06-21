@@ -66,4 +66,31 @@ class WebController extends Controller
             "client_id" => "BU_CODE"
         ]);
     }
+
+    public function signUp(){
+
+        $heading = "Parent Sign Up";
+        $description = "Kindly enter your email linked with your kid's profile";
+
+        return view('web.sign_up',[
+            "heading" => $heading,
+            "description" => $description,
+            "logo_url" => url('assets/images/Group-60782.png'),
+            "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
+            "client_id" => "BU_CODE"
+        ]);
+    }
+
+    public function forgetPassword(){
+        $heading = "Forget Password";
+        $description = "Please enter your email";
+
+        return view('web.forget_password',[
+            "heading" => $heading,
+            "description" => $description,
+            "logo_url" => url('assets/images/Group-60782.png'),
+            "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
+            "client_id" => "BU_CODE"
+        ]);
+    }
 }

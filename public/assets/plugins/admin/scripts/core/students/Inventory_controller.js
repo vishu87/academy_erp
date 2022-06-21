@@ -17,7 +17,7 @@ app.controller('Inventory_controller', function($scope, $http, DBService){
   $scope.init = function(){
     $scope.loading = true;
 
-    DBService.postCall($scope.filter,'/inventory/get-items')
+    DBService.postCall($scope.filter,'/api/inventory/get-items')
     .then(function(data){
       if (data.success) {
         if($scope.filter.export){
@@ -70,7 +70,7 @@ app.controller('Inventory_controller', function($scope, $http, DBService){
 
   $scope.saveItem = function(){
     $scope.processing_req = true;
-    DBService.postCall($scope.itemData,'/inventory/save-items')
+    DBService.postCall($scope.itemData,'/api/inventory/save-items')
     .then(function(data){
       if (data.success) {
         bootbox.alert(data.message);
@@ -93,8 +93,7 @@ app.controller('Inventory_controller', function($scope, $http, DBService){
     bootbox.confirm("Are you sure?", (check)=>{
       if(check){
         $scope.loading = true;
-        DBService.getCall('/inventory/delete-items/'+id)
-        .then(function(data){
+        DBService.getCall('/api/inventory/delete-items/'+id).then(function(data){
           if (data.success) {
             bootbox.alert(data.message);
             $scope.dataset.splice(index,1);

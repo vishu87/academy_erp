@@ -18,7 +18,7 @@ app.controller('Company_controller', function($scope, $http, DBService){
   $scope.init = function(){
     $scope.loading = true;
 
-    DBService.postCall($scope.filter,'/inventory/companies/get-companies')
+    DBService.postCall($scope.filter,'/api/inventory/companies/get-companies')
     .then(function(data){
       if (data.success) {
         if($scope.filter.export){
@@ -70,7 +70,7 @@ app.controller('Company_controller', function($scope, $http, DBService){
 
   $scope.saveCompany = function(){
     $scope.processing_req = true;
-    DBService.postCall($scope.companyData,'/inventory/companies/save-company').then(function(data){
+    DBService.postCall($scope.companyData,'/api/inventory/companies/save-company').then(function(data){
       if (data.success) {
         bootbox.alert(data.message);
         $("#company_modal").modal('hide');
@@ -91,7 +91,7 @@ app.controller('Company_controller', function($scope, $http, DBService){
   $scope.deleteCompany = function(id, index){
     bootbox.confirm("Are you sure?", (check)=>{
         if(check){
-          DBService.getCall('/inventory/companies/delete-companies/'+id).then(function(data){
+          DBService.getCall('/api/inventory/companies/delete-companies/'+id).then(function(data){
             if (data.success) {
               bootbox.alert(data.message);
               $scope.dataset.splice(index,1);

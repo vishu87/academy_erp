@@ -31,9 +31,15 @@
 
                             <button type="submit" class="btn btn-block btn-primary">Login</button>
                             <br>
-                            <br>
+                            <div class="text-right">
+                                <div style="clear:both; text-align: center;">Forgot Password? <a href="{{url('forget-password')}}">Click here </a> to reset your password</div>
+                            </div><br>
+                            <div>
+                                <a href="{{url('/sign-up')}}" class="btn btn-block btn-primary">Parent Sign-up</a>
+                            </div>
                         {{Form::close()}}
                     </div>
+                    
                 </div>  
             </div>
         </div>

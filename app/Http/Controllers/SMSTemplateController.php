@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Redirect,App\Student;
-use Response,Validator,DB,Input;
+use Redirect,App\Models\Student;
+use Response,Validator,DB;
 use Illuminate\Http\Request;
-use App\Models\SMSTemplate;
+use App\Models\SMSTemplate, App\Models\User;
 
 class SMSTemplateController extends Controller {
 
@@ -16,15 +16,18 @@ class SMSTemplateController extends Controller {
 	}
 
 	
-	public function init()
+	public function init(Request $request)
 	{
-		$data['templates'] = DB::table("sms_templates")->get();
+		$user = User::AuthenticateUser($request->header("apiToken"));
+		$data['templates'] = DB::table("sms_templates")->where("client_id",$user->client_id)->get();
 		$data['success'] = true;
 		return Response::json($data,200,[]); 
 	}
 
 	public function store(Request $request)
 	{
+		$user = User::AuthenticateUser($request->header("apiToken"));
+
 		$cre = [
 			"template"=>$request->template,
 			"dlt_template_id"=>$request->dlt_template_id,
@@ -43,6 +46,8 @@ class SMSTemplateController extends Controller {
 			$data['message'] = 'SMS Template is updated successfully';
 			if(!$template){
 				$template = new SMSTemplate;
+				$template->client_id    = $user->client_id;
+				$template->added_by     = $user->id;
 				$data['message'] = 'SMS Template is added successfully';
 			}
 			$template->template = $request->template;
@@ -61,17 +66,12 @@ class SMSTemplateController extends Controller {
 		return Response::json($data,200,[]);
 	}
 
-	public function delete($id)
+	public function delete(Request $request, $id)
 	{
-		$template = SMSTemplate::find($id);
-		if($template){
-			$template->delete();
-			$data['success'] = true;
-			$data['message'] = 'SMS Template is deleted successfully';
-		}else{
-			$data['message'] = 'SMS Template can not be deleted';
-			$data['success'] = false;
-		}
+		$user = User::AuthenticateUser($request->header("apiToken"));
+		DB::table('sms_templates')->where('id',$id)->where("client_id",$user->client_id)->delete();
+		$data['success'] = true;
+		$data['message'] = 'SMS Template is deleted successfully';
 		return Response::json($data,200,[]);
 	}
 }

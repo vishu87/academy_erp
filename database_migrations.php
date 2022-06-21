@@ -426,3 +426,15 @@ ALTER TABLE `users` ADD `user_type` TINYINT NOT NULL DEFAULT '1' AFTER `api_key`
 ALTER TABLE `items` ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
 ALTER TABLE `companies` ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
 
+
+CREATE TABLE `user_students` ( `id` INT NOT NULL AUTO_INCREMENT , `user_id` INT NULL , `student_id` INT NULL , `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+ALTER TABLE `users`  ADD `last_login` TIMESTAMP NULL DEFAULT NULL  AFTER `is_admin`;
+=======
+// pradeep 02/06/22
+
+ALTER TABLE `sms_templates` ADD `added_by` INT NULL DEFAULT NULL AFTER `dlt_pe_id`, ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
+ALTER TABLE `email_templates` ADD `added_by` INT NULL DEFAULT NULL AFTER `content`, ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
+
+ALTER TABLE `sessions` ADD `added_by` INT NULL DEFAULT NULL AFTER `end_date`, ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
+
