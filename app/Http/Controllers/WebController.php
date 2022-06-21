@@ -54,9 +54,13 @@ class WebController extends Controller
 
     public function lead($type){
 
-        $heading = "Apply for Scholarship";
-        $description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam";
+        $lead_for = DB::table("lead_for")->where("slug",$type)->first();
+        if(!$lead_for){
+            return "Invalid form";
+        }
+
+        $heading = $lead_for->page_title;
+        $description = $lead_for->page_description;
 
         return view('web.lead',[
             "heading" => $heading,

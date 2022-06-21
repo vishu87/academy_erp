@@ -13,7 +13,7 @@
 					<x-input type="text" label="Name" name="formData.name" :required="true" />
 				</div>
 				<div class="col-md-6">
-					<x-dob label="Date of Birth" name="formData" :required="true" year="2019" />
+					<x-dob label="Date of Birth" name="formData" :required="true" year="2000" />
 				</div>
 			</div>
 			<div class="row">
@@ -34,9 +34,8 @@
 				<div class="col-md-6">
 					<x-select label="Scholarship Type" :required="true" name="formData.scholor_type">
 						<option value="">Select</option>
-						<option value="1">1</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
+						<option value="Full">Full</option>
+						<option value="Partial">Partial</option>
 					</x-select>
 				</div>
 			</div>
