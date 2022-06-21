@@ -66,8 +66,20 @@
 			</div>
 		</div>
 		<div class="col-6 text-right">
-			Welcome, {{ Auth::user()->username }}
-			<a href="{{url('/logout')}}"><i class="icons icon-lock-open"></i> <span>Logout</span></a>
+			<div class="welcome-nav">
+				<span class="name">
+					{{ Auth::user()->name }}
+				</span>
+				<div class="menu">
+					<ul>
+						<li>
+							<a href="{{url('/logout')}}"><i class="icons icon-lock-open"></i> <span>Logout</span></a>
+							
+						</li>
+					</ul>
+				</div>
+			</div>
+	<!-- 		Welcome,  -->
 		</div>
 	</div>
 </div>
