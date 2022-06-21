@@ -175,6 +175,7 @@ class WebApiController extends Controller
             $lead->city_id = $request->city_id;
             $lead->remarks = $request->remarks;
             $lead->document = $request->document;
+            $lead->lead_for = $request->lead_for;
             $lead->client_id = $client_id;
             if($request->visit_date){
                 $lead->action_date = Utilities::convertDateToDB($request->visit_date);

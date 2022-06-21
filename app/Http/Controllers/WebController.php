@@ -63,6 +63,7 @@ class WebController extends Controller
         $description = $lead_for->page_description;
 
         return view('web.lead',[
+            "lead_for" => $lead_for,
             "heading" => $heading,
             "description" => $description,
             "logo_url" => url('assets/images/Group-60782.png'),
