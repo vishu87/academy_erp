@@ -32,7 +32,7 @@ class AppAPIController extends Controller {
 				$user->name = Auth::user()->name;
 				$user->email = Auth::user()->email;
 				$user->mobile = Auth::user()->mobile;
-				$user->is_admin = Auth::user()->is_admin;
+				$user->is_admin = Auth::user()->role == 1 ? 1 : 0;
 
 	        	$data["success"] = true;
 	            $data["user"] = $user;

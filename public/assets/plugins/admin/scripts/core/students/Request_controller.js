@@ -139,7 +139,7 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
             }
         }
         $scope.company();
-        $scope.getStateCityCenter();
+        $scope.getStateCityCenter('inv_user');
         $scope.allItems();
     });
   }

@@ -36,6 +36,8 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\SMSTemplateController;
 use App\Http\Controllers\EmailTemplateController;
 
+use App\Http\Controllers\AccountsController;
+
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -185,6 +187,10 @@ Route::group([], function(){
         Route::post('/addGroupTiming',[CenterController::class, 'addGroupTiming']);
         Route::post('/deleteTiming',[CenterController::class, 'deleteTiming']);
         Route::post('/add-contact-person',[CenterController::class, 'addContactPerson']);
+
+        Route::get('/coach',[CenterController::class,'all_coach']);
+        Route::post('/save-coach',[CenterController::class,'save_coach']);
+        Route::get('/remove-coach/{id}',[CenterController::class,'remove_coach']);
 
         });
 
@@ -371,14 +377,16 @@ Route::group(["prefix"=>"inventory"], function(){
 
 Route::group(["prefix"=>"communications"], function(){
 
-    // Route::group(["prefix"=>"send-message"], function(){
-    //     Route::get('/',[CommunicationController::class,'index']);
-    //     Route::post('/init',[CommunicationController::class,'init']);
-    //     Route::post('/listing',[CommunicationController::class,'listing']);
-    //     Route::post('/comm_students',[CommunicationController::class,'comm_students']);
-    //     Route::post("getStudents",[CommunicationController::class,'getStudents']);
-    //     Route::post("postMessage",[CommunicationController::class,'postMessage']);
-    // }); 
+    Route::group(["prefix"=>"send-message"], function(){
+        Route::post('/init',[CommunicationController::class,'init']);
+        Route::post("getStudents",[CommunicationController::class,'getStudents']);
+        Route::post("postMessage",[CommunicationController::class,'postMessage']);
+        Route::post("get-content",[CommunicationController::class,'getContent']);
+
+        Route::post('/listing',[CommunicationController::class,'listing']);
+        Route::post('/comm_students',[CommunicationController::class,'comm_students']);
+        
+    }); 
 
     Route::group(["prefix"=>"sms-template"], function(){
         Route::get('/init',[SMSTemplateController::class,'init']);

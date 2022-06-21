@@ -21,11 +21,13 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\SMSTemplateController;
 use App\Http\Controllers\EmailTemplateController;
+use App\Http\Controllers\AccountsController;
 
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\CompanyController;
+// use App\Http\Controllers\ParentController;
 
 Route::get('/', [UserController::class,'login'])->name("login");
 Route::post('/login', [UserController::class, 'postLogin']);
@@ -173,11 +175,11 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 
         Route::group(["prefix"=>"send-message"], function(){
             Route::get('/',[CommunicationController::class,'index']);
-            Route::post('/init',[CommunicationController::class,'init']);
-            Route::post('/listing',[CommunicationController::class,'listing']);
-            Route::post('/comm_students',[CommunicationController::class,'comm_students']);
-            Route::post("getStudents",[CommunicationController::class,'getStudents']);
-            Route::post("postMessage",[CommunicationController::class,'postMessage']);
+            // Route::post('/init',[CommunicationController::class,'init']);
+            // Route::post('/listing',[CommunicationController::class,'listing']);
+            // Route::post('/comm_students',[CommunicationController::class,'comm_students']);
+            // Route::post("getStudents",[CommunicationController::class,'getStudents']);
+            // Route::post("postMessage",[CommunicationController::class,'postMessage']);
         }); 
 
         Route::group(["prefix"=>"sms-template"], function(){
@@ -194,10 +196,10 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 });
 
 
-Route::group(["before"=>"auth","middleware"=>["auth","parents"]], function(){
+// Route::group(["before"=>"auth","middleware"=>["auth","parents"]], function(){
 
-    Route::group(["prefix"=>"parents"], function(){
-        Route::get('/',[ParentController::class,'index']);
-    }); 
+//     Route::group(["prefix"=>"parents"], function(){
+//         Route::get('/',[ParentController::class,'index']);
+//     }); 
 
-});
+// });

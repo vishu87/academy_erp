@@ -4,20 +4,20 @@
 <div class="" ng-controller="master_leads_controller" ng-init="init()">
 	<div class="page-header row">
 		<div class="col-6">
-			<h3>Master Leads</h3>
+			<h3>Lead Variables</h3>
 		</div>
 	</div>
 		<div class="row">
-			<div class="col-md-4">
+			<div class="col-xl-4 col-md-6">
 				@include('manage.masterLeads.lead_for')
 			</div>
-			<div class="col-md-4">
+			<!-- <div class="col-xl-4 col-md-6">
 				@include('manage.masterLeads.lead_status')
-			</div>
-			<div class="col-md-4">
+			</div> -->
+			<div class="col-xl-4 col-md-6">
 				@include('manage.masterLeads.lead_reasons')
 			</div>
-			<div class="col-md-4">
+			<div class="col-xl-4 col-md-6">
 				@include('manage.masterLeads.lead_sources')
 			</div>
 		</div>

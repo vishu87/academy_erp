@@ -20,7 +20,7 @@
 				<div class="col-md-6">
 					<ul class="menu">
 						<li class="active">
-							<a href="#">SMS Templates</a>
+							<a href="#">List of Templates</a>
 						</li>
 					</ul>
 				</div>
@@ -35,6 +35,7 @@
 					<thead>
 						<tr>
 							<th>SN</th>
+							<th>Name</th>
 							<th>For</th>
 							<th>Template</th>
 							<th>DLT Template ID</th>
@@ -46,6 +47,7 @@
 					<tbody>
 						<tr ng-repeat="template in templates">
 							<td>@{{$index+1}}</td>
+							<td>@{{template.name}}</td>
 							<td>
 								@{{template.type==1?'Promotional':''}}
 								@{{template.type==2?'Transactional':''}}

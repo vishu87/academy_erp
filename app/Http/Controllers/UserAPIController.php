@@ -85,6 +85,7 @@ class UserAPIController extends Controller {
 				DB::table('roles')->insert([
 					"title"=>$request->title,
 					"access_rights"=> implode(",",$request->access_rights),
+					"added_by" => $user->id,
 					"client_id" => $user->client_id
 				]);
 			}
@@ -270,8 +271,9 @@ class UserAPIController extends Controller {
 	    		$user_row->mobile = $request->mobile;
 		        $user_row->role = $request->role;
 		        $user_row->city_id = $request->city_id;
-	    		
-	    		$password = User::getRandPassword();
+	    			
+	    		$password = $request->username;
+	    		// $password = User::getRandPassword();
 	    		$user_row->password = Hash::make($password);
 	    		$user_row->password_check = $password;
 	    		

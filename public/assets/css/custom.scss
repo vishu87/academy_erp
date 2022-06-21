@@ -290,7 +290,6 @@ h4.section-title {
 span.has-error {
 	color: red;
 	font-size: 12px;
-
 }
 
 .fl-btn,.ex-btn {
@@ -1006,3 +1005,166 @@ img.round{
 	}
 	background: #FFF;
 }
+
+.filter-box {
+	background: #EEE;
+	padding: 5px;
+	border-radius: 5px;
+	margin-bottom: 15px;
+}
+.login-bg{
+	background:url('../images/banner3.jpg') no-repeat;
+	background-color:rgba(0,0,0,0.8);
+	background-blend-mode:multiply;
+	background-size:cover;
+	height: 100vh;
+	label{
+		color: #ffff;
+		font-size: 12px;
+	}
+	.login-control{
+		background-color: rgba(255, 255, 255, 0.15);
+		border: none;
+		box-shadow: none;
+		border-radius: 30px;
+		padding: 20px;
+		color: #fff;
+		font-size: 14px;
+	}
+	h1{
+		font-size: 32px;
+		color: #fff;
+		margin-bottom: 30px;
+	}
+	.table-div{
+		display: table;
+		width: 100%;
+		margin: 0 -5px;
+		> div {
+			display: table-cell;
+			width: 50%;
+			padding-left:5px;
+			padding-right:5px;
+			vertical-align: middle;
+		}
+	}
+	a{
+		text-decoration: none;
+	}
+	.login-btn{
+		width: 100%;
+		padding:8px 15px;
+		background-color:#fff;
+		border-radius:30px;
+		border:1px solid #fff;
+		box-shadow:none;
+		transition: all 0.3s ease;
+		color:#000;
+		display: block;
+		text-align: center;
+		font-size: 14px;
+		&:hover{
+			background-color:transparent;
+			border: 1px solid rgba(255,255,255,0.5);
+			color: #fff;
+		}
+		&:active,&:focus{
+			box-shadow: none;
+			outline: none;
+		}
+	}
+	.text-link{
+		// text-decoration:none;
+		font-size: 12px;
+		display: inline-block;
+		color: #fff;
+		text-decoration: underline;
+		&:hover{
+			opacity: 0.8;
+		}
+
+	}
+}
+@media only screen and (max-width: 600px) {
+	.mob-mt-5{
+		margin-top: 32px;
+	}
+	.login-bg{
+		.d-flex{
+			display: block ! important;
+		}
+		.w-50{
+			width: 100% ! important;
+		}
+	}
+}
+.welcome-nav{
+	position:relative;
+	display: inline-block;
+	transition: all 0.2s ease;
+	span.name{
+		padding:10px 0;
+		display: inline-block;
+		cursor: pointer;
+		position:relative;
+		padding-right:18px;
+		transition: all 0.2s ease;
+
+		&:after{
+			content:'';
+			position:absolute;
+			top: 14px;
+			right: 0;
+			width: 10px;
+			height: 10px;
+			border-top:1px solid #000;
+			border-left:1px solid #000;
+			transform: rotate(-135deg);
+			transition: all 0.2s ease;
+
+		}
+	}
+	.menu{
+		position: absolute;
+    width: 180px;
+    right: 0;
+    top: 35px;
+    background: #fff;
+    box-shadow: 0 0 2px rgba(0,0,0,0.3);
+    display: none;
+    text-align: left;
+		transition: all 0.2s ease;
+
+		ul{
+			list-style: none;
+			padding-left:0;
+			text-align: left;
+			margin-bottom:0;
+			li{
+				display: block;
+				a{
+					color: inherit;
+					padding:10px;
+					display: block;
+					&:hover{
+
+					}
+				}
+			}
+		}
+	}
+	&:hover{
+		span.name{
+			
+			&:after{
+				top: 20px;
+				transform: rotate(45deg);
+			}
+		}
+		.menu{
+			display: block;
+		}
+	}
+}
+
+

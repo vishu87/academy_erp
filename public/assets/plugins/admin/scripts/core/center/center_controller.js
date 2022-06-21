@@ -125,7 +125,7 @@ app.controller('CenterController',function($scope , $http, $timeout , DBService,
 	            }
 	        }).then(function (resp) {
 	            if(resp.data.success){
-	            	$scope.saveImage(resp.data.path);
+	            	$scope.saveImage(resp.data.url, resp.data.url_thumb);
 	            } else {
 	            	alert(resp.data.message);
 	            }
@@ -140,9 +140,10 @@ app.controller('CenterController',function($scope , $http, $timeout , DBService,
 		$scope.imageProcessing = false;
     }
 
-    $scope.saveImage = function(path){
+    $scope.saveImage = function(path, thumb){
     	$scope.path.center_id = $scope.center.id;
     	$scope.path.path_url = path;
+    	$scope.path.thumb_url = thumb;
     	DBService.postCall($scope.path,'/api/centers/save-image').then(function(data){
     		if(data.success){
     			bootbox.alert(data.message);
@@ -353,4 +354,45 @@ app.controller('CenterController',function($scope , $http, $timeout , DBService,
    	$scope.hideModal1 = function(modal_id){
 	    $("#"+modal_id).modal("hide");
    }
+
+	$scope.addCoach = function(group_coach, group_id){
+		$scope.group_coach = {};
+		$scope.group_id = group_id;
+		$scope.group_coach = group_coach;
+		DBService.getCall('/api/centers/coach').then(function(data){
+			if(data.success){
+				$scope.coachs = data.coachs;	
+			}
+		});
+		$("#add_coach_modal").modal('show');
+	}
+
+
+	$scope.submitCoach = function(){
+		$scope.processingCoach = true;
+		DBService.postCall({coach : $scope.coach_id, group_id : $scope.group_id},'/api/centers/save-coach').then(function(data){
+			if(data.success){
+				$scope.fetchCenterGroups();
+    			bootbox.alert(data.message);
+				$("#add_coach_modal").modal('hide');
+			}
+			$scope.processingCoach = false;
+		});
+	}
+
+	$scope.removeCoach = function(id, index){
+		bootbox.confirm("Are you sure?", (check)=>{
+	      	if (check) {
+				DBService.getCall('/api/centers/remove-coach/'+id).then(function(data){
+					if(data.success){
+						bootbox.alert(data.message);
+						$scope.group_coach.splice(index,1);	
+					}
+				});
+	    	}
+    	});
+	}
+
+
+
 });

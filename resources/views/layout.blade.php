@@ -15,7 +15,26 @@
     <!-- <link rel="stylesheet" href="{{url('assets/plugins/admin/scripts/jquery-ui.css')}}" type="text/css"> -->
     <link rel="stylesheet" href="{{url('assets/plugins/admin/scripts/ui-cropper.css')}}" type="text/css">
     <link rel="stylesheet" href="{{url('assets/plugins/admin/scripts/jquery-cropper/croppie.css')}}" type="text/css">
-    
+    <style type="text/css">
+        .center-images {
+            overflow-x: auto;
+        }
+        .center-images > div {
+            display: inline-block;
+            border: 1px solid #EEE;
+            margin: 5px;
+            position: relative;
+        }
+        .center-images > div img{
+            width: 150px;
+            height: auto;
+        }
+        .center-images > div > .btn-remove{
+            position: absolute;
+            right: 5px;
+            top:  5px;
+        }
+    </style>
 </head>
 <body ng-app="app">
     <div class="wrapper">

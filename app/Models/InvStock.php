@@ -9,7 +9,7 @@ class InvStock extends Model
 
     protected $table = 'inv_stocks';
 
-    public static function updateStock($city_id, $center_id, $item_id, $quantity){
+    public static function updateStock($city_id, $center_id, $item_id, $quantity, $client_id){
 
     	$stocks = DB::table('inv_stocks')->where('city_id',$city_id)->where('center_id',$center_id)->where('item_id',$item_id)->first();
 
@@ -18,7 +18,8 @@ class InvStock extends Model
 	    		'city_id'   => $city_id,
 	    		'center_id' => $center_id,
 	    		'item_id'   => $item_id,
-	    		'quantity'  => $quantity
+	    		'quantity'  => $quantity,
+	    		'client_id' => $client_id
 	    	]);    		
     	}else{
     		$quantity = $quantity+$stocks->quantity;
@@ -26,7 +27,8 @@ class InvStock extends Model
 	    		'city_id'   => $city_id,
 	    		'center_id' => $center_id,
 	    		'item_id'   => $item_id,
-	    		'quantity'  => $quantity
+	    		'quantity'  => $quantity,
+	    		'client_id' => $client_id
 	    	]); 
     	}
     	return $stocks;

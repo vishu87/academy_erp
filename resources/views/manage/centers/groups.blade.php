@@ -47,6 +47,14 @@
 					<button type="button" class="btn btn-light" ng-click="addTrainingDay(group.id)">
 						<i class="icon-plus icons "></i> Add Training Day
 					</button>
+
+					<button type="button" class="btn btn-light" ng-click="addCoach(group.group_coach, group.id)">
+						<i class="icon-plus icons "></i> Manage Coaches
+					</button>
+					<ul class="list-group"  style="list-style: none; display: inline-block; margin-left: 0; padding-left: 0">
+                  		<ol class="list-group-item" ng-repeat ="coach in group.group_coach" style="display: inline-block; padding: 5px; background: #EEE;">@{{coach.name}}</ol>
+              		</ul>
+
 				</div>
 
 			</div>

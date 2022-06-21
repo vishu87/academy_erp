@@ -61,7 +61,7 @@ class RequestController extends Controller {
 			$invRequest->company_id	     = $request->company_id;
 			$invRequest->date            = date("Y-m-d",strtotime($request->date));
 			$invRequest->invoice_number  = $request->invoice_number;
-			$invRequest->document        = $request->file;
+			$invRequest->document        = $request->document;
 			$invRequest->remark          = $request->remark;
 			$invRequest->save();
 
@@ -191,11 +191,11 @@ class RequestController extends Controller {
 
     		foreach ($items as $item) {
     			if($invRequest->in_center_id){
-					InvStock::updateStock($invRequest->in_city_id, $invRequest->in_center_id, $item->item_id, $item->quantity);
+					InvStock::updateStock($invRequest->in_city_id, $invRequest->in_center_id, $item->item_id, $item->quantity, $user->client_id);
 				}
 				
 				if($invRequest->out_center_id){
-					InvStock::updateStock($invRequest->out_city_id, $invRequest->out_center_id, $item->item_id, -1*$item->quantity);
+					InvStock::updateStock($invRequest->out_city_id, $invRequest->out_center_id, $item->item_id, -1*$item->quantity, $user->client_id);
 				}
     		}
     	}

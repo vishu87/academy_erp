@@ -33,3 +33,9 @@ button {
 		}
 	}
 }
+
+span {
+	&.has-error {
+		color: #F00;
+	}
+}

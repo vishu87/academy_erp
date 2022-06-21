@@ -430,11 +430,30 @@ ALTER TABLE `companies` ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
 CREATE TABLE `user_students` ( `id` INT NOT NULL AUTO_INCREMENT , `user_id` INT NULL , `student_id` INT NULL , `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , PRIMARY KEY (`id`)) ENGINE = InnoDB;
 
 ALTER TABLE `users`  ADD `last_login` TIMESTAMP NULL DEFAULT NULL  AFTER `is_admin`;
-=======
-// pradeep 02/06/22
 
 ALTER TABLE `sms_templates` ADD `added_by` INT NULL DEFAULT NULL AFTER `dlt_pe_id`, ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
 ALTER TABLE `email_templates` ADD `added_by` INT NULL DEFAULT NULL AFTER `content`, ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
 
 ALTER TABLE `sessions` ADD `added_by` INT NULL DEFAULT NULL AFTER `end_date`, ADD `client_id` INT NULL DEFAULT NULL AFTER `added_by`;
 
+
+
+
+// vashistha
+
+ALTER TABLE `groups` CHANGE `remark` `remark` TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
+
+DROP - > groups table mein group_type_id
+
+ALTER TABLE `center_images` CHANGE `image_thumb` `image_thumb` MEDIUMTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL;
+
+ALTER TABLE `inv_stocks` ADD `client_id` INT NOT NULL AFTER `quantity`;
+
+
+
+ALTER TABLE `lead_for`  ADD `page_title` VARCHAR(255) NULL  AFTER `slug`,  ADD `page_description` TEXT NULL  AFTER `page_title`;
+ALTER TABLE `sms_templates`  ADD `name` VARCHAR(255) NULL  AFTER `id`;
+
+// pradeep 13-06-22
+
+ALTER TABLE `companies` ADD `gst` VARCHAR(50) NULL AFTER `address`, ADD `state_id` INT NULL AFTER `gst`, ADD `state_city_id` INT NULL AFTER `state_id`;

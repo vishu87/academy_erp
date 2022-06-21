@@ -37,16 +37,18 @@ class CompanyController extends Controller {
 		if ($validator->passes()) {
 
 			if($request->id){
-				$company = Company::find($request->id);
+				$company = Company::where("id",$request->id)->where("client_id",$user->client_id)->first();
 			}else{
 				$company = new Company;
 			}
-
-			$company->company_name	= $request->company_name;
-			$company->contact_no	= $request->contact_no;
-			$company->address       = $request->address;
-			$company->client_id    = $user->client_id;
-			$company->added_by     = $user->id;
+			$company->company_name = $request->company_name;
+			$company->contact_no = $request->contact_no;
+			$company->address = $request->address;
+			$company->gst = $request->gst;
+			$company->state_id = $request->state_id;
+			$company->state_city_id = $request->state_city_id;
+			$company->client_id = $user->client_id;
+			$company->added_by = $user->id;
 			$company->save();
 
 			$data['success'] = true;

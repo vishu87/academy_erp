@@ -70,35 +70,30 @@
                         <div class="col-md-12">
                             <h4 class="section-title">Lead Location</h4>
                         </div>
-                        <div class="col-md-3 form-group ">
-                            <label>Pincode</label>
-                            <input type="text" ng-model="leadData.pincode" class="form-control" autocomplete="off" ng-change="autoFillByPincode()">
-                        </div>
 
                         <div class="col-md-3 form-group ">
-                            <label>Locality </label>
-                            <select class="form-control" ng-model="leadData.client_address" ng-change="changeLocality()">
-                                <option >Select</option>
-                                <option ng-repeat="office in office_names"  ng-value="office.id">@{{office.office_name}}</option>
+                            <label>Locality</label>
+                            <input type="text" ng-model="leadData.client_address" class="form-control">
+                        </div>
+
+                        <div class="col-md-3 form-group">
+                            <label>State</label>
+                            <select class="form-control" ng-model="leadData.client_state_id" ng-change="getCities()">
+                                <option value="0">Select</option>
+                                <option ng-repeat="state in parameters.state" ng-value="state.value">@{{state.label}}</option>
                             </select>
                         </div>
 
                         <div class="col-md-3 form-group">
                                     
                             <label>City</label>
-                            <select class="form-control" ng-model="leadData.client_city_id" ng-change="getClientState()">
-                                <option >Select</option>
-                                <option ng-repeat="city in all_cities"  ng-value="city.id">@{{city.city_name}}</option>
+                            <select class="form-control" ng-model="leadData.client_city_id">
+                                <option value="0">Select</option>
+                                <option ng-repeat="city in parameters.cities"  ng-value="city.value">@{{city.label}}</option>
                             </select>
                         </div>
 
-                        <div class="col-md-3 form-group">
-                            <label>State</label>
-                            <select class="form-control" ng-model="leadData.client_state_id">
-                                <option >Select</option>
-                                <option ng-repeat="state in states" ng-value="state.id">@{{state.state_name}}</option>
-                            </select>
-                        </div>
+                        
 
                         <div class="col-md-12">
                             <h4 class="section-title">Training Location</h4>

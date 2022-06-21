@@ -66,6 +66,7 @@ app.controller('Company_controller', function($scope, $http, DBService){
   $scope.addCompany = function(){
     $scope.companyData = {};
     $("#company_modal").modal('show');
+    $scope.getStateCityCenter();
   }
 
   $scope.saveCompany = function(){
@@ -86,6 +87,7 @@ app.controller('Company_controller', function($scope, $http, DBService){
     $scope.companyData = {};
     $scope.companyData = JSON.parse(JSON.stringify(data));
     $("#company_modal").modal('show');
+    $scope.getStateCityCenter();
   }
 
   $scope.deleteCompany = function(id, index){
@@ -101,6 +103,23 @@ app.controller('Company_controller', function($scope, $http, DBService){
         }
     });
   }
+
+  $scope.getStateCityCenter = function(tag){
+    DBService.postCall({Tag:tag},"/api/get-state-city-center-data").then(function (data){  
+      if (data.success) {
+        $scope.state_city_center = data;
+      }
+    });
+  }
+
+
+  $scope.selectCity = function(state_id){
+    DBService.getCall("/api/cities/"+state_id).then(function(data){
+      if (data.success) {
+        $scope.cities = data.cities;
+      }
+    });
+  } 
 
 });
 

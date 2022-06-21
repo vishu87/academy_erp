@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 use Redirect, Validator, Hash, Response, Session, DB;
-use App\User, App\Center;
+use App\Models\User, App\Models\Center;
 
 class AccountsController extends Controller{ 
 

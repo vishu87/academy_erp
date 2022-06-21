@@ -15,6 +15,17 @@
                     <label>Slug<span class="text-danger"> *</span></label>
                     <input type="text" ng-model="lead_for.slug" required class="form-control">
                 </div>
+
+                <div class="form-group">
+                    <label>Page Title</label>
+                    <input type="text" ng-model="lead_for.page_title"  class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Page Description</label>
+                    <input type="text" ng-model="lead_for.page_description" class="form-control">
+                </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" ng-click="submitLeadFor()" class="btn btn-primary" ng-disabled="leadForProcessing">@{{(lead_for.id) ? "Update" : "Create" }} <span ng-show="leadForProcessing" class="spinner-border spinner-border-sm"></span></button>

@@ -1,36 +1,62 @@
+<?php $access_rights = Session::get("access_rights"); ?>
+
+<?php $condition = in_array(25, $access_rights["admin"]) ; ?>
+@if($condition)
 <li class="parent @if($sidebar == 'city') active @endif ">
     <a href="{{url('/city')}}"><i class="icon-settings icons "></i> <span>City</span></a>
 </li>
+@endif
 
+<?php $condition = in_array(15, $access_rights["admin"]) ; ?>
+@if($condition)
 <li class="parent @if($sidebar == 'center') active @endif">
     <a href="{{url('/centers')}}"><i class="icon-settings icons "></i> <span>Centers</span></a>
 </li>
+@endif
 
 
+<?php $condition = in_array(5, $access_rights["admin"]) ; ?>
+@if($condition)
 <li class="parent @if($sidebar == 'users') active @endif">
     <a><i class="icon-people icons "></i> <span>Users</span></a>
     <ul>
+        <?php $condition = in_array(5, $access_rights["admin"]) ; ?>
+        @if($condition)
       	<li>
       		<a href="{{url('users/view')}}" style="width: 150px;">
       		All Users</a>
       	</li>
-      	<!-- <li><a href="{{url('users/add')}}" style="width: 150px;">Add Users</a></li> -->
+        @endif
+
+        <?php $condition = in_array(25, $access_rights["admin"]) ; ?>
+        @if($condition)
       	<li><a href="{{url('users/user-roles')}}" style="width: 150px;">Role Manager</a></li>
-      	<li>
+        @endif
+      	
+        <?php $condition = in_array(22, $access_rights["admin"]) ; ?>
+        @if($condition)
+        <li>
       		<a href="{{url('users/staff-attendance')}}" style="width: 150px;">Staff Attendance</a>
       	</li>
-      	<!-- <li><a href="{{url('users/user-rights')}}" style="width: 150px;">Access Rights</a></li> -->
+        @endif
     </ul>
 </li>
+@endif
 
 
+<?php $condition = in_array(17, $access_rights["admin"]) ; ?>
+@if($condition)
 <li class="parent @if($sidebar == 'parameter') active @endif">
-    <a href="{{url('/parameters')}}"><i class="icon-settings icons "></i> <span>Parameters</span></a>
+    <a href="{{url('/parameters')}}"><i class="icon-settings icons "></i> <span>Report Parameters</span></a>
 </li>
+@endif
 
-<li class="parent @if($sidebar == 'settings') active @endif">
+<?php $condition = in_array(25, $access_rights["admin"]) ; ?>
+@if($condition)
+<!-- <li class="parent @if($sidebar == 'settings') active @endif">
     <a href="{{url('/settings')}}"><i class="icon-settings icons "></i> <span>Settings</span></a>
-</li>
+</li> -->
+@endif
 
 <!-- <li class="parent @if($sidebar == 'reports') active @endif">
     <a><i class="icon-list icons "></i> <span>Reports</span></a>
