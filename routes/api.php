@@ -331,7 +331,7 @@ Route::group(["prefix"=>"subscriptions"], function(){
     Route::post('/get-payment-options',[SubscriptionController::class, 'getPaymentOptions']);
     Route::post('/get-payment-items',[SubscriptionController::class, 'paymentItems']);
     Route::post('/create-order',[SubscriptionController::class, 'createOrder']);
-    Route::post('/process-order',[SubscriptionController::class, 'createOrder']);
+    Route::post('/process-order',[SubscriptionController::class, 'processWebOrder']);
 });
 
 

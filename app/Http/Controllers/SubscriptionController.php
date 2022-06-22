@@ -220,7 +220,7 @@ class SubscriptionController extends Controller
             $student->save();
             $payment->save();
 
-            PaymentHistory::sendReceipt($payment->id, true);
+            // PaymentHistory::sendReceipt($payment->id, true);
 
             $data['success'] = true;
             $data["datetime"] = date("d-m-Y H:i:s");
