@@ -198,7 +198,7 @@
               <label>City</label>
               <select class="form-control" ng-model="groupShifting.city_id">
                 <option ng-value="">Select</option>
-                <option ng-value="city.id" ng-repeat="city in state_city_center.city" >@{{city.city_name}}</option>
+                <option ng-value="city.value" ng-repeat="city in state_city_center.city" >@{{city.label}}</option>
               </select>
             </div>
 
@@ -206,7 +206,7 @@
               <label>Center</label>
               <select class="form-control" ng-model="groupShifting.center_id">
                 <option ng-value="">Select</option>
-                <option ng-value="center.id" ng-repeat="center in state_city_center.center" ng-if="groupShifting.city_id == center.city_id">@{{center.center_name}}</option>
+                <option ng-value="center.value" ng-repeat="center in state_city_center.center" ng-if="groupShifting.city_id == center.city_id">@{{center.label}}</option>
               </select>
             </div>
 
@@ -214,7 +214,7 @@
               <label>Group</label>
               <select class="form-control" ng-model="groupShifting.group_id">
                 <option ng-value="">Select</option>
-                <option ng-value="group.id" ng-repeat="group in state_city_center.group" ng-if="groupShifting.center_id == group.center_id">@{{group.group_name}}</option>
+                <option ng-value="group.value" ng-repeat="group in state_city_center.group" ng-if="groupShifting.center_id == group.center_id">@{{group.label}}</option>
               </select>
             </div>
 
