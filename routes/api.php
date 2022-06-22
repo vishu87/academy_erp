@@ -319,6 +319,7 @@ Route::group([], function(){
 
 Route::get('/get-state-city-center',[WebApiController::class, 'stateCityCenter']);
 Route::get('/get-state-city/{state_id}',[WebApiController::class, 'stateCity']);
+
 Route::group(["prefix"=>"registrations"], function(){
     Route::post('/store',[WebApiController::class, 'store']);
     Route::post('/store-demo',[WebApiController::class, 'storeDemo']);
