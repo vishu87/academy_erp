@@ -25,7 +25,7 @@ class StudentPerformanceController extends Controller{
 
         $records = DB::table('students as stu')->select('stu.id','stu.name','player_evaluation.status')->leftJoin("player_evaluation", function($query) use ($session_id) {
                 $query->on("player_evaluation.student_id",'=','stu.id')->where("player_evaluation.session_id","=",$session_id);
-            })->where("stu.group_id",$group_id)->where("stu.inactive",0)->where("students.client_id",$user->client_id)->get();
+            })->where("stu.group_id",$group_id)->where("stu.inactive",0)->where("stu.client_id",$user->client_id)->get();
 
         $data["success"] = true;
         $data["students"] = $records;
@@ -36,7 +36,7 @@ class StudentPerformanceController extends Controller{
     public function getStudentRecord(Request $request){
 
         $user = User::AuthenticateUser($request->header("apiToken"));
-        
+
         $student_id  = $request->student_id;
         $session_id  = $request->session_id;
 
