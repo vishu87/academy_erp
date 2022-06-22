@@ -77,6 +77,7 @@ class Lead extends Model
             $new_lead = true;
         } else {
             $new_lead = false;
+            $lead->status = 8;
         }
 
         if(!$lead->name) $lead->name = $open_lead->name;
