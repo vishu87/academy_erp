@@ -58,7 +58,7 @@ app.controller("Reg_controller", function($scope, $http, DBService) {
     $scope.getStateCity = function(){
       DBService.getCall("/api/cities/"+$scope.formData.address_state_id).then(function(data){
         if (data.success) {
-          $scope.state_cities = data.state_cities;
+          $scope.state_cities = data.cities;
         }else{
           bootbox.alert(data.message);  
         }
