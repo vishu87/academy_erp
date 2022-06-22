@@ -17,7 +17,8 @@ class Lead extends Model
     }
 
     public static function lead_sources($client_id){
-    	return DB::table('lead_sources')->where("client_id",$client_id)->select("id as value","source as label")->where('parent_id',0)->get();
+        // return DB::table('lead_sources')->where("client_id",$client_id)->select("id as value","source as label")->where('parent_id',0)->get();
+    	return DB::table('lead_sources')->where("client_id",$client_id)->select("id as value","source as label")->get();
     }
 
     public static function lead_for_types($client_id){
