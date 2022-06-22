@@ -56,8 +56,7 @@
 	</div>
 
 	<div ng-if="tab == 2">
-		<x-web.success message="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua."></x-web.success>
+		<x-web.success message="Thank you registering. We will contact you soon."></x-web.success>
 	</div>
 
 </x-web.container>
