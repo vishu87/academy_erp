@@ -64,13 +64,23 @@ class SubscriptionController extends Controller
             
             $price = PaymentHistory::getAmount($group_id,$fix_type_id);
 
-            $payment_items[] = [
-                "category" => $category->category_name,
-                "amount" => $price->price,
-                "tax_perc" => $price->tax_perc,
-                "total_amount" => round($price->total)
-            ];
-            $total_amount += round($price->total);
+            if($price){
+                $payment_items[] = [
+                    "category" => $category->category_name,
+                    "amount" => $price->price,
+                    "tax_perc" => $price->tax_perc,
+                    "total_amount" => round($price->total)
+                ];
+                $total_amount += round($price->total);
+            } else {
+                $payment_items[] = [
+                    "category" => $category->category_name,
+                    "amount" => 0,
+                    "tax_perc" => 0,
+                    "total_amount" => 0
+                ];
+            }
+            
             
         }
 
