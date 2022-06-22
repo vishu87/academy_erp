@@ -44,14 +44,14 @@
     	<div class="portlet-body ng-cloak">
       	
       	<div class="table-responsive">
-	    		<table class="table">
+	    		<table class="table table-compact">
 			 			<thead>
 			 				<tr class="">
-			 					<td style="width:50px;">SN</td>
-			 					<td>Name</td>
-			 					<td>Start Date</td>
-			 					<td>End Date</td>
-			 					<td class="text-right">#</td>
+			 					<th style="width:50px;">SN</th>
+			 					<th>Name</th>
+			 					<th>Start Date</th>
+			 					<th>End Date</th>
+			 					<th class="text-right">#</th>
 			 				</tr>
 			 			</thead>
 			 			<tbody>
