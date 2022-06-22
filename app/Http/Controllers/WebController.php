@@ -38,9 +38,8 @@ class WebController extends Controller
 
     public function demoShedule(){
 
-        $heading = "Demo Registration Form";
-        $description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam";
+        $heading = "Schedule a demo";
+        $description = "Please fill the form below to schedule a demo with FCBU";
 
         return view('web.demo_schedule',[
             "heading" => $heading,
