@@ -42,30 +42,32 @@
 	    </div>
 
     	<div class="portlet-body ng-cloak">
-      
-    		<table class="table">
-	 			<thead>
-	 				<tr class="">
-	 					<td style="width:50px;">SN</td>
-	 					<td>Name</td>
-	 					<td>Start Date</td>
-	 					<td>End Date</td>
-	 					<td class="text-right">#</td>
-	 				</tr>
-	 			</thead>
-	 			<tbody>
-	 				<tr ng-repeat="session in sessionList track by $index">
-	 					<td>@{{$index + 1}}</td>
-	 					<td>@{{session.name}}</td>
-	 					<td>@{{session.start_date}}</td>
-	 					<td>@{{session.end_date}}</td>
-	 					<td class="text-right">
-	 						<button class="btn btn-sm btn-light" ng-click="editSession(session)">Edit</button>
-	 						<button class="btn btn-sm btn-primary" ng-click="deleteSession(session.id)">Delete</button>
-	 					</td>
-	 				</tr>
-	 			</tbody>
-	 		</table>
+      	
+      	<div class="table-responsive">
+	    		<table class="table">
+			 			<thead>
+			 				<tr class="">
+			 					<td style="width:50px;">SN</td>
+			 					<td>Name</td>
+			 					<td>Start Date</td>
+			 					<td>End Date</td>
+			 					<td class="text-right">#</td>
+			 				</tr>
+			 			</thead>
+			 			<tbody>
+			 				<tr ng-repeat="session in sessionList track by $index">
+			 					<td>@{{$index + 1}}</td>
+			 					<td>@{{session.name}}</td>
+			 					<td>@{{session.start_date}}</td>
+			 					<td>@{{session.end_date}}</td>
+			 					<td class="text-right">
+			 						<button class="btn btn-sm btn-light" ng-click="editSession(session)">Edit</button>
+			 						<button class="btn btn-sm btn-primary" ng-click="deleteSession(session.id)">Delete</button>
+			 					</td>
+			 				</tr>
+			 			</tbody>
+		 			</table>
+	 			</div>
 
     	</div>
 
