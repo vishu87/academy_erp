@@ -81,7 +81,10 @@ class UserController extends Controller {
 						$count++;
 						break;
 					}
-				} else {
+				} elseif ($user->user_type == 11) {
+					return Redirect::to("clients");
+				}
+				else {
 					return Redirect::to("parents");
 				}
                 
@@ -184,6 +187,36 @@ class UserController extends Controller {
         $data['success'] = false;
 		$data['message'] = "New password has been sent to your registered email id";
 		return Response::json($data, 200, array());
+    }
+
+
+    public function changePassword(){
+        return view('change_password',['menu' => "academy"]);
+    }
+
+    public function updatePassword(Request $request){
+        $cre = ["old_password"=>$request->old_password,"new_password"=>$request->new_password,"confirm_password"=>$request->confirm_password];
+        $rules = ["old_password"=>'required',"new_password"=>'required|min:5',"confirm_password"=>'required|same:new_password'];
+        $old_password = Hash::make($request->old_password);
+        $validator = Validator::make($cre,$rules);
+        if ($validator->passes()) { 
+            if (Hash::check($request->old_password, Auth::user()->password )) {
+                $password = Hash::make($request->new_password);
+                $user = User::find(Auth::id());
+                $user->password = $password;
+                $user->password_check = $request->new_password;
+                $user->save();
+
+                return Redirect::back()->with('success', 'Password changed successfully ');
+                
+            } else {
+                return Redirect::back()->withInput()->with('failure', 'Old password does not match.');
+            }
+        } else {
+            return Redirect::back()->withErrors($validator)->withInput();
+        }
+
+        return Redirect::back()->withErrors($validator)->withInput()->with('failure','Unauthorised Access or Invalid Password');
     }
 
 	// public function addAccessRights(){

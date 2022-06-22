@@ -23,21 +23,18 @@ use App\Http\Controllers\CenterController;
 use App\Http\Controllers\ParameterController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\InventoryController;
-
 use App\Http\Controllers\AppAPIController;
 use App\Http\Controllers\CommunicationController;
 use App\Http\Controllers\WebApiController;
 use App\Http\Controllers\RenewalWebController;
-
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\SMSTemplateController;
 use App\Http\Controllers\EmailTemplateController;
-
 use App\Http\Controllers\AccountsController;
-
+use App\Http\Controllers\ClientsController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -288,7 +285,7 @@ Route::group([], function(){
     Route::group(["prefix"=>"clients"], function(){
         Route::post('/list',[ClientsController::class, 'getList']);
         Route::post('/save',[ClientsController::class, 'save']);
-        Route::post('/delete',[ClientsController::class, 'delete']);
+        Route::get('/delete/{id}',[ClientsController::class, 'delete']);
     });
 
     Route::group(["prefix"=>"reports"], function(){

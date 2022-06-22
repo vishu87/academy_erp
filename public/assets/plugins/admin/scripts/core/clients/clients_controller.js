@@ -4,57 +4,46 @@ app.controller("ClientsController", function($scope, $http, DBService) {
 	$scope.update = false;
 	
 	$scope.init = function(){
-		DBService.postCall({},"/api/clients/list")
-		.then(function(data)	{
+		DBService.postCall({},"/api/clients/list").then(function(data){
 			$scope.clientsRecord = data.list;
 		});
 	}
 
-	$scope.submit = function(client){
-		client.id = 0;
-		DBService.postCall({client:client},"/api/clients/save")
-		.then(function(data){
+	$scope.addClient = function(){
+		$("#client_modal").modal('show');
+	}
+
+	$scope.submit = function(){
+		$scope.processing = true;
+		DBService.postCall($scope.formData,"/api/clients/save").then(function(data){
 			if (data.success) {
 				$scope.init();
-				alert(data.message);
-				$scope.addClinet = {}; 
+				$("#client_modal").modal('hide');
+				bootbox.alert(data.message);
 			}else{
-				alert(data.message);
+				bootbox.alert(data.message);
 			}
+			$scope.processing = false;
 		});
 	}
 
 	$scope.edit = function(client){
-		$scope.update = true;
-		$scope.addClinet = client; 
+		$scope.formData = JSON.parse(JSON.stringify(client));
+		$("#client_modal").modal('show');
 	}
 
-	$scope.updateData = function(client){
-		DBService.postCall({client:client},"/api/clients/save")
-		.then(function(data){
-			if (data.success) {
-				$scope.update = false;
-				$scope.init();
-				alert(data.message);
-				$scope.addClinet = {}; 
-			}else{
-				alert(data.message);
+
+	$scope.delete = function(id, index){
+	bootbox.confirm("Are you sure?", (check)=>{
+	      if(check){
+				DBService.getCall("/api/clients/delete/"+id).then(function(data){
+					if(data.success){
+						$scope.clientsRecord.splice(index,1);
+						bootbox.alert(data.message);
+					}
+				});
 			}
 		});
-	}
-
-	$scope.delete = function(id){
-		if (confirm("are you sure")) {
-			DBService.postCall({id:id},"/api/clients/delete")
-			.then(function(data){
-				if (data.success) {
-					$scope.init();
-					alert(data.message);
-				}else{
-					alert(data.message);
-				}
-			});
-		}
 	}
 
 });
