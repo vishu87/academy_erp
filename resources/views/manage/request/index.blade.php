@@ -44,6 +44,7 @@
 		 			<thead>
 		 				<tr>
 		 					<th>SN</th>
+		 					<th>Date</th>
 		 					<th>Type</th>
 		 					<th>Company Name</th>
 		 					<th>Invoice Number</th>
