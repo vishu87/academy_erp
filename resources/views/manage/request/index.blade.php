@@ -55,12 +55,12 @@
 		 			<tbody>
 		 				<tr ng-repeat="data in dataset track by $index">
 		 					<td>@{{$index+1}}</td>
+		 					<td>@{{ data.date | date }}</td>
 		 					<td ng-if="data.type == 1">Purchase</td>
 		 					<td ng-if="data.type == 2">Transfer</td>
 		 					<td ng-if="data.type == 3">Consume</td>
 		 					<td>@{{data.companyName}}</td>
 		 					<td>@{{data.invoice_number}}</td>
-		 					<td width="800px">@{{data.remark}}</td>
 		 					<td>@{{data.status_name}}</td>
 		 					<td class="text-right">
             					<button type="button" class="btn btn-sm btn-light" ng-click="viewInventoryRequest(data.id)">View</button>
