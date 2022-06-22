@@ -75,7 +75,7 @@
 		<div class="col-4">
 			<x-select label="Address City" name="formData.address_city_id" :required="true">
 				<option value="">Select City</option>
-				<option  ng-repeat="city in state_cities" value="@{{city.id}}">@{{city.city_name}}</option>
+				<option  ng-repeat="city in state_cities" value="@{{city.value}}">@{{city.label}}</option>
 			</x-select>
 		</div>
 
