@@ -70,8 +70,10 @@ class MasterLeadsController extends Controller
                 "page_description" => $request->page_description
             ];
 
+            $check = DB::table('lead_for')->where('slug',$request->slug)->where("client_id",$user->client_id);
+            if($request->id) $check = $check->where("lead_for.id","!=",$request->id);
 
-            $check = DB::table('lead_for')->where('slug',$request->slug)->where("client_id",$user->client_id)->first();
+            $check = $check->first();
 
             if($check){
                 $data['success'] = false;
