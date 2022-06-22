@@ -142,18 +142,6 @@ class SubscriptionController extends Controller
                 "client_id" => $client_id
             ));
 
-            // foreach($payment_items as $payment_item){
-            //     DB::table("order_items")->insert(array(
-            //         "order_id" => $table_order_id,
-            //         "type_id" => $payment_item["type_id"],
-            //         "amount" => $payment_item["amount"],
-            //         "tax_perc" => $payment_item["tax_perc"],
-            //         "tax" => $payment_item["tax"],
-            //         "total_amount" => $payment_item["total_amount"],
-
-            //     ));
-            // }
-
             $data['success'] = true;
             $data['order_id'] = $order_id;
             $data['key'] = $this->get_key();
