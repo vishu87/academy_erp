@@ -1,6 +1,6 @@
 @extends('layout')
 
-<div class="" ng-controller="communicationCtrl" ng-init="listing()">
+<div class="" ng-controller="communicationListCtrl" ng-init="listing()">
 @section('sub_header')
 	<div class="sub-header">
 		<div class="table-div full">
@@ -33,15 +33,14 @@
 
 		<div class="portlet-body ng-cloak">
 			<div class="table-responsive" ng-if="!loading && communications.length > 0">
-				<table class="table">
+				<table class="table table-compact">
 					<thead>
 						<tr>
 							<th>SN</th>
-							<th>Send Type</th>
-							<th>SMS Type</th>
+							<th>Date</th>
+							<th>Type</th>
 							<th>Subject</th>
 							<th>Message</th>
-							<th>Date</th>
 							<th>Added By</th>
 							<th></th>
 						</tr>
@@ -50,11 +49,10 @@
 					<tbody>
 						<tr ng-repeat="comm in communications">
 							<td>@{{ (pn-1)*max + $index + 1}}</td>
-							<td>@{{comm.send_types}}</td>
-							<td>@{{comm.sms_types}}</td>
-							<td>@{{comm.subject}}</td>
-							<td>@{{comm.message_show}}</td>
 							<td>@{{comm.c_date}}</td>
+							<td>@{{comm.send_types}}</td>
+							<td>@{{comm.subject ? comm.subject : '-'}}</td>
+							<td>@{{comm.message_show}}</td>
 							<td>@{{comm.name}}</td>
 							<td><button type="button" class="btn btn-sm btn-light" ng-click="viewStudetns(comm)" >View Details</button></td>
 						</tr>
@@ -69,27 +67,24 @@
 		    <div class="modal-content">
 
 	        <div class="modal-header">
-	            <h4 class="modal-title">Communication Students</h4>
+	            <h4 class="modal-title">Details</h4>
 	            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i class="icons icon-close"></i></button>
 	        </div>
 
 
 		        <div class="modal-body">
-		            
-					<table class="table table-bordered">
+					<table class="table table-compact">
 						<tr>
 							<td><strong>Send Type :</strong> @{{open_comm.send_types}}</td>
-							<td><strong>SMS Type :</strong> @{{open_comm.sms_types}}</td>
 							<td><strong>Added By :</strong>@{{open_comm.name}}</td>
 						</tr>
 						<tr>
-							<td><strong>Subject :</strong>@{{open_comm.subject}}</td>
-							<td colspan="2"><strong>SMS Content :</strong>@{{open_comm.sms_content}}</td>
+							<td colspan="2"><strong>Subject :</strong>@{{open_comm.subject}}</td>
 						</tr>
 						<tr>
-							<td colspan="3">
-								<strong>Message :</strong>
-								<div ng-bind-html="open_comm.message"></div>
+							<td colspan="2">
+								<strong>Content :</strong>
+								<div>@{{ open_comm.content }}</div>
 							</td>
 						</tr>
 					</table>
@@ -107,31 +102,34 @@
 
 							</div>
 						</div>
-						<table class="table  table-compact table-bordered table-stripped">
-							<tr>
-								<th>SN</th>
-								<th>Name</th>
-								<th>DOB</th>
-								<th>Subscription End</th>
-								<th>Mobile</th>
-								<th>Center</th>
-								<th>Group</th>
-							</tr>
-							<tbody>
-								<tr ng-repeat="student in open_comm.students">
-									<td>@{{$index + 1}}</td>
-
-									<td><span style="display: block;">@{{student.name}}</span></td>
-									<td>@{{student.dob}}</td>
-									<td>@{{student.doe}}</td>
-									<td style="cursor: pointer;" ng-click="showNumber(student.father_mob)">
-										<a href="javascript:;">@{{student.mobile_trimmed}}</a>
-									</td>
-									<td>@{{student.center_name}}</td>
-									<td>@{{student.group_name}}</td>
+						<div class="table-responsive">
+							<table class="table table-compact table-bordered table-stripped">
+								<tr>
+									<th>SN</th>
+									<th>Name</th>
+									<th>DOB</th>
+									<th>Subscription End</th>
+									<th>Center</th>
+									<th>Group</th>
+									<th>Status</th>
 								</tr>
-							</tbody>
-						</table>
+								<tbody>
+									<tr ng-repeat="student in open_comm.students">
+										<td>@{{$index + 1}}</td>
+
+										<td><span style="display: block;">@{{student.name}}</span></td>
+										<td>@{{student.dob}}</td>
+										<td>@{{student.doe}}</td>
+										<td style="cursor: pointer;" ng-click="showNumber(student.father_mob)">
+											<a href="javascript:;">@{{student.mobile_trimmed}}</a>
+										</td>
+										<td>@{{student.center_name}}</td>
+										<td>@{{student.group_name}}</td>
+										<td>@{{student.status == 0 ? 'Pending' : 'Sent'}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
 					</div>	
 					<div class="modal-footer">
                 <button type="button" data-dismiss="modal" aria-hidden="true" class="btn btn-primary" > Close </button>
@@ -140,10 +138,11 @@
 		    </div>
 		</div>
 	</div>
+	
 </div>
 
 @endsection
 
 @section('footer_scripts')
-	<script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/students/communicationCtrl.js?v='.env('JS_VERSION')) }}" ></script>
+	<script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/students/communicationListCtrl.js?v='.env('JS_VERSION')) }}" ></script>
 @endsection

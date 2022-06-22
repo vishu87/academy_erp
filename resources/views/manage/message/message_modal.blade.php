@@ -56,17 +56,9 @@
 							</div>
 
 							<div class="row" style="margin-top:20px">
-								<div class="col-md-4 form-group">
-									<label>Variable 1 </label><br>
-									<input type="text" class="form-control" ng-model="msgData.variable1">
-								</div>
-								<div class="col-md-4 form-group">
-									<label>Variable 2 </label><br>
-									<input type="text" class="form-control" ng-model="msgData.variable2">
-								</div>
-								<div class="col-md-4 form-group">
-									<label>Variable 3 </label><br>
-									<input type="text" class="form-control" ng-model="msgData.variable3">
+								<div class="col-md-4 form-group" ng-repeat="variable in variables track by $index">
+									<label>Variable @{{$index+1}} </label><br>
+									<input type="text" class="form-control" ng-model="variable.content" ng-keyup="modifyContent()">
 								</div>
 							</div>
 
