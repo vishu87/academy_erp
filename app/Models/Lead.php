@@ -74,10 +74,12 @@ class Lead extends Model
             $lead->client_id = $lead->client_id;
             $lead->created_at = date("Y-m-d H:i:s");
             $lead->created_by = null;
+            $lead->status = 8;
+            $lead->lead_for = $open_lead->lead_for;
+            $lead->lead_source = $open_lead->lead_source;
             $new_lead = true;
         } else {
             $new_lead = false;
-            $lead->status = 8;
         }
 
         if(!$lead->name) $lead->name = $open_lead->name;

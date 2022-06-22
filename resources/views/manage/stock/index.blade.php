@@ -82,5 +82,5 @@
 @endsection
 
 @section('footer_scripts')
-<script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/students/stock_controller.js?v='.env('JS_VERSION')) }}" ></script>
+<script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/students/Stock_controller.js?v='.env('JS_VERSION')) }}" ></script>
 @endsection
