@@ -47,7 +47,7 @@ class StudentPerformanceController extends Controller{
         $student->sport_id = 1;
         $role = 5;
 
-        $skill_categories = DB::table("skill_categories")->where('sport_id',$student->sport_id)->where("students.client_id",$user->client_id)->get();
+        $skill_categories = DB::table("skill_categories")->where('sport_id',$student->sport_id)->where("skill_categories.client_id",$user->client_id)->get();
 
         foreach ($skill_categories as $skill_category) {
             
