@@ -257,7 +257,7 @@ class CommunicationController extends Controller {
 		$max = 100;
 		$page_no = $request->pn;
 
-		$students = DB::table('communication_students')->select("students.id",'students.name','center.center_name','students.dob','students.doe','groups.group_name','communication_students.status')->join("students","students.id","=","communication_students.student_id")->join("groups","groups.id",'=','students.group_id')->join('center','center.id','=','groups.center_id')->whereIn('students.id',$student_ids)->where("students.client_id",$user->client_id);
+		$students = DB::table('communication_students')->select("students.id",'students.name','center.center_name','students.dob','students.doe','groups.group_name','communication_students.status')->join("students","students.id","=","communication_students.student_id")->join("groups","groups.id",'=','students.group_id')->join('center','center.id','=','groups.center_id')->where("students.client_id",$user->client_id)->where("communication_students.communication_id",$request->id);
 		$count = $students->count();
 
 		$students = $students->skip(($page_no-1)*200)->limit(100)->get();

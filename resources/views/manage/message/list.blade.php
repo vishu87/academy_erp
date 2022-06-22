@@ -120,9 +120,6 @@
 										<td><span style="display: block;">@{{student.name}}</span></td>
 										<td>@{{student.dob}}</td>
 										<td>@{{student.doe}}</td>
-										<td style="cursor: pointer;" ng-click="showNumber(student.father_mob)">
-											<a href="javascript:;">@{{student.mobile_trimmed}}</a>
-										</td>
 										<td>@{{student.center_name}}</td>
 										<td>@{{student.group_name}}</td>
 										<td>@{{student.status == 0 ? 'Pending' : 'Sent'}}</td>
