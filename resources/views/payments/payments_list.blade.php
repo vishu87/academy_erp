@@ -90,7 +90,7 @@
 								<td>@{{item.created_at | date}}</td>
 								<td class="text-right">
 									<button class="btn btn-sm btn-light" ng-click="viewPayment(item.id)">View</button>
-									<a href="{{url('/students/payment_receipt')}}/@{{item.id}}/@{{history.student_id}}" class="btn btn-sm btn-primary" target="_blank"><i class="icons icon-printer"></i></button>
+									<a href="{{url('/payment-receipt')}}/@{{item.unique_id}}" class="btn btn-sm btn-primary" target="_blank"><i class="icons icon-printer"></i></button>
 								</td>
 							</tr>
 						</tbody>

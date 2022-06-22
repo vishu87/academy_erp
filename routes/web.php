@@ -51,6 +51,8 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
     Route::get('/payment-details', [UserController::class, 'paymentDetails']);
     Route::get('/dashboard', [UserController::class, 'dashboard']);
 
+    Route::get('/payment-receipt/{payment_code}',[StudentController::class, 'paymentReceipt']);
+
     Route::get('/switch/dashboard/{type}', [UserController::class, 'switchDashboard']);
 
     Route::group(["prefix"=>"users"], function(){
@@ -68,7 +70,6 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
         Route::get('/student_details/{id}',[StudentController::class, 'student_personal_detail']);
         Route::get('/add-student',[StudentController::class, 'add_student']);
         Route::get('/edit-student/{id}',[StudentController::class, 'edit_student']);
-        Route::get('/payment_receipt/{history_id}/{student_id}',[StudentController::class, 'paymentReceipt']);
 
         // Route::post('/save-payment-history','StudentController@save_payment_history');
 

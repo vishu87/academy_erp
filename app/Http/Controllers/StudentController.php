@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use  Redirect, Validator, Hash, Response, Session, DB;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 use App\Models\PaymentHistory, App\Models\PaymentItem, App\Models\User, App\Models\Student, App\Models\Utilities;
 
@@ -783,71 +784,69 @@ class StudentController extends Controller
         }
     }
 
-    public function paymentReceipt1($history_id, $student_id){
+    public function paymentReceipt($payment_code){
 
-        $student = DB::table('students')->select('students.id','students.name','students.code',
-            'students.gender','students.dob','students.email','students.school','students.mobile',
-            'students.father','students.mother',
-            'students.address','students.added_by',
-            'students.group_id','students.pic','groups.group_name','groups.center_id','center.center_name',
-            'center.city_id','city.city_name','city.state_id','states.state_name')
-        ->where('students.id', '=', $student_id)
-        ->leftJoin('groups', 'students.group_id', '=', 'groups.id')
-        ->leftJoin('center', 'groups.center_id', '=', 'center.id')
-        ->leftJoin('city', 'center.city_id', '=', 'city.id')
-        ->leftJoin('states', 'city.state_id', '=', 'states.id')
-        ->first();
-
-
-
-        $payment_id =  $history_id;
-        $payment = PaymentHistory::find($payment_id);
-        if ($payment) {
-            $payment->payment_date = date('d-m-Y',strtotime($payment->payment_date));
-
-            $items = PaymentItem::select("payment_items.id","payment_items.category_id","payment_items.type_id","payment_items.amount","payment_items.tax","payment_items.total_amount","payment_items.start_date","payment_items.end_date","payments_type_categories.category_name as category","payments_type.name as type","payment_items.discount","payment_items.discount_code_id","coupons.code as discount_code")->leftJoin("payments_type_categories","payments_type_categories.id","=","payment_items.category_id")->leftJoin("payments_type","payments_type.id","=","payment_items.type_id")->leftJoin("coupons","coupons.id","=","payment_items.discount_code_id")->where('payment_items.payment_history_id',$payment->id)->get();
-
-            foreach ($items as $value) {
-                if ($value->start_date) {
-                    $value->is_sub_type = true;
-                    $value->start_date = date('d-m-Y',strtotime($value->start_date));
-                }
-                if ($value->end_date) {
-                    $value->end_date = date('d-m-Y',strtotime($value->end_date));
-                }
-
-                $price = DB::table("payment_type_prices")
-                ->where("pay_type_cat_id",$value->category_id)
-                ->where("pay_type_id",$value->type_id)
-                ->first();
-                if ($price) {
-                    $value->tax_perc = $price->tax;
-                }
-            }
-            $payment->items = $items;
+        $payment = PaymentHistory::where("unique_id",$payment_code)->first();
+        if(!$payment){
+            return "No payment found";
         }
 
-        $gst = DB::table('gst')->where('defaults',1)->first();
-
-
-
-       // $html =  view('students.payment_receipt');
-
-        return view('students.payment_receipt',['student' => $student, 'payment' => $payment, 'gst' => $gst]);
+        $student = Student::listing()->where("students.id",$payment->student_id)->first();
         
-        // if(env('APP_ENV') == "local"){
-        //     include(app_path().'/libraries/dompdf/dompdf_config.inc.php');
-        //     $dompdf = new \DOMPDF();
-        // } else {
-        //     include(app_path().'/libraries/dompdf/autoload.inc.php');
-        //     $dompdf = new \Dompdf\Dompdf();
-        // }
-        
-        // $dompdf = new \DOMPDF();
-        // $dompdf->load_html($html);
-        // $dompdf->render();
-        // $filename = "Invoice-".$invoice->id.".pdf";
-        // $dompdf->stream($filename,array('Attachment'=>0));
+        $payment->payment_date = date('d-m-Y',strtotime($payment->payment_date));
+
+        $items = PaymentItem::select("payment_items.id","payment_items.category_id","payment_items.type_id","payment_items.amount","payment_items.tax_perc","payment_items.tax","payment_items.total_amount","payment_items.start_date","payment_items.end_date","payments_type_categories.category_name as category","payments_type.name as type","payment_items.discount","payment_items.discount_code_id","coupons.code as discount_code")->leftJoin("payments_type_categories","payments_type_categories.id","=","payment_items.category_id")->leftJoin("payments_type","payments_type.id","=","payment_items.type_id")->leftJoin("coupons","coupons.id","=","payment_items.discount_code_id")->where('payment_items.payment_history_id',$payment->id)->get();
+
+        foreach ($items as $value) {
+            if ($value->start_date) {
+                $value->is_sub_type = true;
+                $value->start_date = date('d-m-Y',strtotime($value->start_date));
+            }
+            if ($value->end_date) {
+                $value->end_date = date('d-m-Y',strtotime($value->end_date));
+            }
+        }
+
+        $gst = DB::table('gst')->where('state_id',$student->student_state_id)->where("client_id",$payment->client_id)->first();
+
+        if(!$gst){
+            $gst = DB::table('gst')->where('defaults',1)->where("client_id",$payment->client_id)->first();
+        }
+
+        if(!$gst){
+            return "No GST information found";
+        }
+
+        if($student->student_state_id != $gst->state_id){
+            $igst = false;
+        } else {
+            $igst = true;
+        }
+
+        foreach($items as $item){
+            $item->igst_perc = "-";
+            $item->igst = "-";
+            $item->cgst_perc = "-";
+            $item->cgst = "-";
+            $item->sgst_perc = "-";
+            $item->sgst = "-";
+
+            if($igst){
+                $item->igst_perc = $item->tax_perc;
+                $item->igst = $item->tax;
+            } else {
+                $item->cgst_perc = $item->tax_perc/2;
+                $item->cgst = $item->tax/2;
+                $item->sgst_perc = $item->tax_perc/2;
+                $item->sgst = $item->tax/2;
+            }
+        }
+
+        $payment->items = $items;
+
+        $pdf = PDF::loadView('students.payment_receipt',['student' => $student, 'payment' => $payment, 'gst' => $gst, "igst" => $igst]);
+        return $pdf->stream();
+        die();
 
     }
 

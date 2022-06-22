@@ -53,6 +53,13 @@
 
 <?php $condition = in_array(25, $access_rights["admin"]) ; ?>
 @if($condition)
+<li class="parent @if($sidebar == 'parameter') active @endif">
+    <a href="{{url('/parameters')}}"><i class="icon-settings icons "></i> <span>Drop Down Master</span></a>
+</li>
+@endif
+
+<?php $condition = in_array(25, $access_rights["admin"]) ; ?>
+@if($condition)
 <!-- <li class="parent @if($sidebar == 'settings') active @endif">
     <a href="{{url('/settings')}}"><i class="icon-settings icons "></i> <span>Settings</span></a>
 </li> -->

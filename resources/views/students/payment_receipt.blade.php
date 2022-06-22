@@ -44,7 +44,7 @@ table#table-right tr:last-child td {
 </head>
 <body>
   <div id="top-title">PAYMENT RECEIPT</div>
-  <div id="top-title2">ACADEMY</div>
+  <div id="top-title2">{{ $gst->name }}</div>
   <div>
     <div id="logo1" >
     <table border="0" cellpadding="0" cellspacing="0"><tr><td>
@@ -52,21 +52,20 @@ table#table-right tr:last-child td {
         <tr>
           <td style="width:350px"><img src="{{url('/assets/images/logo.png')}}"></td>
           <td>
-            <b>Company\'s VAT TIN: </b>{{ $gst->vat_tin }}<br>
-            <b> Company\'s PAN: </b>{{ $gst->pan_no }}<br>
-            <b>Company\'s GST No: </b>{{ $gst->gst_id }}
+            <b> Company's PAN: </b>{{ $gst->pan_no }}<br>
+            <b>Company's GST No: </b>{{ $gst->gst_id }}
           </td>
         </tr>
         <tr>
-          <td><b>{{ $gst->name }}</b><br>
-             <b>Reg. Office: </b>{{ $gst->registered_office }} <br></td>
-             <td><b>Contact Person:</b> {{ $gst->contact_person }}<br>
-             <b>Contact No.:</b> {{ $gst->contact_name }}
-            </td>
+          <td>
+              <b>{{ $gst->name }}</b><br>
+              <b>Reg. Office: </b>{{ $gst->registered_office }} <br></td>
+              <td><b>Contact Person:</b> {{ $gst->contact_person }}<br>
+              <b>Contact No.:</b> {{ $gst->contact_name }}
+          </td>
         </tr>
         <tr>
-          
-          <td colspan="2"><b>Receipt No.: </b>Academy/{{ $payment->id }}<br><b>Receipt Date:  </b>{{ $payment->payment_date }}</td>
+          <td colspan="2"><b>Receipt No.: </b>{{ $payment->code }}<br><b>Receipt Date: </b>{{ $payment->payment_date }}</td>
         </tr>
       </table>
     </div>
@@ -76,59 +75,90 @@ table#table-right tr:last-child td {
 
   <table id="table-details" border="0" cellpaddind="0" cellspacing="0">
     <tr>
-      <td><b>Parent\'s Name:</b></td>
-      <td colspan="7">{{$student->father}}</td>
+      <td><b>Parent's Name:</b></td>
+      <td colspan="9">{{$student->name}}</td>
     </tr>
     <tr>
-      <td><b>Ward\'s Name:</b></td>
-      <td colspan="7">{{$student->name}}</td>
+      <td><b>Ward's Name:</b></td>
+      <td colspan="9">{{$student->name}}</td>
     </tr>
     <tr>
       <td><b>D.O.B.:</b></td>
-      <td colspan="7">{{ date("d - M - y",strtotime($student->dob)) }}</td>
+      <td colspan="9">{{ date("d - M - y",strtotime($student->dob)) }}</td>
     </tr>
     <tr>
       <td><b>Center</b></td>
-      <td colspan="7">{{ $student->center_name }}</td>
+      <td colspan="9">{{ $student->center_name }}</td>
     </tr>
     <tr>
-      <td><b>Category: </b></td>
-      <td colspan="7">{{ $student->group_name }}</td>
+      <td><b>Group/Batch: </b></td>
+      <td colspan="9">{{ $student->group_name }}</td>
     </tr>
     <tr>
-      <td><b>SN</b></td>
+      <td colspan="10">Payment Details</td>
+    </tr>
+    <tr style="font-size: 12px;">
       <td><b>Type</b></td>
-      <td><b>Start Date</b></td>
       <td><b>Amount</b></td>
       <td><b>Discount</b></td>
-      <td><b>Tax</b></td>
+      <td><b>IGST %</b></td>
+      <td><b>IGST</b></td>
+      <td><b>SGST %</b></td>
+      <td><b>SGST</b></td>
+      <td><b>CGST %</b></td>
+      <td><b>CGST</b></td>
       <td><b>Total Amount</b></td>
     </tr>
-
+    <?php
+      $total_amount = 0;
+      $total_discount = 0;
+      $total_igst = 0;
+      $total_sgst = 0;
+      $total_cgst = 0;
+      $total_total_amount = 0;
+    ?>
     @foreach($payment->items as $key=> $pay)
     <tr>
-      <td>{{ $key+1 }}</td>
-      <td>{{ $pay->category }} - {{ $pay->type }}</td>
-      <td>{{ $pay->start_date }}</td>
-      <td>{{ $pay->amount }}</td>
-      <td>{{ $pay->discount }} </td>
-      <td>{{ $pay->tax }}</td>
-      <td>{{ $pay->total_amount }}</td>
+      <td>{{ $key+1 }}. {{ $pay->category }} - {{ $pay->type }}</td>
+      <td style="text-align: center;">{{ $pay->amount }}</td>
+      <td style="text-align: center;">{{ $pay->discount }} </td>
+      <td style="text-align: center;">{{ $pay->igst_perc }}</td>
+      <td style="text-align: center;">{{ $pay->igst }} </td>
+      <td style="text-align: center;">{{ $pay->sgst_perc }}</td>
+      <td style="text-align: center;">{{ $pay->sgst }} </td>
+      <td style="text-align: center;">{{ $pay->cgst_perc }}</td>
+      <td style="text-align: center;">{{ $pay->cgst }} </td>
+      <td style="text-align: center;">{{ $pay->total_amount }}</td>
     </tr>
-      
+    <?php
+      $total_amount += $pay->amount;
+      if(is_numeric($pay->discount)) $total_discount += $pay->discount;
+      if(is_numeric($pay->igst)) $total_igst += $pay->igst;
+      if(is_numeric($pay->sgst)) $total_sgst += $pay->sgst;
+      if(is_numeric($pay->cgst)) $total_cgst += $pay->cgst;
+
+      $total_total_amount += $pay->total_amount;
+
+    ?>
     @endforeach
 
     <tr>
-      <td>Payment details</td>
-      <td colspan="2"><b>{{ $payment->p_remark }}</b></td>
-      <td>{{ $payment->amount }}</td>
-      <td>{{ $payment->discount }}</td>
-      <td>{{ $payment->tax }}</td>
-      <td>{{ $payment->total_amount }}</td>
+      <td>Total</td>
+      <td style="text-align: center;">{{ $total_amount }}</td>
+      <td style="text-align: center;">{{ $total_discount }}</td>
+      <td style="text-align: center;"></td>
+      <td style="text-align: center;">{{ $total_igst }}</td>
+      <td style="text-align: center;"></td>
+      <td style="text-align: center;">{{ $total_sgst }}</td>
+      <td style="text-align: center;"></td>
+      <td style="text-align: center;">{{ $total_cgst }}</td>
+      <td style="text-align: center;">{{ $total_total_amount }}</td>
     </tr>
+    @if($payment->p_remark)
     <tr>
-      <td colspan="7"><i>for</i> <b>{{ $gst->name }}</b></td>
+      <td colspan="10">{{ $payment->p_remark }}</td>
     </tr>
+    @endif
   </table>
   <div>
     <br>
