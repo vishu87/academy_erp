@@ -30,7 +30,7 @@
 					</tr>
 				</tbody>
 			</table>
-			<a href="" type="button" ng-click="tab=1" loading="processing">Edit Details</a>
+			<a href="" type="button" ng-click="tab=1" loading="processing" style="text-decoration:underline;">Edit Details</a>
 		</div>
 
 		<div class="col-md-6">
