@@ -27,7 +27,8 @@ use App\Http\Controllers\RequestController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\CompanyController;
-// use App\Http\Controllers\ParentController;
+use App\Http\Controllers\ClientsController;
+use App\Http\Controllers\QueryController;
 
 Route::get('/', [UserController::class,'login'])->name("login");
 Route::post('/login', [UserController::class, 'postLogin']);
@@ -44,7 +45,8 @@ Route::get('/sign-up', [WebController::class, 'signUp']);
 Route::get('/forget-password', [WebController::class, 'forgetPassword']);
 Route::post('/forget-password', [UserController::class, 'postForgetPassword']);
 
-
+Route::get('/update-password',[UserController::class,'changePassword']);
+Route::post('/update-password',[UserController::class,'updatePassword']);
 
 Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 
@@ -147,9 +149,9 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
         Route::get('/',[AccountsController::class,'index']);
     });
 
-    Route::group(["prefix"=>"clients"], function(){
-        Route::get('/',[ClientsController::class,'index']);
-    });
+    // Route::group(["prefix"=>"clients"], function(){
+    //     Route::get('/',[ClientsController::class,'index']);
+    // });
 
     Route::group(["prefix"=>"upload"], function(){
         Route::post('/photo',[GeneralController::class,'uploadPhoto']);
@@ -193,7 +195,6 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 
     }); 
 
-
 });
 
 
@@ -204,3 +205,15 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 //     }); 
 
 // });
+
+
+Route::group(["before"=>"auth"], function(){
+
+    Route::group(["prefix"=>"clients"], function(){
+        Route::get('/',[ClientsController::class,'index']);
+    });
+
+    Route::get('/query',[QueryController::class,'index']);
+    Route::post('/save-query',[QueryController::class,'saveQuery']);
+
+});

@@ -457,3 +457,7 @@ ALTER TABLE `sms_templates`  ADD `name` VARCHAR(255) NULL  AFTER `id`;
 // pradeep 13-06-22
 
 ALTER TABLE `companies` ADD `gst` VARCHAR(50) NULL AFTER `address`, ADD `state_id` INT NULL AFTER `gst`, ADD `state_city_id` INT NULL AFTER `state_id`;
+// pradeep 22-06-22
+ALTER TABLE `clients` CHANGE `phone` `phone` VARCHAR(50) NOT NULL;
+ALTER TABLE `clients` CHANGE `address` `address` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
+ALTER TABLE `clients` ADD `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `address`, ADD `created_at` TIMESTAMP NULL DEFAULT NULL AFTER `updated_at`;
