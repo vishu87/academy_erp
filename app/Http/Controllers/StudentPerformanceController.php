@@ -17,12 +17,15 @@ class StudentPerformanceController extends Controller{
     }
 
     public function getStudents(Request $request){
+
+        $user = User::AuthenticateUser($request->header("apiToken"));
+
         $group_id  = $request->group_id;
         $session_id  = $request->session_id;
 
         $records = DB::table('students as stu')->select('stu.id','stu.name','player_evaluation.status')->leftJoin("player_evaluation", function($query) use ($session_id) {
                 $query->on("player_evaluation.student_id",'=','stu.id')->where("player_evaluation.session_id","=",$session_id);
-            })->where("stu.group_id",$group_id)->where("stu.inactive",0)->get();
+            })->where("stu.group_id",$group_id)->where("stu.inactive",0)->where("students.client_id",$user->client_id)->get();
 
         $data["success"] = true;
         $data["students"] = $records;
@@ -32,6 +35,8 @@ class StudentPerformanceController extends Controller{
 
     public function getStudentRecord(Request $request){
 
+        $user = User::AuthenticateUser($request->header("apiToken"));
+        
         $student_id  = $request->student_id;
         $session_id  = $request->session_id;
 
@@ -41,21 +46,26 @@ class StudentPerformanceController extends Controller{
         $playerAge = $now->diff($dob)->y;
         $student->sport_id = 1;
         $role = 5;
-        $skill_categories = DB::table("skill_categories")->where('sport_id',$student->sport_id)->get();
+
+        $skill_categories = DB::table("skill_categories")->where('sport_id',$student->sport_id)->where("students.client_id",$user->client_id)->get();
 
         foreach ($skill_categories as $skill_category) {
+            
             $attributes = DB::table("skill_attributes")->select('skill_attributes.id','skill_attributes.attribute_name as name','skill_attributes.type')
             ->where('skill_attributes.sport_id',$student->sport_id)
             ->where('skill_attributes.category_id',$skill_category->id)
             ->orderBy('priorities')
             ->get();
+
             foreach ($attributes as $attr) {
                 $value = DB::table("player_skills")->where("student_id",$student_id)->where("session_id",$session_id)->where("skill_attribute_id",$attr->id)->pluck("attribute_value");
                 if (sizeof($value) > 0) {
                     $attr->value = $value[0];
                 }
             }
+
             $skill_category->attributes = $attributes;
+
         }
 
         $data['success'] = true;    
@@ -116,6 +126,7 @@ class StudentPerformanceController extends Controller{
     public function getSessionList(Request $request){
 
         $user = User::AuthenticateUser($request->header("apiToken"));
+
         $sessionList = DB::table("sessions")->where('client_id',$user->client_id)->orderBy("end_date","DESC")->get();
         foreach ($sessionList as $value) {
             $value->start_date =  date('m-d-Y',strtotime($value->start_date));
