@@ -56,9 +56,9 @@ app.controller("Reg_controller", function($scope, $http, DBService) {
   	}
 
     $scope.getStateCity = function(){
-      DBService.getCall("/api/get-state-city/"+$scope.formData.address_state_id).then(function(data){
+      DBService.getCall("/api/cities/"+$scope.formData.address_state_id).then(function(data){
         if (data.success) {
-          $scope.state_cities = data.state_cities;
+          $scope.state_cities = data.cities;
         }else{
           bootbox.alert(data.message);  
         }
@@ -66,7 +66,7 @@ app.controller("Reg_controller", function($scope, $http, DBService) {
     }
 
   	$scope.getPaymentOptions = function(){
-		DBService.postCall({group_id: 13},"/api/subscriptions/get-payment-options").then(function(data){
+		DBService.postCall({group_id: $scope.formData.group_id},"/api/subscriptions/get-payment-options").then(function(data){
 		  	$scope.payment_options = data.payment_options;
 		  	$scope.getPaymentItems();
 		});
@@ -74,7 +74,7 @@ app.controller("Reg_controller", function($scope, $http, DBService) {
   	$scope.getPaymentOptions();
 
   	$scope.getPaymentItems = function(){
-		DBService.postCall({ categories : $scope.payment_options, group_id: 13 },"/api/subscriptions/get-payment-items").then(function(data){
+		DBService.postCall({ categories : $scope.payment_options, group_id: $scope.formData.group_id },"/api/subscriptions/get-payment-items").then(function(data){
 		  	$scope.payment_items = data.payment_items;
 		  	$scope.total_amount = data.total_amount;
 		});

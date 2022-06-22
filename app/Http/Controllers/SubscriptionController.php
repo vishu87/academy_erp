@@ -64,13 +64,23 @@ class SubscriptionController extends Controller
             
             $price = PaymentHistory::getAmount($group_id,$fix_type_id);
 
-            $payment_items[] = [
-                "category" => $category->category_name,
-                "amount" => $price->price,
-                "tax_perc" => $price->tax_perc,
-                "total_amount" => round($price->total)
-            ];
-            $total_amount += round($price->total);
+            if($price){
+                $payment_items[] = [
+                    "category" => $category->category_name,
+                    "amount" => $price->price,
+                    "tax_perc" => $price->tax_perc,
+                    "total_amount" => round($price->total)
+                ];
+                $total_amount += round($price->total);
+            } else {
+                $payment_items[] = [
+                    "category" => $category->category_name,
+                    "amount" => 0,
+                    "tax_perc" => 0,
+                    "total_amount" => 0
+                ];
+            }
+            
             
         }
 
@@ -131,18 +141,6 @@ class SubscriptionController extends Controller
                 "total_amount" => $total_amount,
                 "client_id" => $client_id
             ));
-
-            // foreach($payment_items as $payment_item){
-            //     DB::table("order_items")->insert(array(
-            //         "order_id" => $table_order_id,
-            //         "type_id" => $payment_item["type_id"],
-            //         "amount" => $payment_item["amount"],
-            //         "tax_perc" => $payment_item["tax_perc"],
-            //         "tax" => $payment_item["tax"],
-            //         "total_amount" => $payment_item["total_amount"],
-
-            //     ));
-            // }
 
             $data['success'] = true;
             $data['order_id'] = $order_id;
@@ -210,7 +208,7 @@ class SubscriptionController extends Controller
             $student->save();
             $payment->save();
 
-            PaymentHistory::sendReceipt($payment->id, true);
+            // PaymentHistory::sendReceipt($payment->id, true);
 
             $data['success'] = true;
             $data["datetime"] = date("d-m-Y H:i:s");

@@ -30,7 +30,7 @@
 					</tr>
 				</tbody>
 			</table>
-			<x-web.button type="button" ng-click="tab=1" loading="processing">Edit</x-web.button>
+			<a href="" type="button" ng-click="tab=1" loading="processing" style="text-decoration:underline;">Edit Details</a>
 		</div>
 
 		<div class="col-md-6">
@@ -62,7 +62,9 @@
 				</table>
 			</div>
 
-			<x-web.button type="button" class="block" loading="placing-order" ng-click="createOrder()">Checkout</x-web.button>
+			<div class="text-right">
+				<x-web.button type="button" class="block" loading="placing-order" ng-click="createOrder()">Checkout</x-web.button>
+			</div>
 
 		</div>
 	</div>

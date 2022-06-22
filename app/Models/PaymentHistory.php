@@ -24,6 +24,10 @@ class PaymentHistory extends Model
         $city_price = null;
         $default_price = null;
 
+        if(!$group){
+            return $default_price;
+        }
+
         $prices = DB::table("payment_type_prices")->select("id","price","tax as tax_perc","group_id","center_id","city_id","total")->where("pay_type_id",$type_id)->where(function($query) use ($group){
             $query->where("city_id",-1)->orWhere("city_id",$group->city_id)
                 ->orWhere(function($query) use ($group){
