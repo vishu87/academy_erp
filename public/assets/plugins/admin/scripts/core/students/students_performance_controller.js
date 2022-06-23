@@ -2,7 +2,6 @@ app.controller("Stu_Performance_Controller", function($scope, $http, DBService, 
   $scope.cityCenter = {};
   $scope.filterData ={
     show: true,
-    group_id: 13,
     session_id: 1
   };
   $scope.performanceParm = {}; 
@@ -56,6 +55,8 @@ app.controller("Stu_Performance_Controller", function($scope, $http, DBService, 
     '/api/student/performance/student-record')
     .then(function(data){
         $scope.studentRecord.skill_categories = data.skill_categories;
+        $scope.studentRecord.mailed = data.mailed;
+        $scope.studentRecord.uuid = data.uuid;
         $scope.open_category_id = data.skill_categories[0].id;
     });
   }
@@ -79,10 +80,10 @@ app.controller("Stu_Performance_Controller", function($scope, $http, DBService, 
     .then(function(data){
       if (data.success) {
         bootbox.alert(data.message);
-        $scope.studentRecord.status = type;
+        $scope.studentRecord.uuid = data.uuid;
         for (var i = 0; i < $scope.students.length; i++) {
           if($scope.students[i].id == $scope.studentRecord.student_id){
-            $scope.students[i].status = type;
+            $scope.students[i].uuid = data.uuid;
           }
         }
         $scope.processing = false;
@@ -93,18 +94,6 @@ app.controller("Stu_Performance_Controller", function($scope, $http, DBService, 
     });
   }
 
-  $scope.updateRecord = function(score){
-    DBService.postCall({id:score.id,score:score.parameter},
-      '/api/student/performance/update-score')
-    .then(function(data){
-        if (data.success) {
-          $scope.getStudentRecord($scope.filterData.group_id)
-          alert(data.message);
-        }else{
-          alert(data.message);
-        }
-    });
-  } 
 
   $scope.getSessionList = function(){
     DBService.getCall("/api/student/performance/get-session-list").then(function(data){
@@ -116,7 +105,7 @@ app.controller("Stu_Performance_Controller", function($scope, $http, DBService, 
   }
 
   $scope.deleteSession =  function(id){
-    bootbox.confirm("are you sure",(check)=> {
+    bootbox.confirm("Are you sure?",(check)=> {
         if (check) {
             DBService.getCall("/api/student/performance/delete-session/"+id)
             .then(function(data){
@@ -160,5 +149,28 @@ app.controller("Stu_Performance_Controller", function($scope, $http, DBService, 
     $("#"+id).modal('hide');
   }
 
+  $scope.sendEmail =  function(){
+    
+    bootbox.confirm("Are you sure to send performance pdf for "+$scope.studentRecord.student_name+"?",(check)=> {
+        if (check) {
+            $scope.processing_mail = true;
+            DBService.postCall({ uuid : $scope.studentRecord.uuid },"/api/student/performance/mail-pdf")
+            .then(function(data){
+                if (data.success) {
+                    bootbox.alert(data.message);
+                    $scope.studentRecord.mailed = 1;
+                    for (var i = 0; i < $scope.students.length; i++) {
+                      if($scope.students[i].id == $scope.studentRecord.student_id){
+                        $scope.students[i].mailed = 1;
+                      }
+                    }
+                } else {
+                  bootbox.alert(data.message);
+                }
+                $scope.processing_mail = false;
+            });
+        }
+    });
+  }
 
 });

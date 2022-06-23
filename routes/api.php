@@ -94,7 +94,8 @@ Route::group([], function(){
             Route::post('/student-record',[StudentPerformanceController::class, 'getStudentRecord']);
 
             Route::post('/save-score',[StudentPerformanceController::class, 'saveScore']);
-            Route::post('/update-score',[StudentPerformanceController::class, 'updateScore']);
+            Route::post('/mail-pdf',[StudentPerformanceController::class, 'mailPerformancePDF']);
+            
             Route::post('/add-session',[StudentPerformanceController::class, 'addSession']);
             Route::get('/get-session-list',[StudentPerformanceController::class, 'getSessionList']);
             Route::get('/delete-session/{id}',[StudentPerformanceController::class, 'deleteSession']);

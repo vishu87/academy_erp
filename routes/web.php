@@ -56,6 +56,7 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
     Route::get('/dashboard', [UserController::class, 'dashboard']);
 
     Route::get('/payment-receipt/{payment_code}',[StudentController::class, 'paymentReceipt']);
+    Route::get('/performance-pdf/{code}',[StudentPerformanceController::class, 'performancePDF']);
 
     Route::get('/switch/dashboard/{type}', [UserController::class, 'switchDashboard']);
 
