@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Redirect, Validator, Hash, Response, Session, DB;
-use App\Models\User, App\Models\ParentAppEvent, App\Models\PaymentHistory, App\Models\SessionData, App\Models\PlayerEvaluation, App\Models\Utilities, App\Models\Student;
+use App\Models\User, App\Models\ParentAppEvent, App\Models\PaymentHistory, App\Models\SessionData, App\Models\PlayerEvaluation, App\Models\Utilities, App\Models\Student, App\Models\MailQueue;
 use Illuminate\Http\Request;
 
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -249,6 +249,18 @@ class StudentPerformanceController extends Controller{
             $performance->mailed_at = date("Y-m-d H:i:s");
             $performance->mailed_by = $user->id;
             $performance->save();
+
+            $mail = new MailQueue;
+            $mail->mailto = implode(', ', $student_emails);
+            $mail->subject = "Performance Record";
+            $mail->content = "content";
+            $mail->at_file = $filename;
+            $mail->tb_name = "player_evaluation";
+            $mail->tb_id = $performance->id;
+            $mail->student_id = $performance->student_id;
+            $mail->user_id = $user->id;
+            $mail->client_id = $user->client_id;
+            $mail->save();
 
             $data["success"] = true;
             $data["message"] = "Email is successfully sent to ".implode(', ', $student_emails);
