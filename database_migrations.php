@@ -468,3 +468,5 @@ CREATE TABLE `academy`.`group_types` ( `id` INT NOT NULL AUTO_INCREMENT , `name`
 
 
 CREATE TABLE `academy`.`group_skill_attributes` ( `id` INT NOT NULL AUTO_INCREMENT , `group_type_id` INT NULL , `skill_attribute_id` INT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+ALTER TABLE `inv_request_item` ADD `price` DOUBLE NULL DEFAULT NULL AFTER `edited_quantity`;

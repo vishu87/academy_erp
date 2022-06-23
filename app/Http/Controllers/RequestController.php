@@ -70,6 +70,7 @@ class RequestController extends Controller {
 					DB::table('inv_request_item')->insert([
 						'item_id'        => isset($item['item_id']) ? $item['item_id'] : 0,
 						'quantity'       => isset($item['quantity']) ? $item['quantity'] : NULL,
+						'price'          => isset($item['price']) ? $item['price'] : NULL,
 						'inv_request_id' => $invRequest->id
 					]);
 				}

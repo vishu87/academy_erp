@@ -192,6 +192,7 @@ Route::group([], function(){
         Route::get('/coach',[CenterController::class,'all_coach']);
         Route::post('/save-coach',[CenterController::class,'save_coach']);
         Route::get('/remove-coach/{id}',[CenterController::class,'remove_coach']);
+        Route::get('/group-types',[CenterController::class, 'groupTypes']);
 
         });
 

@@ -97,8 +97,15 @@ app.controller('CenterController',function($scope , $http, $timeout , DBService,
 	$scope.fetchCenterGroups = function(){
 		DBService.getCall('/api/centers/groups/'+$scope.center.id).then(function(data){
 			$scope.center.groups = data.groups;
+			$scope.fetchGroupTypes();
 		});
 	}	
+
+	$scope.fetchGroupTypes = function(){
+		DBService.getCall('/api/centers/group-types').then(function(data){
+			$scope.group_types = data.group_types;
+		});
+	}
 
 	$scope.onSubmit = function(){
 		$scope.processing = true;
