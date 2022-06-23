@@ -36,7 +36,7 @@ use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\AccountsController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\SignUpController;
-
+use App\Http\Controllers\DropDownMasterController;
 use App\Http\Controllers\ParentController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -312,7 +312,16 @@ Route::group([], function(){
         Route::get('/delete-category/{id}',[ParameterController::class, 'deleteCategory']);
         Route::post('/save-attribute',[ParameterController::class, 'saveAttribute']);
         Route::get('/delete-attribute/{id}',[ParameterController::class, 'deleteAttribute']);
+        Route::get('/get-group-types',[ParameterController::class, 'getGroupTypes']);
+        Route::post('/save-group-skill-attribute',[ParameterController::class, 'saveGroupSkillAttribute']);
+        Route::get('/get-group-skill-attribute/{group_type_id}',[ParameterController::class, 'getGroupSkillAttribute']);
     });
+
+    Route::group(["prefix"=>"group-type"], function(){
+        Route::get('/init',[DropDownMasterController::class,'init']);
+        Route::post('/save',[DropDownMasterController::class,'store']);
+        Route::get('/delete/{id}',[DropDownMasterController::class,'delete']);
+    }); 
 
 });
 

@@ -29,7 +29,7 @@ use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\QueryController;
-
+use App\Http\Controllers\DropDownMasterController;
 use App\Http\Controllers\ParentController;
 
 Route::get('/', [UserController::class,'login'])->name("login");
@@ -172,6 +172,10 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 
     Route::group(["prefix"=>"parameters"], function(){
         Route::get('/',[ParameterController::class,'index']);
+    }); 
+
+    Route::group(["prefix"=>"group-type"], function(){
+        Route::get('/',[DropDownMasterController::class,'index']);
     }); 
 
     Route::group(["prefix"=>"communications"], function(){

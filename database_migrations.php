@@ -461,3 +461,10 @@ ALTER TABLE `companies` ADD `gst` VARCHAR(50) NULL AFTER `address`, ADD `state_i
 ALTER TABLE `clients` CHANGE `phone` `phone` VARCHAR(50) NOT NULL;
 ALTER TABLE `clients` CHANGE `address` `address` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
 ALTER TABLE `clients` ADD `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `address`, ADD `created_at` TIMESTAMP NULL DEFAULT NULL AFTER `updated_at`;
+// pradeep 23-06-22
+ALTER TABLE `gst` ADD `logo` TINYTEXT NULL DEFAULT NULL AFTER `contact_name`;
+
+CREATE TABLE `academy`.`group_types` ( `id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR(300) NULL , `added_by` INT NULL , `client_id` INT NULL , `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , `created_at` TIMESTAMP NULL DEFAULT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+
+CREATE TABLE `academy`.`group_skill_attributes` ( `id` INT NOT NULL AUTO_INCREMENT , `group_type_id` INT NULL , `skill_attribute_id` INT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;

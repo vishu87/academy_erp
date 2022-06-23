@@ -63,7 +63,8 @@ class AccountsController extends Controller{
 				"registered_office" => $request->registered_office,
 				"contact_person" => $request->contact_person,
 				"contact_name" => $request->contact_name,
-				"defaults" => $request->defaults
+				"defaults" => $request->defaults,
+				"logo" => $request->logo,
 			];
 
 			if (!$request->id){
