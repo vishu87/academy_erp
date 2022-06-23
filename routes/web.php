@@ -30,6 +30,8 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\QueryController;
 
+use App\Http\Controllers\ParentController;
+
 Route::get('/', [UserController::class,'login'])->name("login");
 Route::post('/login', [UserController::class, 'postLogin']);
 Route::get('/logout', [UserController::class, 'logout']);
@@ -198,13 +200,13 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 });
 
 
-// Route::group(["before"=>"auth","middleware"=>["auth","parents"]], function(){
+Route::group(["before"=>"auth","middleware"=>["auth"]], function(){
 
-//     Route::group(["prefix"=>"parents"], function(){
-//         Route::get('/',[ParentController::class,'index']);
-//     }); 
+    Route::group(["prefix"=>"parents"], function(){
+        Route::get('/',[ParentController::class,'dashboard']);
+    }); 
 
-// });
+});
 
 
 Route::group(["before"=>"auth"], function(){

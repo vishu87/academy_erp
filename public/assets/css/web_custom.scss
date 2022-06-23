@@ -32,10 +32,28 @@ button {
 			color: #FFF;
 		}
 	}
+	&.close {
+		min-width: auto;
+	}
 }
 
 span {
 	&.has-error {
 		color: #F00;
+	}
+}
+
+.btn {
+	min-width: auto;
+	&:focus {
+		box-shadow: none;
+	}
+	&.btn-primary {
+		background: $theme_color;
+		border-color: $theme_color;
+	}
+	&.btn-light {
+		background: #e2e6ea;
+		border-color: #dae0e5;
 	}
 }

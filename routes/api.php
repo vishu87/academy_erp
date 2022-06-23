@@ -35,6 +35,9 @@ use App\Http\Controllers\SMSTemplateController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\AccountsController;
 use App\Http\Controllers\ClientsController;
+use App\Http\Controllers\SignUpController;
+
+use App\Http\Controllers\ParentController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -400,6 +403,11 @@ Route::group(["prefix"=>"communications"], function(){
 }); 
 
 
+Route::group(["prefix"=>"parents"], function(){
+
+    Route::post('/init',[ParentController::class, 'initStudent']);
+
+}); 
 
 Route::group(["prefix"=>"app"], function(){
     Route::post('/login',[AppAPIController::class, 'login']);

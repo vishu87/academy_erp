@@ -83,9 +83,17 @@ class UserController extends Controller {
 					}
 				} elseif ($user->user_type == 11) {
 					return Redirect::to("clients");
-				}
-				else {
+				} elseif ($user->user_type == 2) {
+
+					$student_ids = DB::table("user_students")->where("user_id",Auth::id())->pluck("student_id")->toArray();
+					$students = DB::table("students")->select("id","name","pic")->whereIn("students.id",$student_ids)->get();
+
+					Session::put("user_students",$students);
+					Session::put("user_student_id",$students[0]->id);
+
 					return Redirect::to("parents");
+				} else {
+					return Redirect::back()->withInput()->with('failure','Invalid user type');	
 				}
                 
 			} else {
@@ -149,6 +157,7 @@ class UserController extends Controller {
 
 
     public function postForgetPassword(Request $request){
+
         $validator = Validator::make(["email"=>$request->email],["email"=>"required|email"]);
         
         if($validator->fails()){
@@ -157,7 +166,7 @@ class UserController extends Controller {
 			return Response::json($data, 200, array());
         }
         
-        $user = User::where('email',$request->email)->first();
+        $user = User::where('email',$request->email)->where("inactive",0)->first();
         
         if(!$user){
 
@@ -181,7 +190,9 @@ class UserController extends Controller {
         }
 
         $mail->subject = "Academy - Reset Password";
-        $mail->content = view('mails',["user"=>$user , "type"=>"password_reset"]);
+        $mail->content = view('mails.password_reset',["user"=>$user]);
+        $mail->client_id = $user->client_id;
+        $mail->priority = 1;
         $mail->save();
 
         $data['success'] = false;

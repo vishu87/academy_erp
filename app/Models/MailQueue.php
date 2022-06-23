@@ -10,7 +10,7 @@ class MailQueue extends Model
     protected $table = 'mail_queue';
 
     
-    public static function createMail($mailto, $mailcc, $mailbcc, $subject, $content){
+    public static function createMail($mailto, $mailcc, $mailbcc, $subject, $content, $client_id){
     	$mail =  new MailQueue;
         
         $mail->mailto = $mailto;
@@ -18,6 +18,7 @@ class MailQueue extends Model
         $mail->mailbcc = $mailbcc;
         $mail->subject = $subject;
         $mail->content = $content;
+        $mail->client_id = $client_id;
         $mail->save();
 
         return $mail;

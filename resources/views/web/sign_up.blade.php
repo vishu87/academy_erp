@@ -13,7 +13,7 @@
 		<x-ngform name="addForm" ng-submit="onSubmit(addForm.$valid)">
 			<div class="row">
 				<div class="col-md-12 ">
-					<x-input type="text" label="Email" name="formData.email" :required="true" />
+					<x-input type="email" label="Email" name="formData.email" :required="true" />
 				</div>
 			</div>
 			
@@ -24,9 +24,8 @@
 		</x-ngform>
 	</div>
 
-	<div ng-if="tab == 2">
-		<x-web.success message="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua."></x-web.success>
+	<div ng-show="tab == 2">
+		<x-web.success message=""></x-web.success>
 	</div>
 		
 	

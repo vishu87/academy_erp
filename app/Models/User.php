@@ -40,7 +40,20 @@ class User extends Authenticatable {
         if(!$api_key || $api_key == NULL){
             die("user not found");
         } else {
-            $user = User::where('api_key',$api_key)->first();
+            $user = User::where('api_key',$api_key)->where("user_type",1)->first();
+            if($user){
+                return $user;
+            } else {
+                die("user not found");
+            }
+        }
+    }
+
+    public static function AuthenticateParent($api_key){
+        if(!$api_key || $api_key == NULL){
+            die("user not found");
+        } else {
+            $user = User::where('api_key',$api_key)->where("user_type",2)->first();
             if($user){
                 return $user;
             } else {
@@ -277,13 +290,12 @@ class User extends Authenticatable {
     public static function sendWelcomeEmail($user, $password){
 
         $subject = "Login Details for the academy";
-        $content = view("mails",[
-            "type" => 'register',
+        $content = view("mails.user_register",[
             "user" => $user,
             "password" => $password
         ]);
 
-        MailQueue::createMail($user->email, "", "", $subject, $content);
+        MailQueue::createMail($user->email, "", "", $subject, $content, $user->client_id);
     }
 
     public static function parentWelcomeEmail($user, $password){
@@ -298,6 +310,16 @@ class User extends Authenticatable {
         MailQueue::createMail($user->email, "", "", $subject, $content);
     }
 
+    public static function getAccessParent($user_id, $student_id){
+
+        $mapping = DB::table("user_students")->where("user_id",$user_id)->where("student_id",$student_id)->first();
+        if($mapping){
+            return true;
+        } else {
+            return false;
+        }
+        
+    }
     
 }
 
