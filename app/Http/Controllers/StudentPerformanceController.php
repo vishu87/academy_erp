@@ -89,6 +89,11 @@ class StudentPerformanceController extends Controller{
 
         $user = User::AuthenticateUser($request->header("apiToken"));
 
+        $studentRecord = $request->studentRecord;
+        $session_id = $request->session_id;
+        $type = $request->type;
+        $student_id =  $studentRecord["student_id"];
+
         $entry = PlayerEvaluation::where("student_id",$student_id)->where("session_id",$session_id)->first();
         if(!$entry){
             $entry = new PlayerEvaluation;
@@ -99,11 +104,6 @@ class StudentPerformanceController extends Controller{
             $entry->created_by = $user->id;
             $entry->sport_id = 1;
         }
-
-        $studentRecord = $request->studentRecord;
-        $session_id = $request->session_id;
-        $type = $request->type;
-        $student_id =  $studentRecord["student_id"];
 
         DB::table("player_skills")->where("student_id",$student_id)->where("session_id",$session_id)->delete();
 
