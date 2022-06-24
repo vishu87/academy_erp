@@ -129,6 +129,7 @@ app.controller("Parameters_controller", function($scope, $http, DBService) {
 
           for (var i = 0; i < $scope.parameters.length; i++) {
             for (var j = 0; j < $scope.parameters[i].attributes.length; j++) {
+              console.log(ids.indexOf($scope.parameters[i].attributes[j].id));
               if( ids.indexOf($scope.parameters[i].attributes[j].id) > -1 ){
                 $scope.parameters[i].attributes[j].value = 1;
               } else {
