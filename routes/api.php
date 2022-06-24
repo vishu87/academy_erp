@@ -36,6 +36,7 @@ use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\AccountsController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\SignUpController;
+use App\Http\Controllers\SettingsController;
 
 use App\Http\Controllers\ParentController;
 
@@ -340,6 +341,11 @@ Route::group(["prefix"=>"renewal"], function(){
 });
 
 
+Route::group(["prefix"=>"settings"], function(){
+    Route::post('/init',[SettingsController::class, 'init']);
+    Route::post('/save',[SettingsController::class, 'saveSettings']);
+});
+
 
 Route::group(["prefix"=>"sign-up"], function(){
     Route::post('/search',[SignUpController::class, 'searchStudent']);
@@ -453,9 +459,7 @@ Route::group(["prefix"=>"app"], function(){
     Route::group(["prefix"=>"performance"], function(){
         Route::get('/get-student-list/{group_id}',[AppAPIController::class, 'performStudentList']);
         Route::get('/categories/{student_id}',[AppAPIController::class, 'performCategories']);
-        Route::post('/save-marks',[AppAPIController::class, 'saveMarks']);
-        
-        
+        Route::post('/save-marks',[AppAPIController::class, 'saveMarks']); 
     });
 
 });

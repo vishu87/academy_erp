@@ -60,9 +60,9 @@
 
 <?php $condition = in_array(25, $access_rights["admin"]) ; ?>
 @if($condition)
-<!-- <li class="parent @if($sidebar == 'settings') active @endif">
+<li class="parent @if($sidebar == 'settings') active @endif">
     <a href="{{url('/settings')}}"><i class="icon-settings icons "></i> <span>Settings</span></a>
-</li> -->
+</li>
 @endif
 
 <!-- <li class="parent @if($sidebar == 'reports') active @endif">

@@ -1167,4 +1167,23 @@ img.round{
 	}
 }
 
+.content-div {
+	cursor: pointer;
+	border: 1px solid #AAA;
+	padding: 10px;
+	max-height: 150px;
+	overflow-y: auto;
 
+	table {
+		width: 100%;
+		tr,td,th {
+			border: 1px solid #AAA;
+			padding: 5px;
+		}
+	}
+
+	p {
+		margin-top: 0;
+		margin-bottom: 10px;
+	}
+}

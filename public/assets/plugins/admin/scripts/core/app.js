@@ -1,7 +1,8 @@
 var app = angular.module('app', [
   'ngFileUpload',
   'jcs-autoValidate',
-  'uiCropper'
+  'uiCropper',
+  'ngSanitize'
 ]);
 
 angular.module('jcs-autoValidate')
@@ -292,6 +293,23 @@ app.filter('INR', function () {
         }
     }
 });
+
+app.directive('ckeditor', Directive);
+function Directive($rootScope) {
+    return {
+        require: 'ngModel',
+        link: function (scope, element, attr, ngModel) {
+
+            var id = attr.id;
+
+            var ckeditor = ClassicEditor.create( document.querySelector( '#editor_data' ) ).then(editor => {
+                window.editor = editor;
+                editor.setData(scope.editor_data);
+            });
+        }
+    };
+}
+
 
 app.run(function($rootScope, DBService) {
   

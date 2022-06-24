@@ -31,6 +31,7 @@ use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\QueryController;
 
 use App\Http\Controllers\ParentController;
+use App\Http\Controllers\SettingsController;
 
 Route::get('/', [UserController::class,'login'])->name("login");
 Route::post('/login', [UserController::class, 'postLogin']);
@@ -172,6 +173,10 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 
     Route::group(["prefix"=>"parameters"], function(){
         Route::get('/',[ParameterController::class,'index']);
+    });
+    
+    Route::group(["prefix"=>"settings"], function(){
+        Route::get('/',[SettingsController::class,'index']);
     }); 
 
     Route::group(["prefix"=>"communications"], function(){
