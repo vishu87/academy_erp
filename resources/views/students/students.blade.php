@@ -16,6 +16,11 @@
 @section('content')
 
 <div class="" ng-controller="Students_controller" ng-init="init()">
+
+	<label class="switch">
+		<input type="checkbox">
+		<span class="slider round"></span>
+	</label>
 		
 	<div class="portlet">
 		

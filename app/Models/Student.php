@@ -254,6 +254,44 @@ class Student extends Model
 
     }
 
+    public static function getContactDetails($type, $student_id){
+
+        $data = [];
+
+        $student = Student::find($student_id);
+        if($student){
+            if($type == "email"){
+                if($student->email){
+                    $data[] = $student->email;
+                }
+            }
+
+            if($type == "mobile"){
+                if($student->mobile){
+                    $data[] = $student->mobile;
+                }
+            }
+        }
+
+        $guardians = Student::getGuardians($student_id);
+        foreach($guardians as $guardian){
+            if($type == "email"){
+                if($guardian->email){
+                    $data[] = $guardian->email;
+                }
+            }
+
+            if($type == "mobile"){
+                if($guardian->mobile){
+                    $data[] = $guardian->mobile;
+                }
+            }
+
+        }
+        return $data;
+
+    }
+
     public static function getPhoto($pic){
         
         $url = "http://192.168.1.38:8888/academy_erp";

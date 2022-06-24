@@ -94,6 +94,10 @@ class Utilities {
         return $uniqid;
     }
 
+    public static function cleanName($name,$operator="_"){
+        return preg_replace('/[^a-zA-Z0-9\']/', $operator, $name);
+    }
+
 
 }
 

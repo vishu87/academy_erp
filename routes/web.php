@@ -29,7 +29,7 @@ use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\QueryController;
-
+use App\Http\Controllers\DropDownMasterController;
 use App\Http\Controllers\ParentController;
 use App\Http\Controllers\SettingsController;
 
@@ -57,6 +57,7 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
     Route::get('/dashboard', [UserController::class, 'dashboard']);
 
     Route::get('/payment-receipt/{payment_code}',[StudentController::class, 'paymentReceipt']);
+    Route::get('/performance-pdf/{code}',[StudentPerformanceController::class, 'performancePDF']);
 
     Route::get('/switch/dashboard/{type}', [UserController::class, 'switchDashboard']);
 
@@ -177,6 +178,10 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
     
     Route::group(["prefix"=>"settings"], function(){
         Route::get('/',[SettingsController::class,'index']);
+    }); 
+
+    Route::group(["prefix"=>"group-type"], function(){
+        Route::get('/',[DropDownMasterController::class,'index']);
     }); 
 
     Route::group(["prefix"=>"communications"], function(){

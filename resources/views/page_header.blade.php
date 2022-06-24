@@ -82,11 +82,11 @@
 					<div class="menu">
 						<ul>
 							<li>
-								<a href="{{url('/logout')}}"><i class="icons icon-lock-open"></i> <span>Logout</span></a>
+								<a href="{{url('/update-password')}}"><i class="icons icon-lock-open"></i> <span>Change Password</span></a>
 							</li>
 
 							<li>
-								<a href="{{url('/update-password')}}"><i class="icons icon-lock-open"></i> <span>Change Password</span></a>
+								<a href="{{url('/logout')}}"><i class="icons icon-lock-open"></i> <span>Logout</span></a>
 							</li>
 						</ul>
 					</div>
