@@ -17,6 +17,9 @@
         <div>
           <a href="" ng-click="studentDetail(student.id)">@{{student.name}}</a>
         </div>
+        <div class="text-right">
+          <i class="icons icon-envelope" ng-if="student.mailed == 1"></i>
+        </div>
       </div>
     </div>
   </div>
