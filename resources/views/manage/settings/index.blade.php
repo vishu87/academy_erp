@@ -17,23 +17,23 @@
 	  	<div class="portlet-head">
 	    	<ul class="menu">
 	      		<li class="@{{switchContent == 'general'?'active':''}}">
-	        		<a href="" ng-click="switchContent('general')">General</a>
+	        		<a href="" ng-click="switchContentType('general')">General</a>
 	      		</li>
 
 	      		<li class="@{{switchContent == 'subscriptions'?'active':''}}">
-	        		<a href="" ng-click="switchContent('subscriptions')">Performance</a>
+	        		<a href="" ng-click="switchContentType('performance')">Performance</a>
 	      		</li>
 	      		
 	      		<li class="@{{switchContent == 'subscriptions'?'active':''}}">
-	        		<a href="" ng-click="switchContent('subscriptions')">Emails</a>
+	        		<a href="" ng-click="switchContentType('email')">Emails</a>
 	      		</li>
 
 	      		<li class="@{{switchContent == 'subscriptions'?'active':''}}">
-	        		<a href="" ng-click="switchContent('subscriptions')">Payment Gateway</a>
+	        		<a href="" ng-click="switchContentType('payment_gateway')">Payment Gateway</a>
 	      		</li>
 
 	      		<li class="@{{switchContent == 'subscriptions'?'active':''}}">
-	        		<a href="" ng-click="switchContent('subscriptions')">Web Pages</a>
+	        		<a href="" ng-click="switchContentType('web_pages')">Web Pages</a>
 	      		</li>
 
 	    	</ul>

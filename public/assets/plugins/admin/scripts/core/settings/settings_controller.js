@@ -20,6 +20,11 @@ app.controller("SettingsController", function($scope, $http, DBService, Upload) 
       });
     }
 
+    $scope.switchContentType = function(type){
+      $scope.switchContent = type;
+      $scope.init();
+    }
+
 
     $scope.uploadImage = function(file, item){
 

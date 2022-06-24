@@ -19,7 +19,7 @@ class SettingsController extends Controller{
         $user = User::AuthenticateUser($request->header("apiToken"));
         
         $items = DB::table("setting_params")->where("category",$request->category)->get();
-
+        
         foreach($items as $item){
             $check = DB::table("setting_values")->where("client_id",$user->client_id)->where("param_id",$item->id)->first();
             if($check){
