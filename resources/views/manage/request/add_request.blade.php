@@ -120,23 +120,31 @@
                 <div class="col-md-6">
 
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <label class="bold">Item</label>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-3">
                             <label class="bold">Quantity</label>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="bold">Price</label>
+                        </div>
+                        <div class="col-md-3">
                         </div>
                     </div>
                     <div class="row form-group" ng-repeat="item in requestData.items track by $index">
-                        <div class="col-md-5">
+                        <div class="col-md-3">
                             <select class="form-control" ng-model="item.item_id" convert-to-number>
                                 <option ng-repeat="item in allItems" value="@{{item.id}}">@{{item.item_name}}</option>
                             </select>
                         </div>
-                        <div class="col-md-5">
+                        <div class="col-md-3">
                             <input type="text" ng-model="item.quantity" class="form-control" >
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
+                            <input type="text" ng-model="item.price" class="form-control" >
+                        </div>
+                        <div class="col-md-3">
                             <button type="button" class="btn btn-sm btn-danger" ng-click="removeItem($index)">Remove</button>
                         </div>
                     </div>
