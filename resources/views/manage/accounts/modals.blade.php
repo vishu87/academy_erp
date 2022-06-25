@@ -78,8 +78,8 @@
 
                     <div class="col-md-4">
                         <div ng-if="gst.logo" class="center-images">
-                            <a href="@{{gst.logo}}" target="_blank">
-                                <img src="@{{gst.logo}}">
+                            <a href="{{url('/')}}/@{{gst.logo}}" target="_blank">
+                                <img src="{{url('/')}}/@{{gst.logo}}">
                             </a>
                             <a class="btn btn-sm btn-danger btn-remove" ladda="image.processing" ng-click="removeLogo()"><i class="icons icon-close" style="color: #FFF;"></i></a>
                         </div>
