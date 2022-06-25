@@ -78,17 +78,32 @@ class WebApiController extends Controller
         $validator = Validator::make($cre,$rules);
 
         if ($validator->fails()) {
+            
             $data['success'] = false;
             $data['message'] = $validator->errors()->first();
             return Response::json($data, 200, []);
+
         } else {
+
+            $flag = true;
+
+            if($request->prim_relation_to_student == $request->sec_relation_to_student){
+                $flag = false;
+                $message = "Relation for primary contact and secondary contact should be different";
+            }
+
+            if(!$flag){
+                $data['success'] = false;
+                $data['message'] = $message;
+                return Response::json($data, 200, []);                
+            }
 
             if($request->id){
                 $registration = Registration::find($request->id);
-                $message = "Data successfully updated....";
+                $message = "Data is successfully is updated";
             } else {
                 $registration = new Registration;
-                $message = "Data successfully inserted....";
+                $message = "Data is successfully saved";
             }
 
             $registration->name = $request->name;

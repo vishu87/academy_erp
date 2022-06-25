@@ -709,50 +709,23 @@ class StudentController extends Controller
         return Response::json($data, 200, []);
     }
 
-    // public function save_payment_history(){
-    //     $payment_data = Input::get('payment_history');
-    //     if ($payment_data) {
+    public function sendWelcomeEmail(Request $request){
 
-    //         $payment_data["dor"] = date('Y-m-d',strtotime($payment_data["dor"]));
+        $user = User::AuthenticateUser($request->header("apiToken"));
+        $student_id = $request->student_id;
 
-    //         $payment_data["created_at"] = date('Y-m-d H:i:s',strtotime($payment_data["created_at"]));
+        $student_emails = Student::getContactDetails("email",$student_id);
+        if(sizeof($student_emails) > 0){
+            $data["success"] = true;
+            $data["message"] = "Email is successfully sent to ".implode(', ',$student_emails);
+            Student::sendWelcomeEmail($student_id, $user, $student_emails);
+        } else {
+            $data["success"] = false;
+            $data["message"] = "No email id is found for the student";
+        }
 
-    //         DB::table('payment_history')->where('id',$payment_data["history_id"])
-    //         ->update([
-    //             'dor'=>$payment_data["dor"],
-    //             'created_at'=>$payment_data["created_at"]
-    //         ]);
-
-    //         foreach ($payment_data["items"] as $pay) {
-
-    //             $pay["start_date"] = date('Y-m-d',strtotime($pay["start_date"]));
-    //             $pay["end_date"] = date('Y-m-d',strtotime($pay["end_date"]));
-
-    //             DB::table('payment_items')->where('id',$pay['id'])
-    //             ->update([
-    //                 "category_id"=>$pay['category_id'],
-    //                 "type_id"=>$pay['type_id'],
-    //                 "start_date"=>$pay['start_date'],
-    //                 "end_date"=>$pay['end_date'],
-    //                 "amount"=>$pay['amount'],
-    //                 "tax"=>$pay['tax'],
-    //                 "total_amount"=>$pay['total_amount'],
-    //                 "adjustment"=>$pay['adjustment'],
-    //                 "a_remarks"=>$pay['a_remarks']
-    //             ]);
-    //         }
-
-    //         $data["success"] = true;
-    //         $data["message"] = "Data is successfully updated";
-    //     }else{
-    //         $data["success"] = false;
-    //         $data["message"] = "Unexpected Error!!";
-    //     }
-
-        
-    //     return Response::json($data, 200 , []);
-    // }
-
+        return Response::json($data, 200, []);
+    }
     public function deleteStudent1(){
         $id = Input::get("id");
         $check = DB::table('students')->find($id);
@@ -782,72 +755,6 @@ class StudentController extends Controller
         } else {
             return $letter;
         }
-    }
-
-    public function paymentReceipt($payment_code){
-
-        $payment = PaymentHistory::where("unique_id",$payment_code)->first();
-        if(!$payment){
-            return "No payment found";
-        }
-
-        $student = Student::listing()->where("students.id",$payment->student_id)->first();
-        
-        $payment->payment_date = date('d-m-Y',strtotime($payment->payment_date));
-
-        $items = PaymentItem::select("payment_items.id","payment_items.category_id","payment_items.type_id","payment_items.amount","payment_items.tax_perc","payment_items.tax","payment_items.total_amount","payment_items.start_date","payment_items.end_date","payments_type_categories.category_name as category","payments_type.name as type","payment_items.discount","payment_items.discount_code_id","coupons.code as discount_code")->leftJoin("payments_type_categories","payments_type_categories.id","=","payment_items.category_id")->leftJoin("payments_type","payments_type.id","=","payment_items.type_id")->leftJoin("coupons","coupons.id","=","payment_items.discount_code_id")->where('payment_items.payment_history_id',$payment->id)->get();
-
-        foreach ($items as $value) {
-            if ($value->start_date) {
-                $value->is_sub_type = true;
-                $value->start_date = date('d-m-Y',strtotime($value->start_date));
-            }
-            if ($value->end_date) {
-                $value->end_date = date('d-m-Y',strtotime($value->end_date));
-            }
-        }
-
-        $gst = DB::table('gst')->where('state_id',$student->student_state_id)->where("client_id",$payment->client_id)->first();
-
-        if(!$gst){
-            $gst = DB::table('gst')->where('defaults',1)->where("client_id",$payment->client_id)->first();
-        }
-
-        if(!$gst){
-            return "No GST information found";
-        }
-
-        if($student->student_state_id != $gst->state_id){
-            $igst = false;
-        } else {
-            $igst = true;
-        }
-
-        foreach($items as $item){
-            $item->igst_perc = "-";
-            $item->igst = "-";
-            $item->cgst_perc = "-";
-            $item->cgst = "-";
-            $item->sgst_perc = "-";
-            $item->sgst = "-";
-
-            if($igst){
-                $item->igst_perc = $item->tax_perc;
-                $item->igst = $item->tax;
-            } else {
-                $item->cgst_perc = $item->tax_perc/2;
-                $item->cgst = $item->tax/2;
-                $item->sgst_perc = $item->tax_perc/2;
-                $item->sgst = $item->tax/2;
-            }
-        }
-
-        $payment->items = $items;
-
-        $pdf = PDF::loadView('students.payment_receipt',['student' => $student, 'payment' => $payment, 'gst' => $gst, "igst" => $igst]);
-        return $pdf->stream();
-        die();
-
     }
 
 }

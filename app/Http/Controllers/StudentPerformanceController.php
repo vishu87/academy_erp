@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Redirect, Validator, Hash, Response, Session, DB;
-use App\Models\User, App\Models\ParentAppEvent, App\Models\PaymentHistory, App\Models\SessionData, App\Models\PlayerEvaluation, App\Models\Utilities, App\Models\Student, App\Models\MailQueue;
+use App\Models\User, App\Models\ParentAppEvent, App\Models\PaymentHistory, App\Models\SessionData, App\Models\PlayerEvaluation, App\Models\Utilities, App\Models\Student, App\Models\MailQueue, App\Models\Group;
 use Illuminate\Http\Request;
 
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -48,6 +48,11 @@ class StudentPerformanceController extends Controller{
         $playerAge = $now->diff($dob)->y;
         $student->sport_id = 1;
 
+        $group = Group::find($student->group_id);
+
+        $attribute_ids = DB::table("group_skill_attributes")->where("group_type_id",$group->group_type_id)->pluck("skill_attribute_id")->toArray();
+        if(sizeof($attribute_ids) == 0) $attribute_ids = [0];
+
         $skill_categories = DB::table("skill_categories")->select("id","category_name")->where('sport_id',$student->sport_id)->where("skill_categories.client_id",$user->client_id)->get();
 
         foreach ($skill_categories as $skill_category) {
@@ -55,6 +60,7 @@ class StudentPerformanceController extends Controller{
             $attributes = DB::table("skill_attributes")->select('skill_attributes.id','skill_attributes.attribute_name as name','skill_attributes.type')
             ->where('skill_attributes.sport_id',$student->sport_id)
             ->where('skill_attributes.category_id',$skill_category->id)
+            ->whereIn('skill_attributes.id',$attribute_ids)
             ->orderBy('priorities')
             ->get();
 
@@ -250,10 +256,15 @@ class StudentPerformanceController extends Controller{
             $performance->mailed_by = $user->id;
             $performance->save();
 
+            $params = Utilities::getSettingParams([25,26], $student->client_id);
+
+            $student->session_name = $performance->session_name;
+            $student = Student::mapDates($student);
+
             $mail = new MailQueue;
             $mail->mailto = implode(', ', $student_emails);
-            $mail->subject = "Performance Record";
-            $mail->content = "content";
+            $mail->subject = Utilities::replaceText($params->param_25, $student);
+            $mail->content = Utilities::replaceText($params->param_26, $student);;
             $mail->at_file = $filename;
             $mail->tb_name = "player_evaluation";
             $mail->tb_id = $performance->id;
@@ -286,6 +297,8 @@ class StudentPerformanceController extends Controller{
 
         $student = Student::listing()->where("students.id",$performance->student_id)->first();
 
+        $params = Utilities::getSettingParams([5,6,7,8,9,10,11,12,13,14],$student->client_id);
+
         $category_ids = [];
         $player_skills = DB::table("player_skills")->select("player_skills.skill_attribute_id","skill_attributes.attribute_name","player_skills.value","player_skills.remarks","skill_categories.category_name","skill_attributes.category_id","skill_attributes.type")->join("skill_attributes","skill_attributes.id","=","player_skills.skill_attribute_id")->join("skill_categories","skill_categories.id","=","skill_attributes.category_id")->where("session_id",$performance->session_id)->where("student_id",$performance->student_id)->get();
         foreach($player_skills as $player_skill){
@@ -304,7 +317,7 @@ class StudentPerformanceController extends Controller{
         }
         
 
-        $pdf = PDF::loadView('students.performance.pdf',['student' => $student, 'categories' => $categories, "performance" => $performance]);
+        $pdf = PDF::loadView('students.performance.pdf',['student' => $student, 'categories' => $categories, "performance" => $performance, "params"=>$params]);
         return [
             "success" => true,
             "pdf" => $pdf

@@ -10,6 +10,11 @@
         </div>
 
         <div class="modal-body">
+          
+          <div class="text-right">
+            <button class="btn btn-light" ng-click="sendPaymentEmail(payment.id)" ng-disabled="processing_pay_mail" >Send Email <span ng-show="processing_pay_mail" class="spinner-border spinner-border-sm"></span></button>
+          </div>
+
           <form method="POST" name="PaymentForm" ng-submit="savePayment(PaymentForm.$valid)" novalidate="novalidate">
 
             <div class="row">

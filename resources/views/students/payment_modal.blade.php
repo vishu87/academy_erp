@@ -58,7 +58,7 @@
                   </div>
 
                   <div class="text-right">
-                    <button type="button" class="btn btn-primary" ng-click="addPaymentItem()" ng-disabled="!item.type_id">Add <i class="icons chevron-right"></i></button>
+                    <button type="button" class="btn btn-primary" ng-click="addPaymentItem()" ng-disabled="!item.type_id || getting_amount">Add <i class="icons chevron-right"></i></button>
                   </div>
 
                 </div>
@@ -88,12 +88,13 @@
                       <thead>
                         <tr>
                           <th>SN</th>
-                          <th style="min-width: 100px;">Type</th>
+                          <th>Type</th>
                           <th style="min-width: 100px;">Start Date</th>
                           <th style="min-width: 100px;">Amount</th>
-                          <th style="min-width: 100px;">Discount</th>
-                          <th style="min-width: 100px;">Tax</th>
-                          <th style="min-width: 100px;">Total</th>
+                          <th style="min-width: 70px;">Discount</th>
+                          <th style="min-width: 100px;" class="text-center">Taxable Amount</th> 
+                          <th class="text-center">Tax</th>
+                          <th class="text-center">Total</th>
                           <th></th>
                         </tr>
                       </thead>
@@ -120,10 +121,13 @@
                               <span>@{{pay_item.discount_code}}</span>
                             </div>
                           </td>
-                          <td>
+                          <td class="text-center">
+                            @{{pay_item.taxable_amount | INR}}
+                          </td>
+                          <td class="text-center">
                             @{{pay_item.tax | INR}} (@{{pay_item.tax_perc}}%)
                           </td>
-                          <td>
+                          <td class="text-center">
                              @{{pay_item.total_amount | INR}}
                           </td>
                           <td>
@@ -132,16 +136,16 @@
                           </td>
                         </tr>
                         <tr>
-                          <th colspan="3">
+                          <th colspan="5">
                             
                           </th>
-                          <th colspan="2" class="text-center">
+                          <th colspan="1" class="text-center">
                             @{{ payment.amount | INR }}
                           </th>
-                          <th colspan="">
+                          <th colspan="" class="text-center">
                             @{{ payment.tax | INR }}
                           </th>
-                          <th colspan="">@{{ payment.total_amount | INR }}</th>
+                          <th colspan="" class="text-center">@{{ payment.total_amount | INR }}</th>
                           <th></th>
                         </tr>
                       </tbody>

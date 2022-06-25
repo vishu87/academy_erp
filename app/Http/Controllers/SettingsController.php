@@ -18,13 +18,29 @@ class SettingsController extends Controller{
 
         $user = User::AuthenticateUser($request->header("apiToken"));
         
-        $items = DB::table("setting_params")->where("category",$request->category)->get();
+        $items = DB::table("setting_params")->where("category",$request->category)->orderBy("priority","ASC")->get();
         
         foreach($items as $item){
             $check = DB::table("setting_values")->where("client_id",$user->client_id)->where("param_id",$item->id)->first();
             if($check){
                 $item->value = $check->value;
             }
+
+            if($item->type == "image"){
+                $item->resize = 0;
+                $item->crop = 0;
+                $item->thumb = 0;
+                $item->width = 0;
+                $item->height = 0;
+                $fields = explode(',',$item->details);
+                foreach($fields as $field){
+                    $field_ar = explode(':',$field);
+                    if(isset($field_ar[1])){
+                        $item->{$field_ar[0]} = $field_ar[1];
+                    }
+                }
+            }
+            unset($item->details);
         }
 
         $data["success"] = true;

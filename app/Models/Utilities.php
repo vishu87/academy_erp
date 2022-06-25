@@ -98,6 +98,37 @@ class Utilities {
         return preg_replace('/[^a-zA-Z0-9\']/', $operator, $name);
     }
 
+    public static function getSettingParams($ids, $client_id){
+        $settings = DB::table("setting_values")->where("client_id",$client_id)->whereIn("param_id",$ids)->get();
+        $params = new \stdClass;
+        foreach($settings as $setting){
+            $params->{'param_'.$setting->param_id} = $setting->value;
+        }
+
+        foreach($ids as $id){
+            if(!isset($params->{'param_'.$id})){
+                $params->{'param_'.$id} = "";
+            }
+        }
+
+        return $params;
+    }
+
+    public static function replaceText($content, $object){
+        
+        $fields = ["name","city_name","center_name","group_name","session_name","dob","sub_end"];
+
+        foreach($fields as $field){
+            if(isset($object->{$field})){
+                $content = str_replace("{#".$field."#}",$object->{$field},$content);
+            } else {
+                $content = str_replace("{#".$field."#}"," ",$content);
+            }
+        }
+
+        return $content;
+    }
+
 
 }
 

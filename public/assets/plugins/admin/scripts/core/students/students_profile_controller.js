@@ -471,6 +471,8 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
 
     $scope.getAmount = function(){
       
+      $scope.getting_amount = true;
+
       if(!$scope.item.type_id) return;
       
       DBService.postCall({
@@ -484,9 +486,12 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
           $scope.item.months = data.months;
           $scope.item.amount = data.price.price;
           $scope.item.discount = 0;
+          $scope.item.taxable_amount = $scope.item.amount - $scope.item.discount;
           $scope.item.tax_perc = data.price.tax_perc;
           $scope.item.tax = Math.round(data.price.price*data.price.tax_perc/100);
           $scope.item.total_amount = $scope.item.amount + $scope.item.tax;
+
+          $scope.getting_amount = false;
       });
 
     }
@@ -504,8 +509,13 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
 
     $scope.applyTax = function(item){
       if (item.amount) {
-        item.tax = Math.round(((parseFloat(item.amount) - parseFloat(item.discount)) * parseFloat(item.tax_perc))/100);
-        item.total_amount = parseFloat(item.amount) - parseFloat(item.discount) + item.tax;
+        
+        item.taxable_amount = parseFloat(item.amount) - parseFloat(item.discount);
+
+        item.tax = Math.round( item.taxable_amount * parseFloat(item.tax_perc) /100 );
+        
+        item.total_amount = item.taxable_amount + item.tax;
+        
         $scope.calculateTotal();
       }
     }
@@ -514,9 +524,8 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
       var amount = 0;
       var tax = 0;
       for (var i = 0; i < $scope.payment.items.length; i++) {
-        if ($scope.payment.items[i].amount) amount += parseFloat($scope.payment.items[i].amount);
-        if ($scope.payment.items[i].discount) amount -= parseFloat($scope.payment.items[i].discount);
-        if ($scope.payment.items[i].tax)tax += parseFloat($scope.payment.items[i].tax);
+        if ($scope.payment.items[i].taxable_amount) amount += parseFloat($scope.payment.items[i].taxable_amount);
+        if ($scope.payment.items[i].tax) tax += parseFloat($scope.payment.items[i].tax);
       }
       $scope.payment.amount = amount;
       $scope.payment.tax = tax;
@@ -675,5 +684,21 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
         }
       })
     }
+
+    $scope.sendWelcomeEmail = function(){
+      bootbox.confirm("Are you sure to send welcome email for "+$scope.student.name+"?", (check)=>{
+        if(check){
+          $scope.processing_email = true;
+          DBService.postCall({
+            student_id : $scope.student_id
+          },"/api/student/send-welcome-email")
+          .then(function (data){
+            bootbox.alert(data.message);
+            $scope.processing_email = false;
+          });
+        }
+      });
+    }
+
 
 });

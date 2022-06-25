@@ -3,14 +3,31 @@
 	<x-input label="Name of the student" name="formData.name" :required="true" />
 
 	<div class="row">
-		<div class="col">
+		<div class="col-md-6">
 			<x-dob label="Date of Birth" name="formData" :required="true" />
 		</div>
-		<div class="col">
+		<div class="col-md-3">
 			@php
 				$genders = ["1"=>"Male", "2"=>"Female"]
 			@endphp
-			<x-radio label="Date of Birth" :options="$genders" name="formData.gender" :required="true" />
+			<x-radio label="Gender" :options="$genders" name="formData.gender" :required="true" />
+		</div>
+		<div class="col-md-3">
+			<x-select label="Kit Size" name="formData.kit_size" :required="true">
+				<x-slot name="link">
+			        <a href="" ng-click="showSizeChart()">Details</a>
+			    </x-slot>
+				<option value="">Choose size</option>
+				<option value="26">26</option>
+				<option value="28">28</option>
+				<option value="30">30</option>
+				<option value="32">32</option>
+				<option value="34">34</option>
+				<option value="36">36</option>
+				<option value="38">38</option>
+				<option value="40">40</option>
+				<option value="42">42</option>
+			</x-select>
 		</div>
 	</div>
 
@@ -33,12 +50,13 @@
 			<x-input type="mobile" label="Mobile" name="formData.prim_mobile" :required="true" />
 		</div>
 		<div class="col">
-			<x-select label="Relation with student" name="formData.prim_relation_to_student" :required="true">
+			<label>Relation with student <span class="text-danger">*</span></label>
+			<select class="form-control" ng-required="true" ng-model="formData.prim_relation_to_student" convert-to-number>
 				<option value="">Select</option>
-				<option value="father">Father</option>
-				<option value="mother">Mother</option>
-				<option value="other">Self</option>
-			</x-select>
+				<option value="1">Father</option>
+				<option value="2">Mother</option>
+				<option value="3">Self</option>	
+			</select>
 		</div>
 	</div>
 	<div class="mt-2"></div>
@@ -51,12 +69,15 @@
 			<x-input type="mobile" label="Mobile No." name="formData.sec_mobile" />
 		</div>
 		<div class="col">
-			<x-select label="Relation with student" name="formData.sec_relation_to_student">
-				<option value="">Select</option>
-				<option value="father">Father</option>
-				<option value="mother">Mother</option>
-				<option value="other">Self</option>
-			</x-select>
+			<div class="form-group">
+				<label>Relation with student</label>
+				<select class="form-control" ng-required="formData.sec_email || formData.sec_mobile" ng-model="formData.sec_relation_to_student" convert-to-number>
+					<option value="">Select</option>
+					<option value="1">Father</option>
+					<option value="2">Mother</option>
+					<option value="3">Self</option>	
+				</select>
+			</div>
 		</div>
 	</div>
 	<div class="row">
@@ -109,28 +130,8 @@
 		</div>
 
 	</div>
-
-	<div class="row">
-		<div class="col-12">
-			<x-select label="Kit Size" name="formData.kit_size" :required="true">
-				<x-slot name="link">
-			        <a href="" ng-click="showSizeChart()">View Details</a>
-			    </x-slot>
-				<option value="">Choose size</option>
-				<option value="26">26</option>
-				<option value="28">28</option>
-				<option value="30">30</option>
-				<option value="32">32</option>
-				<option value="34">34</option>
-				<option value="36">36</option>
-				<option value="38">38</option>
-				<option value="40">40</option>
-				<option value="42">42</option>
-			</x-select>
-		</div>
-	</div>
 	<hr />
-	<div class="row">
+	<div class="row" ng-if="formData.group_id">
 		<div class="col-md-6">
 			<div ng-repeat="item in payment_options">
 				<div class="form-group">

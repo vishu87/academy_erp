@@ -4,13 +4,13 @@
 <div class="form-group">
     <div class="row">
         <div class="col">
-            <label>{{$label}} @if($required) <span class="text-danger">*</span> @endif</label>
+            <label>{{$label}} @if($required)<span class="text-danger">*</span> @endif</label>
+            @isset($link)
+            <span style="font-size: 11px;">
+                {{ $link ?? '' }}
+            </span>
+            @endif
         </div>
-        @isset($link)
-        <div class="col text-right">
-            {{ $link ?? '' }}
-        </div>
-        @endif
     </div>
     <select class="form-control" ng-model="{{$name}}" @if($required) required @endif @if($ngChange) ng-change="{{$ngChange}}" @endif>
         {{$slot}}

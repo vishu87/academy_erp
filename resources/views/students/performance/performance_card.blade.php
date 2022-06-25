@@ -6,7 +6,7 @@
       <div >
         <ul class="menu">
           <li class="active">
-            <a href="#">Performance of @{{ studentRecord.student_name }}</a>
+            <a href="#">@{{ studentRecord.student_name }}</a>
           </li>
         </ul>
       </div>

@@ -20,19 +20,19 @@
 	        		<a href="" ng-click="switchContentType('general')">General</a>
 	      		</li>
 
-	      		<li class="@{{switchContent == 'subscriptions'?'active':''}}">
+	      		<li class="@{{switchContent == 'performance'?'active':''}}">
 	        		<a href="" ng-click="switchContentType('performance')">Performance</a>
 	      		</li>
 	      		
-	      		<li class="@{{switchContent == 'subscriptions'?'active':''}}">
+	      		<li class="@{{switchContent == 'email'?'active':''}}">
 	        		<a href="" ng-click="switchContentType('email')">Emails</a>
 	      		</li>
 
-	      		<li class="@{{switchContent == 'subscriptions'?'active':''}}">
+	      		<li class="@{{switchContent == 'payment_gateway'?'active':''}}">
 	        		<a href="" ng-click="switchContentType('payment_gateway')">Payment Gateway</a>
 	      		</li>
 
-	      		<li class="@{{switchContent == 'subscriptions'?'active':''}}">
+	      		<li class="@{{switchContent == 'web_pages'?'active':''}}">
 	        		<a href="" ng-click="switchContentType('web_pages')">Web Pages</a>
 	      		</li>
 

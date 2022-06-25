@@ -1,6 +1,6 @@
 <div>
 	<div ng-repeat="item in items">
-		<div class="table-div full">
+		<div class="table-div full" style="border-bottom: 1px solid #EEE; padding-bottom: 10px; margin-bottom: 10px">
 			<div style="width: 200px">
 				<b>@{{ item.parameter }}</b>
 			</div>
@@ -30,9 +30,16 @@
 					<div ng-bind-html="item.value" ng-click="openEditor(item)" class="content-div"></div>
 				</div>
 
+				<div ng-if="item.type == 'toggle' " class="form-group" style="margin-bottom: 0; width: 500px">
+					<label class="switch">
+						<input type="checkbox" ng-checked="item.value == 1" ng-click=" item.value = item.value == 1 ? 0 : 1 ">
+						<span class="slider round"></span>
+					</label>
+				</div>
+
+				<small>@{{ item.remarks }}</small>
 			</div>
 		</div>
-		<hr>
 	</div>
 	<div class="text-right">
 		<button type="button" class="btn btn-primary" ng-click="saveSettings()" ng-disabled="processing">Save <span ng-if="processing" class="spinner-border spinner-border-sm"></span></button>

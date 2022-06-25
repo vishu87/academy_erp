@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-use DB;
+use DB, App\Models\Student, App\Models\Utilities, App\Models\PaymentItem;
 
 class PaymentHistory extends Model
 {
@@ -73,6 +73,105 @@ class PaymentHistory extends Model
                 return $price;
             }
         }
+
+    }
+
+    public static function sendReceipt($payment_id, $user = null, $student_emails){
+
+        $payment = DB::table("payment_history")->find($payment_id);
+
+        $student = Student::listing()->where("students.id",$payment->student_id)->first();
+        $student = Student::mapDates($student);
+
+        $params = Utilities::getSettingParams([16,4], $student->client_id);
+
+        if(sizeof($student_emails) > 0){
+            $mail = new MailQueue;
+            $mail->mailto = implode(', ', $student_emails);
+            $mail->subject = Utilities::replaceText($params->param_16, $student);
+            $mail->content = Utilities::replaceText($params->param_4, $student);
+            // $mail->file
+            $mail->tb_name = "payment_history";
+            $mail->tb_id = $payment_id;
+            $mail->student_id = $payment->student_id;
+            if($user){
+                $mail->user_id = $user->id;
+            }
+            $mail->client_id = $student->client_id;
+            $mail->save();
+        }
+
+    }
+
+    public static function createPaymentFromOrder($order, $student, $transaction_id){
+
+        $order_items = DB::table("order_items")->where("order_id",$order->id)->get();
+
+        $amount = 0;
+        $tax = 0;
+        $total_amount = 0;
+        $payment_items = [];
+        foreach($order_items as $order_item){
+            $payment_type = DB::table("payments_type")->select("payments_type.category_id","payments_type.months","payments_type_categories.is_sub_type")->join("payments_type_categories","payments_type_categories.id","=","payments_type.category_id")->where("payments_type.id",$order_item->type_id)->first();
+
+            $order_item->category_id = $payment_type->category_id;
+            $order_item->client_id = $order->client_id;
+            $order_item->months = $payment_type->months;
+
+            if($payment_type->is_sub_type == 1){
+                if($student->doe){
+                    $order_item->start_date = date("Y-m-d",strtotime($student->doe) + 86400);
+                } else {
+                    $order_item->start_date = date("Y-m-d");
+                }
+            }
+        }
+
+        $payment = new PaymentHistory;
+        $uniqid = Utilities::getUniqueInTable("payment_history", "unique_id");
+        $payment->unique_id = $uniqid;
+        $payment->student_id = $student->id;
+        $payment->group_id = $student->group_id;
+        $payment->invoice_date = date("Y-m-d");
+        $payment->payment_date = date("Y-m-d");
+        $payment->amount = $amount;
+        $payment->tax = $tax;
+        $payment->total_amount = $total_amount;
+        $payment->p_mode = 5;
+        $payment->reference_no = $transaction_id;
+        $payment->p_remark = "Razorpay payment - ".$transaction_id;
+        $payment->client_id = $order->client_id;
+        $payment->save();
+
+        foreach ($payment_items as $payment_item) {
+                
+            $item = new PaymentItem;
+            $item->payment_history_id = $payment->id;
+            $item->category_id = $payment_item->category_id;
+            $item->type_id = $payment_item->type_id;
+            $item->client_id = $payment_item->client_id;
+            $item->adjustment = 0;
+
+            $item->months = $payment_item->months;
+            $item->amount = $payment_item->amount;
+            $item->discount = $payment_item->discount;
+            $item->discount_code_id = $payment_item->discount_code_id;
+            $item->taxable_amount = $payment_item->taxable_amount;
+            $item->tax_perc = $payment_item->tax_perc;
+            $item->tax = $payment_item->tax;
+            $item->total_amount = $payment_item->total_amount;
+
+            if(isset($payment_item->start_date)){
+                if($payment_item->start_date){
+                    $item->start_date = date('Y-m-d',strtotime($payment_item->start_date));
+                    $item->end_date = Utilities::calculateEndDate($item->start_date, $item->months, $item->adjustment);
+                }
+            }
+
+            $item->save();
+        }
+
+        return $payment;
 
     }
     

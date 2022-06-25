@@ -1,44 +1,44 @@
 app.controller("Reg_controller", function($scope, $http, DBService) {
    
-   $scope.processing = false;
-  	// $scope.formData = {
-  	// 	name : "Vashisths",
-  	// 	date: "10",
-  	// 	month : "10",
-  	// 	year: "2009",
-  	// 	gender: "1",
-  	// 	father_name : "RK",
-  	// 	mother_name : "Alka",
-  	// 	prim_email : "vishu.iitd@gmail.com",
-  	// 	prim_mobile : "9421345321",
-  	// 	prim_relation_to_student : "father",
-  	// 	address: "Asdada,asda dad , asda",
-  	// 	state_id : "10",
-  	// 	city_id: "3",
-  	// 	pin_code : "265122",
-  	// 	training_city_id : "3",
-  	// 	training_center_id : "8"
+    $scope.processing = false;
+  	$scope.formData = {
+  		name : "Vashisths",
+  		date: "10",
+  		month : "10",
+  		year: "2009",
+  		gender: "1",
+  		father_name : "RK",
+  		mother_name : "Alka",
+  		prim_email : "vishu.iitd@gmail.com",
+  		prim_mobile : "9421345321",
+  		prim_relation_to_student : 1,
+  		address: "Asdada,asda dad , asda",
+  		state_id : "10",
+  		city_id: "3",
+  		pin_code : "265122",
+  		training_city_id : "3",
+  		training_center_id : "8"
 
-  	// };
+  	};
 
-    $scope.formData = {
-        name : "",
-        date: "",
-        month : "",
-        year: "",
-        gender: "",
-        father_name : "",
-        mother_name : "",
-        prim_email : "",
-        prim_mobile : "",
-        prim_relation_to_student : "",
-        address: "",
-        state_id : "",
-        city_id: "",
-        pin_code : "",
-        training_city_id : "",
-        training_center_id : ""
-    };
+    // $scope.formData = {
+    //     name : "",
+    //     date: "",
+    //     month : "",
+    //     year: "",
+    //     gender: "",
+    //     father_name : "",
+    //     mother_name : "",
+    //     prim_email : "",
+    //     prim_mobile : "",
+    //     prim_relation_to_student : "",
+    //     address: "",
+    //     state_id : "",
+    //     city_id: "",
+    //     pin_code : "",
+    //     training_city_id : "",
+    //     training_center_id : ""
+    // };
 
   	$scope.tab = 1;
   	

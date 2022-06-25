@@ -1173,7 +1173,9 @@ img.round{
 	border: 1px solid #AAA;
 	padding: 10px;
 	max-height: 150px;
+	min-height: 100px;
 	overflow-y: auto;
+	background: #f2f2f2;
 
 	table {
 		width: 100%;

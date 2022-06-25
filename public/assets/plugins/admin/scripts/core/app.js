@@ -346,4 +346,26 @@ app.run(function($rootScope, DBService) {
     })
   }
 
+  $rootScope.sendPaymentEmail = function(payment_id){
+    DBService.getCall("/api/student/payment/view-payment/"+payment_id)
+      .then(function(data){
+        $rootScope.payment = data.payment;
+       $("#viewPaymentModal").modal("show"); 
+    })
+  }
+
+  $rootScope.sendPaymentEmail =  function(payment_id){
+    
+    bootbox.confirm("Are you sure to mail payment receipt?",(check)=> {
+        if (check) {
+            $rootScope.processing_pay_mail = true;
+            DBService.postCall({ payment_id : payment_id },"/api/student/payment-email")
+            .then(function(data){
+                bootbox.alert(data.message);
+                $rootScope.processing_pay_mail = false;
+            });
+        }
+    });
+  }
+
 });

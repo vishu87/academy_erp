@@ -470,3 +470,28 @@ CREATE TABLE `academy`.`group_types` ( `id` INT NOT NULL AUTO_INCREMENT , `name`
 CREATE TABLE `academy`.`group_skill_attributes` ( `id` INT NOT NULL AUTO_INCREMENT , `group_type_id` INT NULL , `skill_attribute_id` INT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
 
 ALTER TABLE `inv_request_item` ADD `price` DOUBLE NULL DEFAULT NULL AFTER `edited_quantity`;
+
+
+CREATE TABLE `order_items` (
+  `id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  `type_id` int(11) DEFAULT NULL,
+  `amount` double DEFAULT NULL,
+  `tax_perc` double NOT NULL DEFAULT 0,
+  `tax` double DEFAULT NULL,
+  `total_amount` double DEFAULT NULL,
+  `discount` double NOT NULL DEFAULT 0,
+  `discount_code_id` int(11) DEFAULT NULL,
+  `months` int(11) DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+ALTER TABLE `order_items`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `order_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+COMMIT;

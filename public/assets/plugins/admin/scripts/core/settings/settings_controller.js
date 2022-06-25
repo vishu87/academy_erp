@@ -1,6 +1,6 @@
 app.controller("SettingsController", function($scope, $http, DBService, Upload) {
     
-    $scope.switchContent = 'general';
+    $scope.switchContent = 'email';
     $scope.items = [];
 
     $scope.init = function(){
@@ -37,12 +37,16 @@ app.controller("SettingsController", function($scope, $http, DBService, Upload) 
       Upload.upload({
         url: url,
         data: {
-          photo: file
+          photo: file,
+          resize: 1,
+          crop: item.crop,
+          width: item.width,
+          height: item.height
         }
       }).then(function (resp) {
 
         if(resp.data.success){
-          item.value = resp.data.url;
+          item.value = resp.data.path;
         } else {
           alert(resp.data.message);
         }

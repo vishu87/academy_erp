@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Redirect, Validator, Hash, Response, Session, DB;
 use Illuminate\Http\Request;
 
-use App\Models\PaymentHistory, App\Models\Client;
+use App\Models\PaymentHistory, App\Models\Client, App\Http\Controllers\PaymentController, App\Models\Student;
 
 class SubscriptionController extends Controller
 {	
@@ -67,16 +67,24 @@ class SubscriptionController extends Controller
             if($price){
                 $payment_items[] = [
                     "category" => $category->category_name,
+                    "type_id" => $fix_type_id,
                     "amount" => $price->price,
+                    "discount" => 0,
+                    "taxable_amount" => $price->price,
                     "tax_perc" => $price->tax_perc,
+                    "tax" => round($price->price*$price->tax_perc/100),
                     "total_amount" => round($price->total)
                 ];
                 $total_amount += round($price->total);
             } else {
                 $payment_items[] = [
                     "category" => $category->category_name,
+                    "type_id" => $fix_type_id,
                     "amount" => 0,
+                    "discount" => 0,
+                    "taxable_amount" => 0,
                     "tax_perc" => 0,
+                    "tax" => 0,
                     "total_amount" => 0
                 ];
             }
@@ -87,13 +95,31 @@ class SubscriptionController extends Controller
         foreach($categories as $category){
             if($category["type_id"]){
                 $price = PaymentHistory::getAmount($group_id,$category["type_id"]);
-                $payment_items[] = [
-                    "category" => $category["category_name"],
-                    "amount" => $price->price,
-                    "tax_perc" => $price->tax_perc,
-                    "total_amount" => round($price->total),
-                ];
-                $total_amount += round($price->total);
+                if($price){
+                    $payment_items[] = [
+                        "category" => $category["category_name"],
+                        "type_id" => $category["type_id"],
+                        "amount" => $price->price,
+                        "taxable_amount" => $price->price,
+                        "discount" => 0,
+                        "tax_perc" => $price->tax_perc,
+                        "tax" => round($price->price*$price->tax_perc/100),
+                        "total_amount" => round($price->total),
+                    ];
+                    $total_amount += round($price->total);
+                } else {
+                    $payment_items[] = [
+                        "category" => $category["category_name"],
+                        "type_id" => $category["type_id"],
+                        "amount" => 0,
+                        "taxable_amount" => 0,
+                        "discount" => 0,
+                        "tax_perc" => 0,
+                        "tax" => 0,
+                        "total_amount" => 0,
+                    ];
+                }
+                
             }
         }
 
@@ -142,6 +168,20 @@ class SubscriptionController extends Controller
                 "client_id" => $client_id
             ));
 
+            foreach($request->payment_items as $payment_item){
+                DB::table("order_items")->insert(array(
+                    "order_id" => $table_order_id,
+                    "type_id" => $payment_item["type_id"],
+                    "amount" => $payment_item["amount"],
+                    "discount" => $payment_item["discount"],
+                    "discount_code_id" => isset($payment_item["discount_code_id"])?$payment_item["discount_code_id"] : null,
+                    "taxable_amount" => $payment_item["taxable_amount"],
+                    "tax" => $payment_item["tax"],
+                    "tax_perc" => $payment_item["tax_perc"],
+                    "total_amount" => $payment_item["total_amount"]
+                ));
+            }
+
             $data['success'] = true;
             $data['order_id'] = $order_id;
             $data['key'] = $this->get_key();
@@ -150,65 +190,36 @@ class SubscriptionController extends Controller
         return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
     }
 
-    public function processWebOrder(){
+    public function processWebOrder(Request $request){
 
-        $order_id = Input::get("order_id");
-        $transaction_id = Input::get("transaction_id");
+        $order_id = $request->order_id;
+        $transaction_id = $request->transaction_id;
 
         $order = DB::table("orders")->where("order_id",$order_id)->where("status",0)->first();
 
         if($order){
 
-            DB::table("orders")->where("id",$order->id)->update(array(
-                "transaction_id" => $transaction_id,
-                "status" => 1
-            ));
+            // DB::table("orders")->where("id",$order->id)->update(array(
+            //     "transaction_id" => $transaction_id,
+            //     "status" => 1
+            // ));
 
-            $student = Student::find($order->student_id);
-
-            $kit_fee = $order->kit_fee;
-            $sub_fee = $order->amount - $kit_fee;
-
-            $sub_fee_tax = round($sub_fee*0.18);
-            $kit_fee_tax = $order->amount_tax - $sub_fee_tax;
-
-            $payment = new PaymentHistory;
-            $payment->student_id = $order->student_id;
-            $payment->group_id = $student->first_group;
-            $payment->payment_category_id = 0;
-            $payment->product_type = 1;
-            $payment->package_type = 3;
-            $payment->dor = strtotime("today");
-            $payment->reg_fee = 0;
-            $payment->sub_fee = $sub_fee;
-            $payment->kit_fee = $kit_fee;
-            $payment->reg_fee_tax = 0;
-            $payment->sub_fee_tax = $sub_fee_tax;
-            $payment->kit_fee_tax = $kit_fee_tax;
-            $payment->payment_mode = 8;
-            $payment->in_favor_of = 'TISMPL';
-            $payment->amount = $order->amount;
-            $payment->total_amount = $order->amount + $order->amount_tax;
-            $payment->months = $order->month_plan;
-            $payment->p_remark = "Razorpay payment - ".$transaction_id;
-            $payment->razorpay_id = $transaction_id;
-            $payment->user_subscription_id = 0;
-            $payment->save();
-
-            if($student->doe){
-                $payment->dos = $student->doe + 86400;
-                $student->doe = $payment->doe = $payment->dos + $order->month_plan*30*86400;
+            if($order->registration_id){
+                $student = Student::createFromRegistration($order->registration_id);
             } else {
-                $payment->dos = $payment->dor;
-                $payment->doe = $payment->dos + $order->month_plan*30*86400;
+                $student = Student::find($order->student_id);
             }
 
-            $student->active = 0;
+            $payment = PaymentHistory::createPaymentFromOrder($order, $student, $transaction_id);
 
+            Student::reCalculateDates($student->id);
+            $student->inactive = 0;
             $student->save();
-            $payment->save();
 
-            // PaymentHistory::sendReceipt($payment->id, true);
+            $student_emails = Student::getContactDetails("email",$student->id);
+            if(sizeof($student_emails) > 0){
+                PaymentController::createPaymentEmail($payment, $student_emails, $user = null);
+            }
 
             $data['success'] = true;
             $data["datetime"] = date("d-m-Y H:i:s");

@@ -60,7 +60,10 @@
 	    							<button type="button" class="btn btn-sm btn-danger" ng-click="deleteAttribute(att.id)">Delete</button>
 	            				</td>
 	            				<td class="text-right" style="min-width: 130px" ng-show="group_type_id != 0">
-	            					@{{ att.value == 1 ? 'Yes' : 'No' }} <button type="button" ng-click="toggleAttr(att)">Toggle</button>
+	            					<label class="switch">
+										<input type="checkbox" ng-checked="att.value == 1" ng-click="toggleAttr(att)">
+										<span class="slider round"></span>
+									</label>
 	            				</td>
 	            			</tr>
 	            		</table>

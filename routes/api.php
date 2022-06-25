@@ -86,6 +86,10 @@ Route::group([], function(){
 
         Route::post('/add-student',[StudentController::class, 'add_student_data']);
         Route::post('/change-profile-pic',[StudentController::class, 'changeProfilePicture']);
+
+        Route::post('/send-welcome-email',[StudentController::class, 'sendWelcomeEmail']);
+
+        Route::post('/payment-email',[PaymentController::class, 'sendEmail']);
         
         // Route::post('/getfull-details',[StudentController::class, 'student_full_detail']);
         // Route::post('/delete-group-shift',[StudentController::class, 'deleteGroupShift']); 
