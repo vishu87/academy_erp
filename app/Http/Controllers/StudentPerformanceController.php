@@ -158,8 +158,8 @@ class StudentPerformanceController extends Controller{
 
         $sessionList = DB::table("sessions")->where('client_id',$user->client_id)->orderBy("end_date","DESC")->get();
         foreach ($sessionList as $value) {
-            $value->start_date =  date('m-d-Y',strtotime($value->start_date));
-            $value->end_date =  date('m-d-Y',strtotime($value->end_date));
+            $value->start_date =  date('d-m-Y',strtotime($value->start_date));
+            $value->end_date =  date('d-m-Y',strtotime($value->end_date));
         }
         $data["success"] = true;
         $data["sessionList"] = $sessionList;

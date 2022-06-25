@@ -28,9 +28,11 @@
           </tr>
         </tbody>
       </table>
-      <div ng-if="!loading && reports.length == 0">
-        No reports are available
-      </div>
     </div>
+
+    <div ng-if="!loading && reports.length == 0" class="alert alert-warning">
+        No reports are available
+    </div>
+
   </div>
 </div>
