@@ -104,7 +104,7 @@ app.controller("AcountsController", function($scope, $http, DBService, Upload) {
 	            }
 	        }).then(function (resp) {
 	            if(resp.data.success){
-	            	$scope.gst.logo = resp.data.url_thumb;
+	            	$scope.gst.logo = resp.data.path;
 	            } else {
 	            	alert(resp.data.message);
 	            }
