@@ -418,7 +418,7 @@ class Student extends Model
         if(!$mother_reg){
             DB::table("student_guardians")->insert(array(
                 "student_id" => $student->id,
-                "relation_type" => 1,
+                "relation_type" => 2,
                 "name" => $student->mother
             ));
         }
