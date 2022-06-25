@@ -145,6 +145,7 @@ class PaymentHistory extends Model
         $payment->reference_no = $transaction_id;
         $payment->p_remark = "Razorpay payment - ".$transaction_id;
         $payment->client_id = $order->client_id;
+        $payment->order_id = $order->id;
         $payment->save();
 
         foreach ($payment_items as $payment_item) {

@@ -318,7 +318,7 @@ class Student extends Model
             if($user){
                 $mail->user_id = $user->id;
             }
-            $mail->client_id = $student_id->client_id;
+            $mail->client_id = $student->client_id;
             $mail->save();
         }
 

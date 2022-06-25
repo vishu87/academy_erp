@@ -45,6 +45,12 @@
                 @include("students.student_profile.general_details")
               </div>
 
+              <div class="mt-3">
+                <div >
+                  <button class="btn btn-light btn-block" ng-click="sendWelcomeEmail()" ng-disabled="processing_mail" >Send Welcome Email <span ng-show="processing_mail" class="spinner-border spinner-border-sm"></span></button>
+                </div>
+              </div>
+
         </div>
       </div>
     </div>

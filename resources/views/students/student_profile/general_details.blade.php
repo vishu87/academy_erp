@@ -32,10 +32,6 @@
   </div>
 
 
-  <div class="col-md-12">
-    <div >
-      <button class="btn btn-light btn-block" ng-click="sendWelcomeEmail()" ng-disabled="processing_mail" >Send Welcome Email <span ng-show="processing_mail" class="spinner-border spinner-border-sm"></span></button>
-    </div>
-  </div>
+  
 
 </div>
