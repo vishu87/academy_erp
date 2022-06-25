@@ -136,7 +136,7 @@ app.controller("Reg_controller", function($scope, $http, DBService) {
                 },'/api/subscriptions/process-order').then(function(data){
                     $scope.datetime = data.datetime;
                     if(data.success){
-                        $scope.show_success = true;
+                        $scope.tab = 3;
                     } else {
                         alert(data.message);
                     }

@@ -62,9 +62,11 @@
 				</table>
 			</div>
 
-			<div class="text-right">
+			<div class="text-right" ng-if="!processing_order">
 				<x-web.button type="button" class="block" loading="placing-order" ng-click="createOrder()">Checkout</x-web.button>
 			</div>
+
+			<div ng-if="processing_order">Processing your order Please Wait</div>
 
 		</div>
 	</div>

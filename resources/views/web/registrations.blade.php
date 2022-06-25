@@ -18,6 +18,10 @@
 	<div ng-show="tab == 2">
 		@include("web.registration_checkout")
 	</div>
+
+	<div ng-show="tab == 3">
+		@include("web.reg_completion")
+	</div>
 	
 </x-web.container>
 

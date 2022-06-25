@@ -125,6 +125,10 @@ class PaymentHistory extends Model
                     $order_item->start_date = date("Y-m-d");
                 }
             }
+            $amount += $order_item->amount;
+            $tax += $order_item->tax;
+            $total_amount += $order_item->total_amount;
+            $payment_items[] = $order_item;
         }
 
         $payment = new PaymentHistory;
