@@ -726,6 +726,114 @@ class StudentController extends Controller
 
         return Response::json($data, 200, []);
     }
+
+    public function studentAttendance(Request $request, $student_id){
+        
+        $month = $request->month;
+        $year = $request->year;
+
+        $days = array();
+        $dates = array();
+        $today = date("Y-m-d");
+
+        if(!$month || $month == 0){
+          $month = date("n");
+          $month_2 = date("m");
+          $year = date("Y");
+        } else {
+          if($month < 10){
+            $month_2 = '0'.$month;
+          } else {
+            $month_2 = $month;
+          }
+        }
+
+        $date_ref = "01-".$month_2."-".$year;
+
+        $month_start_day = date("w",strtotime($date_ref));
+        $month_start_day_ts = strtotime($date_ref);
+
+        if($month_start_day != 0){
+          for ( $i = $month_start_day; $i > 0; $i--) { 
+            $ts_ref = $month_start_day_ts - $i*86400;
+            $date = date("Y-m-d",$ts_ref);
+            array_push($days, array(
+              "date" => $date,
+              "date_show" => date("d-M",$ts_ref),
+              "in_month" => false,
+              "attendance" => ""
+            ));
+            array_push($dates, $date);
+          }
+        } else {
+            $ts_ref = $month_start_day_ts;
+        }
+
+        $i = 0;
+        $month_check = $month;
+
+        $month_last_day_ts = $month_start_day_ts + 30*86400;
+
+        while ($ts_ref < $month_last_day_ts) {
+          $ts_ref = $month_start_day_ts + $i*86400;
+          $date = date("Y-m-d",$ts_ref);
+          array_push($days, array(
+            "date" => $date,
+            "date_show" => date("d-M",$ts_ref),
+            "in_month" => true,
+            "attendance" => ""
+            ));
+          array_push($dates, $date);
+          $i++;
+        }
+
+        $total_days = sizeof($days);
+
+        for ($i=1; $i <= 42 - $total_days; $i++) { 
+          $ts_ref = $month_last_day_ts + $i*86400;
+          $date = date("Y-m-d",$ts_ref);
+          array_push($days, array(
+            "date" => $date,
+            "date_show" => date("d-M",$ts_ref),
+            "in_month" => false,
+            "attendance" => ""
+          ));
+          array_push($dates, $date);
+        }
+
+        $st_attendance = DB::table('student_attendance')->select('group_id','attendance','date')->where("student_id",$student_id)->get();
+
+        $final_days = [];
+        foreach ($days as $day) {
+          
+          foreach ($st_attendance as $st_at) {
+            if($st_at->date == $day["date"]){
+              $day["attendance"] = $st_at->attendance;
+            }
+          }
+          $final_days[] = $day;
+        }
+
+        $weeks = array_chunk($final_days, 7);
+
+        $data["success"] = true;
+        $data["weeks"] = $weeks;
+        $data["month"] = $month*1;
+        $data["month_name"] = date("M",strtotime($date_ref));
+        $data["year"] = $year*1;
+        $data['success']= true;
+        return Response::json($data, 200, []);
+    }
+
+    public function studentReports(Request $request, $student_id){
+
+        $st_reports = DB::table('player_evaluation')->select('player_evaluation.*','sessions.name as session_name')->join("sessions","sessions.id","=","player_evaluation.session_id")->where("player_evaluation.student_id",$student_id)->orderBy("sessions.end_date",'DESC')->get();
+
+        $data["success"] = true;
+        $data["reports"] = $st_reports;
+        return Response::json($data, 200, []);
+    }
+
     public function deleteStudent1(){
         $id = Input::get("id");
         $check = DB::table('students')->find($id);

@@ -34,3 +34,18 @@
 
   </div>
 </div>
+
+<div class="row">
+  <div class="col-md-6">
+    @include("students.student_profile.attendance")
+  </div>
+  <div class="col-md-6">
+    @include("students.student_profile.performance_reports")
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    @include("students.student_profile.performance_graph")
+  </div>
+</div>

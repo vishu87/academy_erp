@@ -6,6 +6,13 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
     $scope.loading = true;
     $scope.processing = false;
     $scope.switchContent = 'payments';
+
+    $scope.attendance = {
+      weeks: []
+    }
+
+    $scope.month = "";
+    $scope.year = "";
     
     $scope.myImage = '';
     $scope.myCroppedImage = '';
@@ -38,6 +45,9 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
           $scope.loading = false;
       });
 
+      $scope.getAttendance();
+      $scope.getPerformanceReports();
+      $scope.getPerformanceGraph();
     }
 
     $scope.editStudent = function(id){
@@ -698,6 +708,53 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
           });
         }
       });
+    }
+
+    $scope.getAttendance = function(){
+
+      DBService.postCall({
+        month : $scope.month,
+        year : $scope.year,
+      },"/api/student/attendance/"+$scope.student_id)
+      .then(function (data){
+          $scope.attendance.month_name = data.month_name;
+          $scope.attendance.year = data.year;
+          $scope.attendance.weeks = data.weeks;
+
+          $scope.month = data.month;
+          $scope.year = data.year;
+          
+      });
+    }
+    $scope.prev_month = function(){
+        $scope.month--;
+        if($scope.month == 0) {
+            $scope.month = 12;
+            $scope.year--;
+        }
+        $scope.getAttendance();
+    }
+
+    $scope.next_month = function(){
+        $scope.month++;
+        if($scope.month == 13) {
+            $scope.month = 1;
+            $scope.year++;
+        }
+        $scope.getAttendance();
+    }
+
+    $scope.getPerformanceReports = function(){
+      DBService.postCall({
+        
+      },"/api/student/reports/"+$scope.student_id)
+      .then(function (data){
+          $scope.reports = data.reports;
+      });
+    }
+
+    $scope.getPerformanceGraph = function(){
+      
     }
 
 

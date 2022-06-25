@@ -130,6 +130,11 @@ Route::group([], function(){
             Route::post('/approve',[PaymentController::class, 'approvePauseRequest']);
             Route::post('/delete',[PaymentController::class, 'deletePauseRequest']);
         });
+
+        Route::post('/attendance/{student_id}',[StudentController::class, 'studentAttendance']);
+        Route::post('/reports/{student_id}',[StudentController::class, 'studentReports']);
+
+
     });
 
     Route::group(["prefix"=>"payments"], function(){

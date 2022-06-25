@@ -7,7 +7,7 @@
     </ul>
   </div>
   <div class="portlet-body">
-    <div class="table-responsive">
+    <div class="table-responsive" ng-if="reports.length > 0">
       <table class="table">
         <thead>
           <tr>
@@ -23,11 +23,14 @@
             <td>@{{ report.session_name }}</td>
             <td>@{{ report.created_at }}</td>
             <td class="text-right">
-              <a class="btn btn-light" href="{{url('/performance-pdf')}}/@{{report.uuid}}">View</a>
+              <a class="btn btn-light btn-sm" href="{{url('/performance-pdf')}}/@{{report.uuid}}" target="_blank">View</a>
             </td>
           </tr>
         </tbody>
       </table>
+      <div ng-if="!loading && reports.length == 0">
+        No reports are available
+      </div>
     </div>
   </div>
 </div>
