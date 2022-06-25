@@ -199,10 +199,10 @@ class SubscriptionController extends Controller
 
         if($order){
 
-            // DB::table("orders")->where("id",$order->id)->update(array(
-            //     "transaction_id" => $transaction_id,
-            //     "status" => 1
-            // ));
+            DB::table("orders")->where("id",$order->id)->update(array(
+                "transaction_id" => $transaction_id,
+                "status" => 1
+            ));
 
             if($order->registration_id){
                 $student = Student::createFromRegistration($order->registration_id);
