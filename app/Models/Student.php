@@ -362,12 +362,16 @@ class Student extends Model
 
         $student->save();
 
+        $father_reg = false;
+        $mother_reg = false;
         //reg parent 1
         if($registration->prim_relation_to_student != 3){
             if($registration->prim_relation_to_student == 1){
                 $name = $student->father;
+                $father_reg = true;
             } else {
                 $name = $student->mother;
+                $mother_reg = true;
             }
             DB::table("student_guardians")->insert(array(
                 "student_id" => $student->id,
@@ -382,11 +386,14 @@ class Student extends Model
         }
 
         //reg parent 2
+
         if($registration->sec_relation_to_student != 3){
             if($registration->sec_relation_to_student == 1){
                 $name = $student->father;
+                $father_reg = true;
             } else {
                 $name = $student->mother;
+                $mother_reg = true;
             }
             DB::table("student_guardians")->insert(array(
                 "student_id" => $student->id,
@@ -398,6 +405,22 @@ class Student extends Model
         } else {
             $student->mobile = $registration->prim_mobile;
             $student->email = $registration->prim_email;
+        }
+
+        if(!$father_reg){
+            DB::table("student_guardians")->insert(array(
+                "student_id" => $student->id,
+                "relation_type" => 1,
+                "name" => $student->father
+            ));
+        }
+
+        if(!$mother_reg){
+            DB::table("student_guardians")->insert(array(
+                "student_id" => $student->id,
+                "relation_type" => 1,
+                "name" => $student->mother
+            ));
         }
 
         $student->save();
