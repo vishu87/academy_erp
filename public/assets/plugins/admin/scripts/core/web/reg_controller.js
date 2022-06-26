@@ -1,6 +1,8 @@
 app.controller("Reg_controller", function($scope, $http, DBService) {
    
     $scope.processing = false;
+    $scope.payment_code = payment_code;
+
   	$scope.formData = {
   		name : "Vashisths",
   		date: "10",
@@ -18,8 +20,10 @@ app.controller("Reg_controller", function($scope, $http, DBService) {
   		pin_code : "265122",
   		training_city_id : "3",
   		training_center_id : "8"
-
   	};
+
+    $scope.coupon_code = "";
+    $scope.coupon_code_message = "";
 
     // $scope.formData = {
     //     name : "",
@@ -65,18 +69,59 @@ app.controller("Reg_controller", function($scope, $http, DBService) {
       });
     }
 
+    $scope.resetPayment = function(){
+        $scope.getPaymentOptions();
+        $scope.payment_items = [];
+        $scope.total_amount = 0;
+        for (var i = 0; i < $scope.payment_options.length; i++) {
+            $scope.payment_options[i].type_id = "";
+        }
+    }
+
   	$scope.getPaymentOptions = function(){
-		DBService.postCall({group_id: $scope.formData.group_id},"/api/subscriptions/get-payment-options").then(function(data){
+		DBService.postCall({
+            group_id: $scope.formData.group_id,
+            payment_code: $scope.payment_code
+        },"/api/subscriptions/get-payment-options").then(function(data){
 		  	$scope.payment_options = data.payment_options;
 		  	$scope.getPaymentItems();
 		});
   	}
-  	$scope.getPaymentOptions();
+
+    $scope.checkCoupon = function(){
+        DBService.postCall({ 
+            coupon_code: $scope.formData.coupon_code,
+            group_id: $scope.formData.group_id 
+        },"/api/subscriptions/check-coupon").then(function(data){
+            if(data.success){
+                $scope.coupon_code = $scope.formData.coupon_code;
+                $scope.getPaymentItems();
+            } else {
+                alert(data.message);
+            }
+        });
+    }
+
+    $scope.removeCoupon = function(){
+        $scope.formData.coupon_code = "";
+        $scope.coupon_code = "";
+        $scope.coupon_code_message = "";
+        $scope.getPaymentItems();
+    }
 
   	$scope.getPaymentItems = function(){
-		DBService.postCall({ categories : $scope.payment_options, group_id: $scope.formData.group_id },"/api/subscriptions/get-payment-items").then(function(data){
+		DBService.postCall({ 
+            coupon_code : $scope.coupon_code, 
+            categories : $scope.payment_options, 
+            group_id: $scope.formData.group_id,
+            payment_code: $scope.payment_code,
+        },"/api/subscriptions/get-payment-items").then(function(data){
 		  	$scope.payment_items = data.payment_items;
-		  	$scope.total_amount = data.total_amount;
+            $scope.total_amount = data.total_amount;
+		  	$scope.total_discount = data.total_discount;
+
+            $scope.coupon_code_message = data.coupon_code_message;
+
 		});
   	}
 

@@ -15,7 +15,7 @@ class PaymentHistory extends Model
         return PaymentHistory::select("payment_history.*","payment_modes.mode")->join("payment_modes","payment_modes.id","=","payment_history.p_mode");
     }
 
-    public static function getAmount($group_id, $type_id){
+    public static function getAmount($group_id, $type_id, $coupon = null){
         
         $group = DB::table("groups")->select("groups.id as group_id","groups.center_id","center.city_id")->join("center","center.id","=","groups.center_id")->where("groups.id",$group_id)->first();
 
@@ -24,8 +24,18 @@ class PaymentHistory extends Model
         $city_price = null;
         $default_price = null;
 
+        $not_found_price = new \stdClass;
+        $not_found_price->price = 0;
+        $not_found_price->amount = 0;
+        $not_found_price->discount = 0;
+        $not_found_price->discount_code_id = null;
+        $not_found_price->taxable_amount = 0;
+        $not_found_price->tax_perc = 18;
+        $not_found_price->tax = 18;
+        $not_found_price->total_amount = 0;
+
         if(!$group){
-            return $default_price;
+            return $not_found_price;
         }
 
         $prices = DB::table("payment_type_prices")->select("id","price","tax as tax_perc","group_id","center_id","city_id","total")->where("pay_type_id",$type_id)->where(function($query) use ($group){
@@ -57,22 +67,39 @@ class PaymentHistory extends Model
         }
 
         if($group_price){
-            return $group_price;
+            $final_price = $group_price;
         } else if($center_price){
-            return $center_price;
+            $final_price = $center_price;
         } else if($city_price){
-            return $city_price;
+            $final_price = $city_price;
         } else {
             if($default_price){
-                return $default_price;
+                $final_price = $default_price;
             } else {
-                $price = new \stdClass;
-                $price->price = 0;
-                $price->tax_perc = 18;
-                $price->total = 0;
-                return $price;
+                $final_price = $not_found_price;
             }
         }
+
+        $final_price->discount = 0;
+        $final_price->discount_code_id = null;
+
+        if($coupon){
+            if($coupon->pay_type_id == $type_id && $final_price->price > 0){
+                if($coupon->discount_type == 1){
+                    $final_price->discount = round($final_price->price*$coupon->discount/100);
+                } else {
+                    $final_price->discount = $coupon->discount;
+                }
+                $final_price->discount_code_id = $coupon->id;
+            }
+        }
+
+        $final_price->amount = $final_price->price;
+        $final_price->taxable_amount = $final_price->price - $final_price->discount;
+        $final_price->tax = round($final_price->taxable_amount*$final_price->tax_perc/100);
+        $final_price->total_amount = $final_price->taxable_amount + $final_price->tax;
+
+        return $final_price;
 
     }
 
@@ -125,7 +152,7 @@ class PaymentHistory extends Model
                     $order_item->start_date = date("Y-m-d");
                 }
             }
-            $amount += $order_item->amount;
+            $amount += $order_item->taxable_amount;
             $tax += $order_item->tax;
             $total_amount += $order_item->total_amount;
             $payment_items[] = $order_item;

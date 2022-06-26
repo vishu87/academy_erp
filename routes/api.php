@@ -133,6 +133,7 @@ Route::group([], function(){
 
         Route::post('/attendance/{student_id}',[StudentController::class, 'studentAttendance']);
         Route::post('/reports/{student_id}',[StudentController::class, 'studentReports']);
+        Route::post('/performance-graph/{student_id}',[StudentPerformanceController::class, 'graphData']);
 
 
     });
@@ -351,7 +352,9 @@ Route::group(["prefix"=>"registrations"], function(){
 
 Route::group(["prefix"=>"subscriptions"], function(){
     Route::post('/get-payment-options',[SubscriptionController::class, 'getPaymentOptions']);
+    Route::post('/check-coupon',[SubscriptionController::class, 'checkCoupon']);
     Route::post('/get-payment-items',[SubscriptionController::class, 'paymentItems']);
+    
     Route::post('/create-order',[SubscriptionController::class, 'createOrder']);
     Route::post('/process-order',[SubscriptionController::class, 'processWebOrder']);
 });

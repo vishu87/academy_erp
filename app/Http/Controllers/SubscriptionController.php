@@ -20,24 +20,37 @@ class SubscriptionController extends Controller
     public function getPaymentOptions(Request $request){
 
         $group_id = $request->group_id;
+        $payment_code = $request->payment_code;
 
-        $category_ids = [ 2, 3];
-        $mandatory = [ 2 ];
+        $codes = explode('|',$payment_code);
+        $mandatory = explode(',',$codes[0]);
+        $category_ids = array_merge(explode(',',$codes[0]), explode(',',$codes[1]));
+        $fixed = explode(',',$codes[2]);
+
+        if(sizeof($fixed) > 0){
+            $fix_category_ids = DB::table("payments_type")->whereIn("id",$fixed)->pluck("category_id")->toArray();
+            if(sizeof($fix_category_ids) == 0) $fix_category_ids = [0];
+        } else {
+            $fix_category_ids = [0];
+        }
 
         $payment_categories = [];
 
         foreach($category_ids as $payment_category_id){
             $category = DB::table("payments_type_categories")->select("id","category_name")->where("id",$payment_category_id)->first();
-            $category->label = "Select ".$category->category_name;
-            $category->types = DB::table("payments_type")->select("id as value","name as label")->where("category_id",$category->id)->get();
-            $category->type_id = "";
-            if(in_array($category->id,$mandatory)){
-                $category->required = true;
-            } else {
-                $category->required = false;
+            
+            if($category && !in_array($payment_category_id, $fix_category_ids)){
+                $category->label = "Select ".$category->category_name;
+                $category->types = DB::table("payments_type")->select("id as value","name as label")->where("category_id",$category->id)->get();
+                $category->type_id = "";
+                if(in_array($category->id,$mandatory)){
+                    $category->required = true;
+                } else {
+                    $category->required = false;
+                }
+                $category->group_id = $group_id;
+                $payment_categories[] = $category;
             }
-            $category->group_id = $group_id;
-            $payment_categories[] = $category;
         }
         
         $data["success"] = true;
@@ -48,86 +61,120 @@ class SubscriptionController extends Controller
 
     public function paymentItems(Request $request){
 
+        $client_code = $request->header("clientId");
+        $client = Client::AuthenticateClient($client_code);
+
         $group_id = $request->group_id;
         $categories = $request->categories;
+        $payment_code = $request->payment_code;
 
-        $mandatory = [ 1, 2];
-        $optional = [ 3 ];
-        $fixed = [ 1 => 21 ];
-        
+        $coupon_code = $request->coupon_code;
+        if($coupon_code){
+            $coupon = DB::table("coupons")->where("code",$coupon_code)->where("client_id",$client->id)->first();
+        } else {
+            $coupon = null;
+        }
+
+        $codes = explode('|',$payment_code);
+        $mandatory = explode(',',$codes[0]);
+        $optional = explode(',',$codes[1]);
+        $fixed = explode(',',$codes[2]);
+
         $total_amount = 0;
+        $total_discount = 0;
 
         $payment_items = [];
-        foreach($fixed as $fix_category_id => $fix_type_id){
-            
-            $category = DB::table("payments_type_categories")->select("id","category_name")->where("id",$fix_category_id)->first();
-            
-            $price = PaymentHistory::getAmount($group_id,$fix_type_id);
-
-            if($price){
+        foreach($fixed as $fix_type_id){
+            if($fix_type_id){
+                $category = DB::table("payments_type")->select("category_name")->join("payments_type_categories","payments_type_categories.id","=","payments_type.category_id")->where("payments_type.id",$fix_type_id)->first();
+                
+                $price = PaymentHistory::getAmount($group_id,$fix_type_id,$coupon);
                 $payment_items[] = [
                     "category" => $category->category_name,
                     "type_id" => $fix_type_id,
-                    "amount" => $price->price,
-                    "discount" => 0,
-                    "taxable_amount" => $price->price,
+                    "amount" => $price->amount,
+                    "discount" => $price->discount,
+                    "discount_code_id" => $price->discount_code_id,
+                    "taxable_amount" => $price->taxable_amount,
                     "tax_perc" => $price->tax_perc,
-                    "tax" => round($price->price*$price->tax_perc/100),
-                    "total_amount" => round($price->total)
+                    "tax" => $price->tax,
+                    "total_amount" => $price->total_amount
                 ];
-                $total_amount += round($price->total);
-            } else {
-                $payment_items[] = [
-                    "category" => $category->category_name,
-                    "type_id" => $fix_type_id,
-                    "amount" => 0,
-                    "discount" => 0,
-                    "taxable_amount" => 0,
-                    "tax_perc" => 0,
-                    "tax" => 0,
-                    "total_amount" => 0
-                ];
+                $total_amount += $price->total_amount;
+                $total_discount += $price->discount;
             }
-            
             
         }
 
         foreach($categories as $category){
             if($category["type_id"]){
-                $price = PaymentHistory::getAmount($group_id,$category["type_id"]);
-                if($price){
-                    $payment_items[] = [
-                        "category" => $category["category_name"],
-                        "type_id" => $category["type_id"],
-                        "amount" => $price->price,
-                        "taxable_amount" => $price->price,
-                        "discount" => 0,
-                        "tax_perc" => $price->tax_perc,
-                        "tax" => round($price->price*$price->tax_perc/100),
-                        "total_amount" => round($price->total),
-                    ];
-                    $total_amount += round($price->total);
-                } else {
-                    $payment_items[] = [
-                        "category" => $category["category_name"],
-                        "type_id" => $category["type_id"],
-                        "amount" => 0,
-                        "taxable_amount" => 0,
-                        "discount" => 0,
-                        "tax_perc" => 0,
-                        "tax" => 0,
-                        "total_amount" => 0,
-                    ];
-                }
+                $price = PaymentHistory::getAmount($group_id,$category["type_id"],$coupon);
+                $payment_items[] = [
+                    "category" => $category["category_name"],
+                    "type_id" => $category["type_id"],
+                    "amount" => $price->amount,
+                    "discount" => $price->discount,
+                    "discount_code_id" => $price->discount_code_id,
+                    "taxable_amount" => $price->taxable_amount,
+                    "tax_perc" => $price->tax_perc,
+                    "tax" => $price->tax,
+                    "total_amount" => $price->total_amount
+                ];
+                $total_amount += $price->total_amount;
+                $total_discount += $price->discount;
                 
             }
         }
-
-        // foreach($)
         
         $data["success"] = true;
         $data["payment_items"] = $payment_items;
         $data["total_amount"] = $total_amount;
+        $data["total_discount"] = $total_discount;
+
+        if($data["total_discount"] > 0){
+            $data["coupon_code_message"] = "You have recieved a total discount of Rs. ".$total_discount;
+        } else {
+            $data["coupon_code_message"] = "Sorry! No discount is available for the coupon code in selected items";
+        }
+
+        return Response::json($data, 200, []);
+    }
+
+    public function checkCoupon(Request $request){
+
+        $client_code = $request->header("clientId");
+        $client = Client::AuthenticateClient($client_code);
+
+        $success = false;
+        $message = "Invalid coupon code";
+
+        $group_id = $request->group_id;
+        $coupon_code = $request->coupon_code;
+
+        $coupon = DB::table("coupons")->where("code",$coupon_code)->where("client_id",$client->id)->first();
+        if($coupon){
+
+            $group = DB::table("groups")->select("groups.id as group_id","groups.center_id","center.city_id")->join("center","center.id","=","groups.center_id")->where("groups.id",$group_id)->first();
+
+            $group_id = $group->group_id;
+            $center_id = $group->center_id;
+            $city_id = $group->city_id;
+
+            $mapped_coupons = DB::table("coupon_mapping")->where("city_id",-1)->orWhere(function($query) use ($city_id){
+                $query->where("city_id",$city_id)->whereNull("center_id");
+            })->orWhere(function($query) use ($city_id, $center_id){
+                $query->where("city_id",$city_id)->where("center_id",$center_id)->whereNull("group_id");
+            })->orWhere(function($query) use ($group_id){
+                $query->where("group_id",$group_id);
+            })->where("coupon_id",$coupon->id)->first();
+
+            if($mapped_coupons){
+                $success = true;
+            }
+        }
+        
+        $data["success"] = $success;
+        $data["message"] = $message;
 
         return Response::json($data, 200, []);
     }

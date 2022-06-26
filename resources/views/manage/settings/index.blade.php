@@ -29,7 +29,7 @@
 	      		</li>
 
 	      		<li class="@{{switchContent == 'payment_gateway'?'active':''}}">
-	        		<a href="" ng-click="switchContentType('payment_gateway')">Payment Gateway</a>
+	        		<a href="" ng-click="switchContentType('payment_gateway')">External Keys</a>
 	      		</li>
 
 	      		<li class="@{{switchContent == 'web_pages'?'active':''}}">

@@ -75,12 +75,16 @@ class Lead extends Model
             $lead->client_id = $lead->client_id;
             $lead->created_at = date("Y-m-d H:i:s");
             $lead->created_by = null;
-            $lead->status = 8;
+            $lead->status = $open_lead->status;
             $lead->lead_for = $open_lead->lead_for;
             $lead->lead_source = $open_lead->lead_source;
+            $lead->assigned_to = $open_lead->assigned_to : null;
             $new_lead = true;
         } else {
             $new_lead = false;
+            if($lead->status == 6 || $lead->status == 7){
+                $lead->status = 1;
+            }
         }
 
         if(!$lead->name) $lead->name = $open_lead->name;
@@ -103,19 +107,20 @@ class Lead extends Model
         if($last_history){
             $leadHistory = new LeadHistory;
             $leadHistory->lead_id = $lead->id;
-            $leadHistory->call_note = "Submission from webesite";
+            $leadHistory->call_note = "Submission from website";
             $leadHistory->call_made = 0;
             $leadHistory->action_date = Utilities::convertDateToDB($open_lead->action_date);
-            $leadHistory->status = $last_history->status;
+            $leadHistory->status = $lead->status;
             $leadHistory->assigned_to = $last_history->assigned_to;
             $leadHistory->save();
         } else {
             $leadHistory = new LeadHistory;
             $leadHistory->lead_id = $lead->id;
-            $leadHistory->call_note = "Submission from webesite";
+            $leadHistory->call_note = "Submission from website";
             $leadHistory->call_made = 0;
             $leadHistory->action_date = Utilities::convertDateToDB($open_lead->action_date);
             $leadHistory->status = 8;
+            $leadHistory->assigned_to = $lead->assigned_to;
             $leadHistory->save();
         }
         

@@ -212,6 +212,73 @@ class StudentPerformanceController extends Controller{
         return Response::json($data, 200, []);
     }
 
+    public function graphData(Request $request, $student_id){
+
+        $category_id = $request->category_id;
+
+        $student = Student::find($student_id);
+
+        $legends = [];
+        $labels = [];
+        $values = [];
+
+        if($category_id == 0){
+            $skills = DB::table("player_skills")->select("player_skills.session_id","skill_attributes.category_id as map_id","player_skills.value")->join("skill_attributes","skill_attributes.id","=","player_skills.skill_attribute_id")->join("skill_categories","skill_categories.id","=","skill_attributes.category_id")->where("player_skills.student_id",$student_id)->where("skill_attributes.type",1)->get();
+        } else {
+            $skills = DB::table("player_skills")->select("player_skills.session_id","player_skills.value","player_skills.skill_attribute_id as map_id")->join("skill_attributes","skill_attributes.id","=","player_skills.skill_attribute_id")->where("player_skills.student_id",$student_id)->where("skill_attributes.category_id",$category_id)->where("skill_attributes.type",1)->get();
+        }
+
+        $session_ids = [];
+        $attribute_ids = [];
+        foreach($skills as $skill){
+            if(!in_array($skill->session_id,$session_ids)){
+                $session_ids[] = $skill->session_id;
+            }
+
+            if(!in_array($skill->map_id,$attribute_ids)){
+                $attribute_ids[] = $skill->map_id;
+            }
+        }
+
+        $sessions = DB::table("sessions")->whereIn("id",$session_ids)->get();
+        
+        if($category_id == 0){
+            $attributes = DB::table("skill_categories")->select("id","category_name as name")->whereIn("id",$attribute_ids)->get();
+        } else {
+            $attributes = DB::table("skill_attributes")->select("id","attribute_name as name")->whereIn("id",$attribute_ids)->get();
+        }
+
+        foreach($attributes as $index => $attribute){
+            $legends[] = $attribute->name;
+            $session_values = [];
+            foreach($sessions as $session){
+                $data_value = 0;
+                if($index == 0){
+                    $labels[] = $session->name;
+                }
+                foreach($skills as $skill){
+                    if($skill->map_id == $attribute->id && $skill->session_id == $session->id){
+                        $data_value += $skill->value;
+                    }
+                }
+                $session_values[] = round($data_value*100/5);
+            }
+            $values[] = $session_values;
+            
+        }
+
+        $p_data = new \stdClass;
+        $p_data->legends = $legends;
+        $p_data->labels = $labels;
+        $p_data->values = $values;
+        
+        $data["success"] = true;
+        $data["p_data"] = $p_data;
+        $data["categories"] = DB::table("skill_categories")->select("id as value","category_name as label")->where("client_id",$student->client_id)->get();
+
+        return Response::json($data, 200, []);
+    }
+
     public function performancePDF($eval_code){
 
         $response = $this->PDFCreate($eval_code);

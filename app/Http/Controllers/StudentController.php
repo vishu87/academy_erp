@@ -759,7 +759,7 @@ class StudentController extends Controller
             $date = date("Y-m-d",$ts_ref);
             array_push($days, array(
               "date" => $date,
-              "date_show" => date("d-M",$ts_ref),
+              "date_show" => date("d",$ts_ref),
               "in_month" => false,
               "attendance" => ""
             ));
@@ -779,7 +779,7 @@ class StudentController extends Controller
           $date = date("Y-m-d",$ts_ref);
           array_push($days, array(
             "date" => $date,
-            "date_show" => date("d-M",$ts_ref),
+            "date_show" => date("d",$ts_ref),
             "in_month" => true,
             "attendance" => ""
             ));
@@ -794,7 +794,7 @@ class StudentController extends Controller
           $date = date("Y-m-d",$ts_ref);
           array_push($days, array(
             "date" => $date,
-            "date_show" => date("d-M",$ts_ref),
+            "date_show" => date("d",$ts_ref),
             "in_month" => false,
             "attendance" => ""
           ));

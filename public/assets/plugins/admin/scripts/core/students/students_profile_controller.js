@@ -6,10 +6,13 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
     $scope.loading = true;
     $scope.processing = false;
     $scope.switchContent = 'payments';
+    $scope.performance_category_id = 0;
 
     $scope.attendance = {
       weeks: []
     }
+
+    $scope.p_categories = [];
 
     $scope.month = "";
     $scope.year = "";
@@ -754,8 +757,21 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
     }
 
     $scope.getPerformanceGraph = function(){
-      
+      $scope.p_data = {
+        legends : [],
+        labels : [],
+        values: []
+      };
+      $scope.loading_graph = true;
+      DBService.postCall({
+        category_id: $scope.performance_category_id
+      },"/api/student/performance-graph/"+$scope.student_id)
+      .then(function (data){
+          $scope.p_data = data.p_data;
+          $scope.p_categories = data.categories;
+          $scope.loading_graph = false;
+
+      });
+
     }
-
-
 });

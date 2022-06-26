@@ -43,6 +43,7 @@ Route::get('/renewals', [WebController::class,'renewals']);
 Route::get('/demo-schedule', [WebController::class,'demoShedule']);
 Route::get('/lead/{type}', [WebController::class,'lead']);
 Route::get('/registrations',[WebController::class,'registrations']);
+Route::get('/pages/{type}',[WebController::class,'webPages']);
 
 Route::get('/sign-up', [WebController::class, 'signUp']);
 Route::get('/forget-password', [WebController::class, 'forgetPassword']);

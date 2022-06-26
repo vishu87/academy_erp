@@ -4,6 +4,8 @@ $body_font : 'Poppins', sans-serif;
 $heading_font : 'Poppins', sans-serif;
 
 $theme_color: #921d1d;
+$blue:#27266b;
+$red:#921d1d;
 $theme_light: lighten($theme_color, 5);
 $theme_light2: lighten($theme_color, 30);
 
@@ -55,5 +57,95 @@ span {
 	&.btn-light {
 		background: #e2e6ea;
 		border-color: #dae0e5;
+	}
+}
+
+.table-div {
+	display: table;
+	> div {
+		display: table-cell;
+		vertical-align: middle;
+	}
+	&.full {
+		width: 100%;
+	}
+	&.top {
+		> div {
+			vertical-align: top;
+		}
+	}
+}
+
+.step {
+	background: #FFF;
+	border: 1px solid #EEE;
+	box-shadow: 0 2px 10px #EEE;
+	margin-bottom: 15px;
+	.head {
+		padding: 10px 15px;
+		.number1 {
+			width: 50px;
+			text-align: left;
+			> div {
+				display: inline-block;
+				font-size: 14px;
+				color: $blue;
+				background: #EEE;
+				padding: 5px 10px;
+			}
+		}
+		.name {
+			font-size: 20px;
+			color: $blue;
+		}
+		&.active {
+			background: $blue;
+			.name {
+				color: #FFF;
+			}
+		}
+	}
+	.body {
+		padding: 15px;
+
+		.plans {
+			overflow-x: auto;
+			margin-bottom: 40px;
+			.plan {
+				cursor: pointer;
+				border-bottom: 1px solid $red;
+				margin: 10px;
+				padding: 5px;
+				.months {
+					font-size: 16px;
+					span {
+						font-size: 12px;
+					}
+				}
+				.amount {
+					font-size: 20px;
+				}
+				&.active {
+					background: $blue;
+					color: #FFF;
+				}
+			}
+		}
+
+		.final-price {
+			
+			border: 1px solid #EEE;
+			padding: 15px;
+		}
+	}
+}
+
+.sub {
+	padding: 10px;
+	border-bottom: 1px solid #AAA;
+	cursor: pointer;
+	&.active {
+		background: #4caf50;
+		color: #FFF;
 	}
 }

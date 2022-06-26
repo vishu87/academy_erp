@@ -1240,5 +1240,38 @@ img.round{
 
 }
 
+.table-cal {
+	width: 100%;
+	thead {
+		tr {
+			td {
+				width: 14.28%;
+				text-align: center;
+				color: #888;
+			}
+		}
+	}
+}
 
-	
+
+.day-cell {
+	text-align: center;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	div {
+		width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    text-align: center;
+    margin: 0 auto;
+    padding-top: 2px;
+	}
+	div.day-1 {
+	  background: green;
+	  color: #FFF;
+	}
+	div.day-0 {
+	  background: red;
+	  color: #FFF;
+	}
+}

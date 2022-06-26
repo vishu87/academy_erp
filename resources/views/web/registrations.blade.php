@@ -4,6 +4,9 @@
 
 @if($payment_gateway == "razorpay")
 	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+	<script type="text/javascript">
+		payment_code = "{{$payment_code}}";
+	</script>
 @endif
 
 <x-web.container :background="$background" :logo="$logo_url" controller="Reg_controller" init="init()">

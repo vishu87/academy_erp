@@ -12,7 +12,7 @@ class RenewalWebController extends Controller
     public function searchStudent(Request $request){
 
         $mobile_number = $request->mobile_number;
-        $students = DB::table("students")->select("students.id", "students.name", "students.dob", "students.doe", "students.father", "groups.group_name", "center.center_name", "students.code","students.email")->join("groups","groups.id","=","students.group_id")->join("center","center.id","=","groups.center_id")->where(function($query) use ($mobile_number){
+        $students = DB::table("students")->select("students.id", "students.name", "students.dob", "students.doe", "students.father", "groups.group_name", "center.center_name", "students.code","students.email","students.group_id")->join("groups","groups.id","=","students.group_id")->join("center","center.id","=","groups.center_id")->where(function($query) use ($mobile_number){
             $query->where("mobile","LIKE","%".$mobile_number."%");
         })->orderBy("students.name")->where("inactive",[0])->limit(5)->get();
 

@@ -1,7 +1,8 @@
 app.controller('RenewalCtrl',function($scope , $http, $timeout , DBService){
 	
+    $scope.payment_code = payment_code;
 	$scope.filter = {
-        mobile_number: ""
+        mobile_number: "9634628573"
     }
     $scope.step = 1;
 	$scope.key = "";
@@ -11,6 +12,9 @@ app.controller('RenewalCtrl',function($scope , $http, $timeout , DBService){
     $scope.sub_index = -1;
     $scope.show_success = false;
     $scope.datetime = "";
+
+    $scope.formData = {};
+    $scope.coupon_code = "";
 
 	$scope.clickStep = function(number){
 		$scope.step = number;
@@ -28,8 +32,6 @@ app.controller('RenewalCtrl',function($scope , $http, $timeout , DBService){
 			$scope.students = data.students;
 			$scope.processing = false;
 
-            // $scope.student = $scope.students[0];
-            // $scope.getPackage();
             if($scope.students.length > 0){
                 $scope.step = 2;
             } else {
@@ -38,37 +40,70 @@ app.controller('RenewalCtrl',function($scope , $http, $timeout , DBService){
 
 		});
 	}
-    // $scope.submitStep1();
 
     $scope.selectStudent = function(student){
         $scope.student = student;
+        $scope.payment_items = [];
         $scope.step = 3;
-        $scope.getPackage();
+        $scope.getPaymentOptions();
     }
 
-    $scope.getPackage = function(){
-        $scope.processing = true;
-        DBService.postCall({student_id:$scope.student.id},'/api/renewal/find-subs').then(function(data){
-            $scope.subs = data.subs;
-            $scope.message = data.message;
-            $scope.processing = false;
-            if(data.subs.length > 0){
-                $scope.selectSub($scope.subs[$scope.subs.length - 1],$scope.subs.length - 1);
+    $scope.getPaymentOptions = function(){
+        DBService.postCall({
+            group_id: $scope.student.group_id,
+            payment_code: $scope.payment_code
+        },"/api/subscriptions/get-payment-options").then(function(data){
+            $scope.payment_options = data.payment_options;
+            $scope.getPaymentItems();
+        });
+    }
+
+    $scope.checkCoupon = function(){
+        DBService.postCall({ 
+            coupon_code: $scope.formData.coupon_code,
+            group_id: $scope.student.group_id 
+        },"/api/subscriptions/check-coupon").then(function(data){
+            if(data.success){
+                $scope.coupon_code = $scope.formData.coupon_code;
+                $scope.getPaymentItems();
+            } else {
+                alert(data.message);
             }
         });
     }
 
-    $scope.selectSub = function(sub, index){
-        $scope.sub_index = index;
-        $scope.sub = sub;
+    $scope.removeCoupon = function(){
+        $scope.formData.coupon_code = "";
+        $scope.coupon_code = "";
+        $scope.coupon_code_message = "";
+        $scope.getPaymentItems();
+    }
+
+    $scope.getPaymentItems = function(){
+        DBService.postCall({ 
+            coupon_code : $scope.coupon_code, 
+            categories : $scope.payment_options, 
+            group_id: $scope.student.group_id,
+            payment_code: $scope.payment_code,
+        },"/api/subscriptions/get-payment-items").then(function(data){
+            $scope.payment_items = data.payment_items;
+            $scope.total_amount = data.total_amount;
+            $scope.total_discount = data.total_discount;
+
+            $scope.coupon_code_message = data.coupon_code_message;
+
+        });
     }
 
     $scope.createOrder = function(){
         $scope.placing_order = true;
         DBService.postCall({
-            student: $scope.student,
-            subscription: $scope.sub
-        },'/api/renewal/create-order').then(function(data){
+            type: "renewal",
+            payment_gateway: "razorpay",
+            student_id: $scope.student.id,
+            total_amount : $scope.total_amount,
+            payment_items : $scope.payment_items
+        },'/api/subscriptions/create-order').then(function(data){
             $scope.order_id = data.order_id;
             $scope.key = data.key;
             $scope.startPayment();
@@ -79,10 +114,10 @@ app.controller('RenewalCtrl',function($scope , $http, $timeout , DBService){
     $scope.startPayment = function(){
         var options = {
             "key": $scope.key, 
-            "amount": $scope.sub.total_amount*100, 
+            "amount": $scope.total_amount*100, 
             "currency": "INR",
             "name": $scope.student.name,
-            "description": "BBFS Renewal Payment for #"+$scope.student.code,
+            "description": "BBFS Registration Payment",
             "image": "https://www.bbfootballschools.com/images/logo.png",
             "order_id": $scope.order_id, 
             "handler": function (response){
@@ -93,22 +128,20 @@ app.controller('RenewalCtrl',function($scope , $http, $timeout , DBService){
                 DBService.postCall({
                     order_id: $scope.order_id,
                     transaction_id: response.razorpay_payment_id
-                },'/api/renewal/process-order').then(function(data){
+                },'/api/subscriptions/process-order').then(function(data){
                     $scope.datetime = data.datetime;
                     if(data.success){
                         $scope.show_success = true;
                     } else {
                         alert(data.message);
                     }
-
                     $scope.processing_order = false;
-
                 });
 
             },
             "prefill": {
                 "name": $scope.student.name,
-                "email": $scope.student.email,
+                "email": "",
                 "contact": $scope.filter.mobile_number
             },
             "notes": {
@@ -119,12 +152,11 @@ app.controller('RenewalCtrl',function($scope , $http, $timeout , DBService){
             },
             "modal": {
                 "ondismiss": function(){
-                    alert("Payment has been cancelled");
+                    alert("Payment has been cancelled. Kindly retry");
                 }
             }
         };
         var rzp1 = new Razorpay(options);
-
         rzp1.open();
     }
 

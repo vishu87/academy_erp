@@ -193,6 +193,7 @@ class WebApiController extends Controller
             $lead->lead_for = $request->lead_for;
             $lead->lead_source = 2;
             $lead->client_id = $client_id;
+            $lead->status = 8;
             if($request->visit_date){
                 $lead->action_date = Utilities::convertDateToDB($request->visit_date);
             } else {

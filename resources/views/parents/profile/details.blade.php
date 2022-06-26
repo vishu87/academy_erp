@@ -13,7 +13,7 @@
       </div>
 
       <div class="text-right">
-        <button class="btn btn-primary" ng-click="addPayment()"><i class="icons icon-plus"></i> Renew</button>
+        <a href="{{url('/renewals')}}" class="btn btn-primary" target="_blank"><i class="icons icon-plus"></i> Renew</a>
       </div>
     </div>
   </div>
@@ -25,15 +25,15 @@
 
 <div class="row">
   <div class="col-md-6">
-    @include("parents.profile.attendance")
+    @include("students.student_profile.attendance")
   </div>
   <div class="col-md-6">
-    @include("parents.profile.performance_reports")
+    @include("students.student_profile.performance_reports")
   </div>
 </div>
 
 <div class="row">
-  <div class="col-md-12">
-    @include("parents.profile.performance_graph")
+  <div class="col-md-6">
+    @include("students.student_profile.performance_graph")
   </div>
 </div>

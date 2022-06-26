@@ -9,7 +9,6 @@
             <th>Amount</th>
             <th>Tax</th>
             <th>Total Amount</th>
-            <th class="text-right">#</th>
           </tr>
         </thead>
         <tbody>
@@ -22,15 +21,11 @@
             <td>@{{ payment.amount | INR}}</td>
             <td>@{{ payment.tax | INR }}</td>
             <td>@{{ payment.total_amount | INR }}</td>
-            <td class="text-right">
-              <button class="btn btn-light btn-sm" ng-click="editPayment(payment.history_id)">
-              Edit</button>
-            </td>
           </tr>
         </tbody>
       </table>
 
-      <div class="alert alert-warning mt-2" ng-if="student.pauses.length == 0">
+      <div class="alert alert-warning mt-2" ng-if="student.payments.length == 0">
         No payments are available
       </div>
 

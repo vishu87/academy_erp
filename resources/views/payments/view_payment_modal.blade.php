@@ -1,3 +1,4 @@
+
 <div class="modal" id="viewPaymentModal" role="dialog"  style="overflow: scroll;">
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
@@ -61,6 +62,7 @@
                           <th>Start Date</th>
                           <th>Amount</th>
                           <th>Discount</th>
+                          <th>Taxable Amount</th>
                           <th>Tax</th>
                           <th>Total Amount</th>
                         </tr>
@@ -72,11 +74,12 @@
                           <td>@{{ pay_item.start_date }}</td>
                           <td>@{{ pay_item.amount | INR }}</td>
                           <td>@{{ pay_item.discount | INR }} <span>@{{pay_item.discount_code}}</span></td>
+                          <td>@{{ pay_item.taxable_amount | INR }}</span></td>
                           <td>@{{pay_item.tax | INR}} (@{{pay_item.tax_perc}}%)</td>
                           <td>@{{pay_item.total_amount | INR}}</td>
                         </tr>
                         <tr>
-                          <th colspan="3"></th>
+                          <th colspan="4"></th>
                           <th colspan="2">
                             @{{ payment.amount | INR }}
                           </th>

@@ -1,15 +1,23 @@
 @extends('layout_web')
 
 @section('content')
+
+@if($payment_gateway == "razorpay")
+	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+	<script type="text/javascript">
+		payment_code = "{{$payment_code}}";
+	</script>
+@endif
+
 <x-web.container :background="$background" :logo="$logo_url" controller="RenewalCtrl">
 
 	<div ng-show="!show_success">
-		<div class="column is-8 is-offset-2">
+		<div>
 			<div class="steps">
 				
 				<div class="step">
 					<div class="head" ng-class=" step == 1 ? 'active' : '' ">
-						<div class="table-div">
+						<div class="table-div full">
 							<div class="number1">
 								<div>1</div>
 							</div>
@@ -17,26 +25,28 @@
 								<div class="name">
 									Mobile Number
 									<span class="icon has-text-success" ng-if="step > 1">
-									  <i class="fa fa-check-square"></i>
+									  <i class="icons icon-check"></i>
 									</span>
 								</div>
 								<div class="selected-value" ng-if="step > 1">@{{filter.mobile_number}}</div>
 							</div>
 							<div style="text-align: right;" ng-if="step > 1">
-								<button type="button" ng-click="clickStep(1)" class="button is-small">Edit</button>
+								<button type="button" ng-click="clickStep(1)" class="btn btn-sm btn-light">Edit</button>
 							</div>
 						</div>
 					</div>
 					<div class="body" ng-if="step == 1">
-						<div class="">
-							<div class="columns">
-								<div class="column">
-									<label class="label">Mobile Number</label>
-									<input class="input" type="text" ng-model="filter.mobile_number">
+						<div class="table-div top">
+							<div style="width:300px">
+								<div class="form-group">
+									<input type="text" class="form-control" ng-model="filter.mobile_number" placeholder="Enter your mobile number">
 								</div>
 							</div>
-							<div>
-								<button type="button" ng-click="submitStep1()" class="button is-primary" ng-class="step == 1 && processing ? 'is-loading' : '' ">Continue</button>
+							<div style="padding-left: 20px;">
+								<button type="button" ng-click="submitStep1()" class="btn btn-light" ng-disabled="processing">
+									Continue
+									<span ng-if="processing" class="spinner-border spinner-border-sm"></span>
+								</button>
 							</div>
 						</div>
 					</div>
@@ -44,7 +54,7 @@
 
 				<div class="step">
 					<div class="head" ng-class=" step == 2 ? 'active' : '' ">
-						<div class="table-div">
+						<div class="table-div full">
 							<div class="number1">
 								<div>2</div>
 							</div>
@@ -52,13 +62,13 @@
 								<div class="name">
 									Select Student
 									<span class="icon has-text-success" ng-if="step > 2">
-									  <i class="fa fa-check-square"></i>
+									  <i class="icons icon-check"></i>
 									</span>
 								</div>
 								<div class="selected-value" ng-if="step > 2">@{{student.code}} @{{student.name}}</div>
 							</div>
 							<div style="text-align: right;" ng-if="step > 2">
-								<button type="button" ng-click="clickStep(2)" class="button is-small">Edit</button>
+								<button type="button" ng-click="clickStep(2)" class="btn btn-sm btn-light">Edit</button>
 							</div>
 						</div>
 					</div>
@@ -82,7 +92,7 @@
 										<td>@{{ student.group_name }}, @{{ student.center_name }}</td>
 										<td>@{{ student.doe }}</td>
 										<td>
-											<button type="button" ng-click="selectStudent(student)" class="button is-small">Select</button>
+											<button type="button" ng-click="selectStudent(student)" class="btn btn-light">Select</button>
 										</td>
 									</tr>
 								</tbody>
@@ -101,7 +111,7 @@
 								<div class="name">
 									Select Subscription Plan
 									<span class="icon has-text-success" ng-if="step > 3">
-									  <i class="fa fa-check-square"></i>
+									  <i class="icons icon-check"></i>
 									</span>
 								</div>
 							</div>
@@ -113,38 +123,65 @@
 								<progress class="progress is-small is-primary" max="100"></progress>
 							</div>	
 							<div ng-if="!processing">
-								<div class="notification is-warning mb-0" ng-if="subs.length == 0">
-								  @{{ message }}
-								</div>
 
-								<div ng-if="subs.length > 0">
-								  	<div style="font-size: 14px; font-weight: bold;margin-bottom: 10px;">
-								  		Product Name: Non-Residential | Football | On-Field Training
-								  	</div>
-								  	<div class="columns">
-										<div class="column">
-											<div ng-repeat="sub in subs" class="sub" ng-class="$index == sub_index ? 'active' : '' " ng-click="selectSub(sub,$index)">
-												<b>@{{ sub.months }}</b> <br>
-												INR @{{ sub.amount }}
+								<div class="row" ng-if="student.group_id">
+									<div class="col-md-6" ng-repeat="item in payment_options">
+										<div >
+											<div class="form-group">
+											    <label>@{{item.label}} <span ng-if="item.required" class="text-danger">*</span></label>
+											    <select class="form-control" ng-model="item.type_id" ng-change="getPaymentItems()" ng-required="item.required">
+											        <option value="">Select</option>
+													<option ng-repeat="type in item.types" value="@{{type.value}}" >@{{type.label}}</option>
+											    </select>
 											</div>
 										</div>
-
-										<div class="column">
-											<table class="table" style="width: 100%">
-												<tr ng-repeat="row in sub.rows" ng-hide="sub.discount == 0 && ($index == 1 || $index == 2) ">
-													<td>@{{row.name}}</td>
-													<td style="width: 50%; text-align: right;">@{{row.amount}}</td>
-												</tr>
-											</table>
-											<div style="text-align: center;" ng-if="!processing_order">
-												<button type="button" ng-if="sub_index != -1" ng-click="createOrder()" class="button is-primary" ng-class=" placing_order ? 'is-loading' : '' ">Checkout</button>
-											</div>
-											<progress class="progress is-small is-primary" max="100" ng-if="processing_order" ></progress>
-										</div>
-
 									</div>
-
 								</div>
+
+								<div ng-if="student.group_id">
+									<div class="" style="background: #F2F2F2">
+										<table class="table">
+											<thead>
+												<tr>
+													<th>Type</th>
+													<th>Amount</th>
+													<th>Tax</th>
+													<th>Total</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr ng-repeat="item in payment_items">
+													<td>@{{ item.category }}</td>
+													<td>
+														@{{ item.taxable_amount }}
+														<span ng-if="item.discount">Saved Rs. @{{ item.discount }}</span>
+													</td>
+													<td>@{{ item.tax_perc }}%</td>
+													<td>@{{ item.total_amount }}</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+
+								<div class="table-div full">
+									<div >
+										<div ng-if="!coupon_code">
+											<input type="text" ng-model="formData.coupon_code" class="form-control" placeholder="Enter discount code" />
+											<button type="button" ng-click="checkCoupon()">Apply</button>
+										</div>
+										<div ng-if="coupon_code">
+											Coupon applied : @{{ coupon_code }}
+											<small>@{{ coupon_code_message }}</small>
+											<button type="button" ng-click="removeCoupon()">Remove</button>
+										</div>
+									</div>
+									<div class="text-center" style="font-size: 16px; width: 200px">
+										Total Amount: <b>@{{ total_amount }}</b>
+									</div>
+								</div>
+
+								<x-web.button type="button" class="block" loading="placing-order" ng-click="createOrder()">Checkout</x-web.button>
 
 							</div>	
 						</div>
@@ -157,28 +194,20 @@
 	</div>
 
 	<div class="columns" ng-show="show_success">
-		<div class="column is-6 is-offset-3">
+		<div class="">
 			<div class="step">
 				<div class="body" style="text-align: center; padding: 50px;">
 					<div class="" >
 						<img src="checked.png" style="width: 120px; height: 120px;" />
-						<h4 style="font-size: 20px;">Thank you @{{student.name}} for renewing your subscription with BBFS by enJogo. We are excited to have you back!</h4>
+						<h4 style="font-size: 20px;">Thank you @{{student.name}} for renewing your subscription. We are excited to have you back!</h4>
 						<table class="table" style="width: 100%; margin-top: 20px;">
-							<tr>
-								<td>Product Name</td>
-								<td>Product Name: Non-Residential | Football | On-Field Training</td>
-							</tr>
-							<tr>
-								<td>Plan Name</td>
-								<td>@{{ sub.months }}</td>
-							</tr>
 							<tr>
 								<td>Date & Time</td>
 								<td>@{{ datetime }}</td>
 							</tr>
 							<tr>
 								<td>Amount</td>
-								<td>₹ @{{ sub.total_amount }}</td>
+								<td>₹ @{{ total_amount }}</td>
 							</tr>
 							<tr>
 								<td>Order ID</td>
@@ -191,12 +220,6 @@
 						</table>
 						<p style="font-size: 14px; margin-bottom: 15px;">
 							With this subscription, you also get unlimited access to the enJogo mobile app which has loads of content curated by our in-house experts especially for you. With enJogo, you can now continue to improve both on the field and at home!
-						</p>
-						<p style="font-size: 14px; margin-bottom: 15px;">
-							enJogo is available on the <a href="https://play.google.com/store/apps/details?id=com.bbfs.parent&hl=en" target="_blank">Play Store</a> as well as the <a href="https://apps.apple.com/in/app/talisman-bbfs/id1484241127" target="_blank">App Store</a>.
-						</p>
-						<p style="font-size: 14px; margin-bottom: 15px;">
-							Happy football!!
 						</p>
 					</div>
 				</div>
