@@ -52,6 +52,7 @@ Route::group([], function(){
 
     Route::get('/states',[GeneralController::class, 'getStates']);
     Route::get('/cities/{state_id}',[GeneralController::class, 'getCities']);
+    Route::get('/groups/{center_id}',[GeneralController::class, 'getGroupList']);
 
     Route::post('/get-state-city-center-data',[GeneralController::class, 'get_state_city_center_data']);
     Route::post('/get-locations',[GeneralController::class, 'get_state_city_center_data']);
@@ -411,20 +412,36 @@ Route::group(["prefix"=>"parents"], function(){
 }); 
 
 Route::group(["prefix"=>"app"], function(){
+
     Route::post('/login',[AppAPIController::class, 'login']);
-    Route::get('/user/profile',[AppAPIController::class, 'getUser']);
     Route::get('/academy-data',[AppAPIController::class, 'academyData']);
+    
+    Route::get('/user/profile',[AppAPIController::class, 'getUser']);
     Route::post('/check-location',[AppAPIController::class, 'getLocation']);
     Route::post('/user-profile/upload/{user_id}',[AppAPIController::class, 'uploadProfile']);
     Route::post('/user-update',[AppAPIController::class, 'updateUser']);
     Route::get('/coach/attendance-list',[AppAPIController::class, 'coachAttendList']);
     Route::post('/user/update-password/{user_id}',[AppAPIController::class, 'changePassword']);
 
+    // Route::group(["prefix"=>"student"], function(){
+    //     Route::post('/get-all-list',[AppAPIController::class, 'allStudentList']);
+    //     Route::post('/info',[AppAPIController::class, 'studentInfo']);
+    //     Route::post('/save-tags',[AppAPIController::class, 'saveTags']);
+    //     Route::get('/edit/{student_id}',[AppAPIController::class, 'studentEdit']);
+    //     Route::get('/state-list',[AppAPIController::class, 'getStateList']);
+    //     Route::get('/city-list/{state_id}',[AppAPIController::class, 'getCityList']);
+    //     Route::post('/upload-student-profile/{student_id}',[AppAPIController::class,'uploadStuPic']);
+    //     Route::post('/save-student/{student_id}',[AppAPIController::class,'saveStudent']); 
+    //     Route::post('/group-shift/{student_id}',[AppAPIController::class, 'groupShift']);
+    //     Route::post('/view-attendance/{student_id}',[AppAPIController::class, 'studAttndList']);
+    //     Route::get('/get-reasion',[AppAPIController::class, 'getInActiveReasons']);
+    //     Route::post('/mark-inactive',[AppAPIController::class, 'markInActive']);
+    //     Route::get('/groups-details/{center_id}',[AppAPIController::class, 'groupDetail']);
+        
+    // });
+
     Route::group(["prefix"=>"events"], function(){
         Route::post('/list',[AppAPIController::class, 'getEventsList']);
-        Route::get('/centers-list',[AppAPIController::class, 'getCenterList']);
-        Route::get('/groups-list/{center_id}',[AppAPIController::class, 'getGroupList']);
-        Route::get('/cancel',[AppAPIController::class, 'getGroupList']);
         Route::get('/fetct-reason',[AppAPIController::class, 'getReasons']);
         Route::post('/save-cancelled',[AppAPIController::class, 'cancelEvent']);
         Route::post('/players',[AppAPIController::class, 'eventPlayers']);
@@ -434,30 +451,12 @@ Route::group(["prefix"=>"app"], function(){
 
     });
 
-    Route::group(["prefix"=>"student"], function(){
-        Route::post('/get-all-list',[AppAPIController::class, 'allStudentList']);
-        Route::post('/info',[AppAPIController::class, 'studentInfo']);
-        Route::post('/save-tags',[AppAPIController::class, 'saveTags']);
-        Route::get('/edit/{student_id}',[AppAPIController::class, 'studentEdit']);
-        Route::get('/state-list',[AppAPIController::class, 'getStateList']);
-        Route::get('/city-list/{state_id}',[AppAPIController::class, 'getCityList']);
-        Route::post('/upload-student-profile/{student_id}',[AppAPIController::class,'uploadStuPic']);
-        Route::post('/save-student/{student_id}',[AppAPIController::class,'saveStudent']); 
-        Route::post('/group-shift/{student_id}',[AppAPIController::class, 'groupShift']);
-        Route::post('/view-attendance/{student_id}',[AppAPIController::class, 'studAttndList']);
-        Route::get('/get-reasion',[AppAPIController::class, 'getInActiveReasons']);
-        Route::post('/mark-inactive',[AppAPIController::class, 'markInActive']);
-        Route::get('/groups-details/{center_id}',[AppAPIController::class, 'groupDetail']);
-        
-    });
 
-    Route::group(["prefix"=>"performance"], function(){
-        Route::get('/get-student-list/{group_id}',[AppAPIController::class, 'performStudentList']);
-        Route::get('/categories/{student_id}',[AppAPIController::class, 'performCategories']);
-        Route::post('/save-marks',[AppAPIController::class, 'saveMarks']);
-        
-        
-    });
+    // Route::group(["prefix"=>"performance"], function(){
+    //     Route::get('/get-student-list/{group_id}',[AppAPIController::class, 'performStudentList']);
+    //     Route::get('/categories/{student_id}',[AppAPIController::class, 'performCategories']);
+    //     Route::post('/save-marks',[AppAPIController::class, 'saveMarks']);
+    // });
 
 });
 

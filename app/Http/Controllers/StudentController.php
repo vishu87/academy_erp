@@ -357,6 +357,9 @@ class StudentController extends Controller
             $student->dob = Utilities::convertDate($student->dob);
 
             $guardians = DB::table('student_guardians')->where("student_id",$student->id)->get();
+            foreach($guardians as $guardian){
+                $guardian->editable = false;
+            }
             $student->guardians = $guardians;
 
             $data["success"] = true;
@@ -453,7 +456,7 @@ class StudentController extends Controller
 
         } else {
             $data['success'] = false;
-            $data['message'] = $validator->errors->first();
+            $data['message'] = $validator->errors()->first();
         }   
 
         return Response::json($data, 200 ,[]);
@@ -532,7 +535,7 @@ class StudentController extends Controller
 
         } else {
             $data['success'] = false;
-            $data['message'] = $validator->errors->first();
+            $data['message'] = $validator->errors()->first();
         }
 
         return Response::json($data, 200 ,[]);
@@ -703,7 +706,7 @@ class StudentController extends Controller
 
         $user = User::AuthenticateUser($request->header("apiToken"));
 
-        $inactiveReasons = DB::table('reasons')->get();
+        $inactiveReasons = DB::table('reasons')->select("id as value","reason as label")->get();
         $data["success"] = true;
         $data["inactiveReasons"] = $inactiveReasons;
         return Response::json($data, 200, []);

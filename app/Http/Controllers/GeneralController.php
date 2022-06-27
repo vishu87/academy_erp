@@ -124,7 +124,7 @@ class GeneralController extends Controller
     public function get_state_city_center_data(Request $request){
         
         $user = User::AuthenticateUser($request->header("apiToken"));
-        $tag = $request->Tag;
+        $tag = $request->Tag ? $request->Tag : "st-profile";
         $center_details = $request->center_details ? 1 : 0;
 
         $user_access = User::getAccess($tag,$user->id);
@@ -162,5 +162,18 @@ class GeneralController extends Controller
         $data['all_access'] = $user_access->all_access;
 
         return Response::json($data, 200, []);
+    }
+
+    public function getGroupList(Request $request, $center_id ){
+        
+        $token  = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
+
+        $groups  = DB::table('groups')->select("id as value","group_name as label")->where("center_id",$center_id)->get();
+
+        $data['success'] = true;
+        $data['groups'] = $groups;
+
+        return Response::json($data,200,array());   
     }
 }

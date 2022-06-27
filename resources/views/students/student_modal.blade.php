@@ -16,8 +16,8 @@
               <label class="label-control">Reason</label>
               <select class="form-control" ng-model="inactive.reason_id">
                 <option ng-value='0'>Select</option>
-                <option ng-repeat="reason in inactiveReasons" ng-value="@{{reason.id}}">
-                  @{{reason.reason}}
+                <option ng-repeat="reason in inactiveReasons" ng-value="@{{reason.value}}">
+                  @{{reason.label}}
                 </option>
                 <option ng-value="-1">Other</option>
 

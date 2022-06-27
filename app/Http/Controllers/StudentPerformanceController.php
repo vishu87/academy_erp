@@ -88,7 +88,6 @@ class StudentPerformanceController extends Controller{
     public function saveScore(Request $request){
 
         $user = User::AuthenticateUser($request->header("apiToken"));
-
         $studentRecord = $request->studentRecord;
         $session_id = $request->session_id;
         $type = $request->type;
