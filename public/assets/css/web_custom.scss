@@ -149,3 +149,56 @@ span {
 		color: #FFF;
 	}
 }
+.apply-div{
+	.input{
+		width: 110px;
+		input{
+			font-size: 12px;
+		}
+	}
+}
+.apply-btn{
+	background:#e2e6ea;
+    color: #fff;
+    outline: none;
+    border: none;
+    line-height: 30px;
+    border-radius: 5px;
+    border:1px solid #e2e6ea;
+    transition:all 0.2s ease;
+    min-width: 80px;
+    font-size: 14px;
+    &:hover{
+    	background:transparent;
+    	color: #e2e6ea;
+    }
+}
+.coupon-code-box{
+	border:1px solid #ced4da;
+	display: inline-block;
+	padding:5px 10px;
+	border-radius:4px;
+	position: relative;
+    padding-right: 40px;
+	.coupon{
+		font-weight: 600;
+		font-size: 12px;
+	}
+	.remove-coupon{
+		background:transparent;
+		border: none;
+		min-width: 30px;
+		position: absolute;
+		top: 6px;
+		right: 4px;
+		&:focus{
+			outline: none;
+			border:none;
+			box-shadow:none;
+		}
+		i{
+			font-size: 18px;
+			color: $theme_color;
+		}
+	}
+}
