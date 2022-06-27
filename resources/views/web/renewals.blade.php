@@ -9,7 +9,7 @@
 	</script>
 @endif
 
-<x-web.container :background="$background" :logo="$logo_url" controller="RenewalCtrl">
+<x-web.container :background="$background" :logo="$logo_url" controller="RenewalCtrl" init="">
 
 	<div ng-show="!show_success">
 		<div>
