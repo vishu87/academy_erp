@@ -23,7 +23,7 @@
             <td>@{{ sub.adjustment }}</td>
             <td class="text-right" ng-if="student.pauses_add_access">
               <button class="btn btn-light btn-sm" ng-click="editSubscription(sub)" ng-if="$index == 0">
-                Add Pause
+                Request Pause
               </button>
             </td>
           </tr>
@@ -33,13 +33,13 @@
 
     <hr>
 
-    <div class="table-div full">
+    <div class="table-div full" ng-if="student.pauses.length > 0">
       <div>
-        <b>Pending Pause Requests</b>
+        <b>Pause Requests under Approval</b>
       </div>
     </div>
-    <div class="table-responsive">
-      <table class="table" ng-if="student.pauses.length > 0">
+    <div class="table-responsive" ng-if="student.pauses.length > 0">
+      <table class="table" >
         <thead>
           <tr>
             <th>Requestor</th>
@@ -59,19 +59,8 @@
             <td>@{{ pause.days }}</td>
             <td>@{{ pause.added_by_name }}</td>
             <td>@{{ pause.created_at }}</td>
-            <td ng-if="student.pauses_approve_access" class="text-right">
-              <button class="btn btn-light btn-sm" ng-click="approvePause(pause, 1)">
-                Approve
-              </button>
-              <button class="btn btn-danger btn-sm" ng-click="approvePause(pause, 2)">
-                Reject
-              </button>
-            </td>
           </tr>
         </tbody>
       </table>
-      <div class="alert alert-warning mt-2" ng-if="student.pauses.length == 0">
-        No pending pause requests are available
-      </div>
     </div>
 </div>

@@ -76,6 +76,19 @@
                         </div>
                     </div>
 
+                    <div class="col-md-4">
+                        <div ng-if="gst.logo" class="center-images">
+                            <a href="{{url('/')}}/@{{gst.logo}}" target="_blank">
+                                <img src="{{url('/')}}/@{{gst.logo}}">
+                            </a>
+                            <a class="btn btn-sm btn-danger btn-remove" ladda="image.processing" ng-click="removeLogo()"><i class="icons icon-close" style="color: #FFF;"></i></a>
+                        </div>
+
+                        <div ng-if="!gst.logo" style="margin-top: 20px">
+                            <button class="button btn btn-primary" ngf-select="uploadGstLogo($file)" ngf-max-size="5MB" ng-disabled="logoProcessing" data-style="expand-right" >Upload Logo <span ng-show="logoProcessing" class="spinner-border spinner-border-sm"></span></button>
+                        </div>
+                    </div>
+
                 </div>
 
             </div>

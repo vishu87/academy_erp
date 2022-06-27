@@ -29,33 +29,34 @@ use App\Http\Controllers\InventoryReportController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\QueryController;
-
+use App\Http\Controllers\DropDownMasterController;
 use App\Http\Controllers\ParentController;
+use App\Http\Controllers\SettingsController;
 
 Route::get('/', [UserController::class,'login'])->name("login");
 Route::post('/login', [UserController::class, 'postLogin']);
 Route::get('/logout', [UserController::class, 'logout']);
+Route::get('/forget-password', [WebController::class, 'forgetPassword']);
+Route::post('/forget-password', [UserController::class, 'postForgetPassword']);
+Route::get('/sign-up', [WebController::class, 'signUp']);
 
 Route::post('/uploads/file', [GeneralController::class, 'uploadFile']);
 
+Route::get('/registrations',[WebController::class,'registrations']);
 Route::get('/renewals', [WebController::class,'renewals']);
+Route::get('/payments/{code}', [WebController::class,'payments']);
+
 Route::get('/demo-schedule', [WebController::class,'demoShedule']);
 Route::get('/lead/{type}', [WebController::class,'lead']);
-Route::get('/registrations',[WebController::class,'registrations']);
 
-Route::get('/sign-up', [WebController::class, 'signUp']);
-Route::get('/forget-password', [WebController::class, 'forgetPassword']);
-Route::post('/forget-password', [UserController::class, 'postForgetPassword']);
-
-Route::get('/update-password',[UserController::class,'changePassword']);
-Route::post('/update-password',[UserController::class,'updatePassword']);
+Route::get('/pages/{type}',[WebController::class,'webPages']);
 
 Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 
     Route::get('/payment-details', [UserController::class, 'paymentDetails']);
     Route::get('/dashboard', [UserController::class, 'dashboard']);
 
-    Route::get('/payment-receipt/{payment_code}',[StudentController::class, 'paymentReceipt']);
+    Route::get('/payment-receipt/{payment_code}',[PaymentController::class, 'paymentReceipt']);
     Route::get('/performance-pdf/{code}',[StudentPerformanceController::class, 'performancePDF']);
 
     Route::get('/switch/dashboard/{type}', [UserController::class, 'switchDashboard']);
@@ -173,6 +174,14 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 
     Route::group(["prefix"=>"parameters"], function(){
         Route::get('/',[ParameterController::class,'index']);
+    });
+    
+    Route::group(["prefix"=>"settings"], function(){
+        Route::get('/',[SettingsController::class,'index']);
+    }); 
+
+    Route::group(["prefix"=>"group-type"], function(){
+        Route::get('/',[DropDownMasterController::class,'index']);
     }); 
 
     Route::group(["prefix"=>"communications"], function(){
@@ -202,6 +211,9 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 
 
 Route::group(["before"=>"auth","middleware"=>["auth"]], function(){
+
+    Route::get('/update-password',[UserController::class,'changePassword']);
+    Route::post('/update-password',[UserController::class,'updatePassword']);
 
     Route::group(["prefix"=>"parents"], function(){
         Route::get('/',[ParentController::class,'dashboard']);

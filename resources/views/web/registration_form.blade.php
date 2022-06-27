@@ -3,14 +3,31 @@
 	<x-input label="Name of the student" name="formData.name" :required="true" />
 
 	<div class="row">
-		<div class="col">
+		<div class="col-md-6">
 			<x-dob label="Date of Birth" name="formData" :required="true" />
 		</div>
-		<div class="col">
+		<div class="col-md-3">
 			@php
 				$genders = ["1"=>"Male", "2"=>"Female"]
 			@endphp
-			<x-radio label="Date of Birth" :options="$genders" name="formData.gender" :required="true" />
+			<x-radio label="Gender" :options="$genders" name="formData.gender" :required="true" />
+		</div>
+		<div class="col-md-3">
+			<x-select label="Kit Size" name="formData.kit_size" :required="true">
+				<x-slot name="link">
+			        <a href="" ng-click="showSizeChart()">Details</a>
+			    </x-slot>
+				<option value="">Choose size</option>
+				<option value="26">26</option>
+				<option value="28">28</option>
+				<option value="30">30</option>
+				<option value="32">32</option>
+				<option value="34">34</option>
+				<option value="36">36</option>
+				<option value="38">38</option>
+				<option value="40">40</option>
+				<option value="42">42</option>
+			</x-select>
 		</div>
 	</div>
 
@@ -33,12 +50,13 @@
 			<x-input type="mobile" label="Mobile" name="formData.prim_mobile" :required="true" />
 		</div>
 		<div class="col">
-			<x-select label="Relation with student" name="formData.prim_relation_to_student" :required="true">
+			<label>Relation with student <span class="text-danger">*</span></label>
+			<select class="form-control" ng-required="true" ng-model="formData.prim_relation_to_student" convert-to-number>
 				<option value="">Select</option>
-				<option value="father">Father</option>
-				<option value="mother">Mother</option>
-				<option value="other">Self</option>
-			</x-select>
+				<option value="1">Father</option>
+				<option value="2">Mother</option>
+				<option value="3">Self</option>	
+			</select>
 		</div>
 	</div>
 	<div class="mt-2"></div>
@@ -51,12 +69,15 @@
 			<x-input type="mobile" label="Mobile No." name="formData.sec_mobile" />
 		</div>
 		<div class="col">
-			<x-select label="Relation with student" name="formData.sec_relation_to_student">
-				<option value="">Select</option>
-				<option value="father">Father</option>
-				<option value="mother">Mother</option>
-				<option value="other">Self</option>
-			</x-select>
+			<div class="form-group">
+				<label>Relation with student</label>
+				<select class="form-control" ng-required="formData.sec_email || formData.sec_mobile" ng-model="formData.sec_relation_to_student" convert-to-number>
+					<option value="">Select</option>
+					<option value="1">Father</option>
+					<option value="2">Mother</option>
+					<option value="3">Self</option>	
+				</select>
+			</div>
 		</div>
 	</div>
 	<div class="row">
@@ -102,80 +123,78 @@
 		</div>
 
 		<div class="col-12">
-			<x-select label="Select Batch" name="formData.group_id" :required="true">
+			<x-select label="Select Batch" name="formData.group_id" :required="true" ng-change="resetPayment()">
 				<option value="">Select Batch</option>
 				<option  ng-repeat="group in groups" value="@{{group.id}}" ng-if="formData.training_center_id == group.center_id">@{{group.group_name}}</option>
 			</x-select>
 		</div>
 
 	</div>
-
-	<div class="row">
-		<div class="col-12">
-			<x-select label="Kit Size" name="formData.kit_size" :required="true">
-				<x-slot name="link">
-			        <a href="" ng-click="showSizeChart()">View Details</a>
-			    </x-slot>
-				<option value="">Choose size</option>
-				<option value="26">26</option>
-				<option value="28">28</option>
-				<option value="30">30</option>
-				<option value="32">32</option>
-				<option value="34">34</option>
-				<option value="36">36</option>
-				<option value="38">38</option>
-				<option value="40">40</option>
-				<option value="42">42</option>
-			</x-select>
-		</div>
-	</div>
 	<hr />
-	<div class="row">
-		<div class="col-md-6">
-			<div ng-repeat="item in payment_options">
+
+	<div class="row" ng-if="formData.group_id">
+		<div class="col-md-6" ng-repeat="item in payment_options">
+			<div >
 				<div class="form-group">
 				    <label>@{{item.label}} <span ng-if="item.required" class="text-danger">*</span></label>
-				    <select class="form-control" ng-model="item.type_id" ng-change="getPaymentItems()">
+				    <select class="form-control" ng-model="item.type_id" ng-change="getPaymentItems()" ng-required="item.required">
 				        <option value="">Select</option>
 						<option ng-repeat="type in item.types" value="@{{type.value}}" >@{{type.label}}</option>
 				    </select>
 				</div>
 			</div>
 		</div>
-		<div class="col-md-6">
-			<div class="" style="background: #EEE">
-				<table class="table">
-					<thead>
-						<tr>
-							<th>Type</th>
-							<th>Amount</th>
-							<th>Tax</th>
-							<th>Total</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr ng-repeat="item in payment_items">
-							<td>@{{ item.category }}</td>
-							<td>@{{ item.amount }}</td>
-							<td>@{{ item.tax_perc }}%</td>
-							<td>@{{ item.total_amount }}</td>
-						</tr>
-						<tr>
-							<td colspan="3" class="text-right">Total Amount</td>
-							<td>@{{ total_amount }}</td>
-						</tr>
-					</tbody>
-				</table>
+	</div>
+
+	<div ng-if="formData.group_id">
+		<div class="" style="background: #F2F2F2">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Type</th>
+						<th>Amount</th>
+						<th>Tax</th>
+						<th>Total</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="item in payment_items">
+						<td>@{{ item.category }}</td>
+						<td>
+							@{{ item.taxable_amount }}
+							<span ng-if="item.discount">Saved Rs. @{{ item.discount }}</span>
+						</td>
+						<td>@{{ item.tax_perc }}%</td>
+						<td>@{{ item.total_amount }}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="table-div full">
+		<div >
+			<div ng-if="!coupon_code">
+				<input type="text" ng-model="formData.coupon_code" class="form-control" placeholder="Enter discount code" />
+				<button type="button" ng-click="checkCoupon()">Apply</button>
 			</div>
+			<div ng-if="coupon_code">
+				Coupon applied : @{{ coupon_code }}
+				<small>@{{ coupon_code_message }}</small>
+				<button type="button" ng-click="removeCoupon()">Remove</button>
+			</div>
+		</div>
+		<div class="text-center" style="font-size: 16px; width: 200px">
+			Total Amount: <b>@{{ total_amount }}</b>
 		</div>
 	</div>
 
 
 
-	<div class="form-check">
+	<div class="form-check" style="margin-top: 20px;">
 	  <label class="form-check-label">
-	  	<input class="form-check-input" type="checkbox" value="1" required="">
-	    I hereby confirm that the information provided above is accurate and I agree to <a href="tnc.php" target="_blank">terms and conditions</a>.
+	  	<input class="form-check-input" ng-model="formData.confirm" type="checkbox" value="1" ng-required="true" ng-checked="false">
+	    I hereby confirm that the information provided above is accurate and I agree to <a href="{{url('pages/terms-conditions')}}" target="_blank">terms and conditions</a>.
 	  </label>
 	</div>
 

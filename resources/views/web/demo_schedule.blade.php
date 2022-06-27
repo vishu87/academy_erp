@@ -31,7 +31,7 @@
 				</div>
 
 				<div class="col">
-					<x-select label="Select Center for training" name="formData.training_center_id" :required="true">
+					<x-select label="Select Center for training" name="formData.center_id" :required="true">
 						<option value="">Select Center</option>
 						<option  ng-repeat="center in centers" value="@{{center.id}}" ng-if="formData.city_id == center.city_id">@{{center.center_name}}</option>
 					</x-select>
@@ -40,7 +40,7 @@
 				<div class="col">
 					<x-select label="Select Batch" name="formData.group_id" ng-change="schedule()" :required="true">
 						<option value="">Select Batch</option>
-						<option  ng-repeat="group in groups" value="@{{group.id}}" ng-if="formData.training_center_id == group.center_id">@{{group.group_name}}</option>
+						<option  ng-repeat="group in groups" value="@{{group.id}}" ng-if="formData.center_id == group.center_id">@{{group.group_name}}</option>
 					</x-select>
 				</div>
 			</div>

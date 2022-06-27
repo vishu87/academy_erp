@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 use Redirect, Validator, Hash, Response, Session, DB;
 
-use App\Models\PaymentHistory, App\Models\PaymentItem, App\Models\User, App\Models\Student, App\Models\Coupon, App\Models\Utilities;
+use App\Models\PaymentHistory, App\Models\PaymentItem, App\Models\User, App\Models\Student, App\Models\Coupon, App\Models\Utilities, App\Models\MailQueue;
 
 class PaymentController extends Controller{ 
 
@@ -152,14 +153,19 @@ class PaymentController extends Controller{
 
         $cre = [
             "invoice_date" => $request->invoice_date,
-            "mode" => $request->p_mode,
-            "payment_date" => $request->payment_date
+            "mode" => $request->p_mode
         ];
-        $validator = Validator::make($cre, [
+        $rules = [
             "invoice_date" => "required",
-            "mode" => "required",
-            "payment_date" => "required",
-        ]);
+            "mode" => "required"
+        ];
+
+        if($request->p_mode != 6){
+            $cre["payment_date"] = $request->payment_date;
+            $rules["payment_date"] = "required";
+        }
+
+        $validator = Validator::make($cre, $rules);
 
         if ($validator->passes()) {
 
@@ -210,11 +216,12 @@ class PaymentController extends Controller{
 
                 $item->months = isset($value["months"]) ? $value["months"] : 0;
                 $item->amount = $value["amount"];
-                $item->total_amount = $value["total_amount"];
                 $item->discount = isset($value["discount"]) ? $value["discount"] : 0;
                 $item->discount_code_id = isset($value["discount_code_id"]) ? $value["discount_code_id"] : null;
+                $item->taxable_amount = $value["taxable_amount"];
                 $item->tax = $value["tax"];
                 $item->tax_perc = $value["tax_perc"];
+                $item->total_amount = $value["total_amount"];
                 
                 if(isset($value["start_date"])){
                     if($value["start_date"]){
@@ -365,6 +372,11 @@ class PaymentController extends Controller{
                 $item["discount_code_id"] = null;
                 $item["discount_code"] = "";
             }
+
+            $item["taxable_amount"] = $item["amount"] - $item["discount"];
+            $item["tax"] = round($item["taxable_amount"]*$item["tax_perc"]/100);
+            $item["total_amount"] = $item["taxable_amount"] + $item["tax"];
+
             $final_items[] = $item;
         }
 
@@ -519,5 +531,142 @@ class PaymentController extends Controller{
         }
 
         return Response::json($data, 200 ,[]);
+    }
+
+
+    public function sendEmail(Request $request){
+        $user = User::AuthenticateUser($request->header("apiToken"));
+        $payment_id = $request->payment_id;
+
+        $payment = PaymentHistory::where("id",$payment_id)->first();
+        $student = Student::listing()->where("students.id",$payment->student_id)->first();
+
+        $student_emails = Student::getContactDetails("email",$payment->student_id);
+        if(sizeof($student_emails) > 0){
+            PaymentController::createPaymentEmail($payment, $student_emails, $user);
+            $data["success"] = true;
+            $data["message"] = "Email is successfully sent to ".implode(', ',$student_emails);
+        } else {
+            $data["success"] = false;
+            $data["message"] = "No email id is found for the student";
+        }
+
+        return Response::json($data, 200, []);
+    }
+
+    public static function createPaymentEmail($payment, $student_emails, $user = null){
+
+        $response = PaymentController::PDFCreate($payment);
+
+        if(sizeof($student_emails) > 0 && $response["success"]){
+
+            $params = Utilities::getSettingParams([16,4], $payment->client_id);
+
+            $student = Student::listing()->where("students.id",$payment->student_id)->first();
+            $student = Student::mapDates($student);
+
+            $destination = "uploads/";
+            $filename = $destination.Utilities::cleanName($student->name."_Receipt_".date("YmdHis")).".pdf";
+            $pdf = $response["pdf"];
+            $pdf->save($filename);
+
+            $mail = new MailQueue;
+            $mail->mailto = implode(', ', $student_emails);
+            $mail->subject = Utilities::replaceText($params->param_16, $student);
+            $mail->content = Utilities::replaceText($params->param_4, $student);
+            $mail->at_file = $filename; 
+            $mail->tb_name = "payment_history";
+            $mail->tb_id = $payment->id;
+            $mail->student_id = $payment->student_id;
+            if($user){
+                $mail->user_id = $user->id;
+            }
+            $mail->client_id = $payment->client_id;
+            $mail->save();
+        }
+    }
+
+    public function paymentReceipt($payment_code){
+
+        $payment = PaymentHistory::where("unique_id",$payment_code)->first();
+        if(!$payment){
+            return "No payment found";
+        }
+
+        $response = PaymentController::PDFCreate($payment);
+
+        if(!$response["success"]){
+            return $response["message"];
+        }
+
+        return $response["pdf"]->stream();
+        die();
+
+    }
+
+    public static function PDFCreate($payment){
+
+        $student = Student::listing()->where("students.id",$payment->student_id)->first();
+        
+        $payment->payment_date = date('d-m-Y',strtotime($payment->payment_date));
+
+        $items = PaymentItem::select("payment_items.id","payment_items.category_id","payment_items.type_id","payment_items.amount","payment_items.tax_perc","payment_items.tax","payment_items.total_amount","payment_items.start_date","payment_items.end_date","payments_type_categories.category_name as category","payments_type.name as type","payment_items.discount","payment_items.discount_code_id","coupons.code as discount_code")->leftJoin("payments_type_categories","payments_type_categories.id","=","payment_items.category_id")->leftJoin("payments_type","payments_type.id","=","payment_items.type_id")->leftJoin("coupons","coupons.id","=","payment_items.discount_code_id")->where('payment_items.payment_history_id',$payment->id)->get();
+
+        foreach ($items as $value) {
+            if ($value->start_date) {
+                $value->is_sub_type = true;
+                $value->start_date = date('d-m-Y',strtotime($value->start_date));
+            }
+            if ($value->end_date) {
+                $value->end_date = date('d-m-Y',strtotime($value->end_date));
+            }
+        }
+
+        $gst = DB::table('gst')->where('state_id',$student->student_state_id)->where("client_id",$payment->client_id)->first();
+
+        if(!$gst){
+            $gst = DB::table('gst')->where('defaults',1)->where("client_id",$payment->client_id)->first();
+        }
+
+        if(!$gst){
+            return [
+                "success" => false,
+                "message" => "GST information is not found"
+            ];
+        }
+
+        if($student->student_state_id != $gst->state_id){
+            $igst = false;
+        } else {
+            $igst = true;
+        }
+
+        foreach($items as $item){
+            $item->igst_perc = "-";
+            $item->igst = "-";
+            $item->cgst_perc = "-";
+            $item->cgst = "-";
+            $item->sgst_perc = "-";
+            $item->sgst = "-";
+
+            if($igst){
+                $item->igst_perc = $item->tax_perc;
+                $item->igst = $item->tax;
+            } else {
+                $item->cgst_perc = $item->tax_perc/2;
+                $item->cgst = $item->tax/2;
+                $item->sgst_perc = $item->tax_perc/2;
+                $item->sgst = $item->tax/2;
+            }
+        }
+
+        $payment->items = $items;
+
+        $pdf = PDF::loadView('students.payment_receipt',['student' => $student, 'payment' => $payment, 'gst' => $gst, "igst" => $igst]);
+        return [
+            "success" => true,
+            "pdf" => $pdf
+        ];
+
     }
 }

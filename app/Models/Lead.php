@@ -9,7 +9,7 @@ class Lead extends Model
     protected $table = 'leads';
 
     public static function status(){
-    	return DB::table('lead_status')->select("id as value","status_value as label","action_date_name","date_req","call_note_req","reason_req")->get();
+    	return DB::table('lead_status')->select("id as value","status_value as label","action_date_name","date_req","call_note_req","reason_req")->orderBy("priority","ASC")->get();
     }
 
     public static function reasons($client_id){
@@ -65,7 +65,7 @@ class Lead extends Model
             ->leftJoin('users as m2','m2.id','=','lead_history.created_by');
     }
 
-    public static function storeOpenLead($open_lead){
+    public static function storeOpenLead($open_lead, $request_type){
         
         $lead = Lead::where("mobile",$open_lead->mobile)->where("client_id",$open_lead->client_id)->first();
 
@@ -75,12 +75,19 @@ class Lead extends Model
             $lead->client_id = $lead->client_id;
             $lead->created_at = date("Y-m-d H:i:s");
             $lead->created_by = null;
-            $lead->status = 8;
+            $lead->status = $open_lead->status;
             $lead->lead_for = $open_lead->lead_for;
             $lead->lead_source = $open_lead->lead_source;
+            $lead->assigned_to = isset($open_lead->assigned_to) ? $open_lead->assigned_to : 0;
             $new_lead = true;
         } else {
             $new_lead = false;
+            if($lead->status == 6 || $lead->status == 7){
+                $lead->status = 1;
+            }
+            if($open_lead->status == 2){
+                $lead->status = 2;
+            }
         }
 
         if(!$lead->name) $lead->name = $open_lead->name;
@@ -91,8 +98,17 @@ class Lead extends Model
         if(!$lead->lead_for && isset($open_lead->lead_for)) $lead->lead_for = $open_lead->lead_for;
         if(!$lead->lead_source && isset($open_lead->lead_source)) $lead->lead_source = $open_lead->lead_source;
         if(!$lead->remarks && isset($open_lead->remarks)) $lead->remarks = $open_lead->remarks;
-        if(!$lead->city_id && isset($open_lead->city_id)) $lead->city_id = $open_lead->city_id;
         if(!$lead->document && isset($open_lead->document)) $lead->document = $open_lead->document;
+
+        if($request_type == "demo-schedule"){
+            $lead->city_id = $open_lead->city_id;
+            $lead->center_id = $open_lead->center_id;
+            $lead->group_id = $open_lead->group_id;
+        } else {
+            if(!$lead->city_id && isset($open_lead->city_id)) $lead->city_id = $open_lead->city_id;
+            if(!$lead->center_id && isset($open_lead->center_id)) $lead->center_id = $open_lead->center_id;
+            if(!$lead->group_id && isset($open_lead->group_id)) $lead->group_id = $open_lead->group_id;
+        }
         
         $lead->action_date = Utilities::convertDateToDB($open_lead->action_date);
         $lead->client_id = $open_lead->client_id;
@@ -103,21 +119,25 @@ class Lead extends Model
         if($last_history){
             $leadHistory = new LeadHistory;
             $leadHistory->lead_id = $lead->id;
-            $leadHistory->call_note = "Submission from webesite";
+            $leadHistory->call_note = "Submission from website";
             $leadHistory->call_made = 0;
             $leadHistory->action_date = Utilities::convertDateToDB($open_lead->action_date);
-            $leadHistory->status = $last_history->status;
+            $leadHistory->status = $lead->status;
             $leadHistory->assigned_to = $last_history->assigned_to;
             $leadHistory->save();
         } else {
             $leadHistory = new LeadHistory;
             $leadHistory->lead_id = $lead->id;
-            $leadHistory->call_note = "Submission from webesite";
+            $leadHistory->call_note = "Submission from website";
             $leadHistory->call_made = 0;
             $leadHistory->action_date = Utilities::convertDateToDB($open_lead->action_date);
             $leadHistory->status = 8;
+            $leadHistory->assigned_to = $lead->assigned_to;
             $leadHistory->save();
         }
+
+
+        return $lead;
         
     }
 

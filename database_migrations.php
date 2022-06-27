@@ -461,3 +461,37 @@ ALTER TABLE `companies` ADD `gst` VARCHAR(50) NULL AFTER `address`, ADD `state_i
 ALTER TABLE `clients` CHANGE `phone` `phone` VARCHAR(50) NOT NULL;
 ALTER TABLE `clients` CHANGE `address` `address` TEXT CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL;
 ALTER TABLE `clients` ADD `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP AFTER `address`, ADD `created_at` TIMESTAMP NULL DEFAULT NULL AFTER `updated_at`;
+// pradeep 23-06-22
+ALTER TABLE `gst` ADD `logo` TINYTEXT NULL DEFAULT NULL AFTER `contact_name`;
+
+CREATE TABLE `academy`.`group_types` ( `id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR(300) NULL , `added_by` INT NULL , `client_id` INT NULL , `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , `created_at` TIMESTAMP NULL DEFAULT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+
+CREATE TABLE `academy`.`group_skill_attributes` ( `id` INT NOT NULL AUTO_INCREMENT , `group_type_id` INT NULL , `skill_attribute_id` INT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+ALTER TABLE `inv_request_item` ADD `price` DOUBLE NULL DEFAULT NULL AFTER `edited_quantity`;
+
+
+CREATE TABLE `order_items` (
+  `id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `category_id` int(11) DEFAULT NULL,
+  `type_id` int(11) DEFAULT NULL,
+  `amount` double DEFAULT NULL,
+  `tax_perc` double NOT NULL DEFAULT 0,
+  `tax` double DEFAULT NULL,
+  `total_amount` double DEFAULT NULL,
+  `discount` double NOT NULL DEFAULT 0,
+  `discount_code_id` int(11) DEFAULT NULL,
+  `months` int(11) DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+ALTER TABLE `order_items`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `order_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+COMMIT;

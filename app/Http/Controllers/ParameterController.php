@@ -29,6 +29,13 @@ class ParameterController extends Controller
 
     }
 
+    public function getGroupTypes(){
+        $group_types = DB::table('group_types')->select('id','name')->get();
+        $data['success'] = true;
+        $data['group_types'] = $group_types;
+        return Response::json($data,200,array());
+    }
+
     public function saveCategory(Request $request){
 
         $user = User::AuthenticateUser($request->header("apiToken"));
@@ -166,6 +173,35 @@ class ParameterController extends Controller
         }
 
         return Response::json($data,200,array()); 
+    }
 
+    public function saveGroupSkillAttribute(Request $request){
+
+        $skill_attribute_id = $request->skill_attribute_id;
+        $group_type_id = $request->group_type_id;
+
+        $check = DB::table('group_skill_attributes')->where('skill_attribute_id',$skill_attribute_id)->where('group_type_id',$group_type_id)->first();
+
+        if($check){
+            DB::table('group_skill_attributes')->where('id',$check->id)->delete();
+            $value = 0;
+        } else {
+            DB::table('group_skill_attributes')->insert([
+                "skill_attribute_id" => $skill_attribute_id,
+                "group_type_id" => $group_type_id
+            ]);
+            $value = 1;
+        }
+        $data['success'] = true;
+        $data['value'] = $value;
+        $data['message'] = "Data successfully changed";
+        return Response::json($data,200,array());
+    }
+
+    public function getGroupSkillAttribute($group_type_id){
+        $skillAttributeIds = DB::table('group_skill_attributes')->select('skill_attribute_id')->where('group_type_id',$group_type_id)->pluck('skill_attribute_id')->toArray();
+        $data['skillAttributeIds'] = $skillAttributeIds;
+        $data['success'] = true;
+        return Response::json($data,200,array());
     }
 }

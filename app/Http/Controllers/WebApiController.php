@@ -78,17 +78,32 @@ class WebApiController extends Controller
         $validator = Validator::make($cre,$rules);
 
         if ($validator->fails()) {
+            
             $data['success'] = false;
             $data['message'] = $validator->errors()->first();
             return Response::json($data, 200, []);
+
         } else {
+
+            $flag = true;
+
+            if($request->prim_relation_to_student == $request->sec_relation_to_student){
+                $flag = false;
+                $message = "Relation for primary contact and secondary contact should be different";
+            }
+
+            if(!$flag){
+                $data['success'] = false;
+                $data['message'] = $message;
+                return Response::json($data, 200, []);                
+            }
 
             if($request->id){
                 $registration = Registration::find($request->id);
-                $message = "Data successfully updated....";
+                $message = "Data is successfully is updated";
             } else {
                 $registration = new Registration;
-                $message = "Data successfully inserted....";
+                $message = "Data is successfully saved";
             }
 
             $registration->name = $request->name;
@@ -172,22 +187,31 @@ class WebApiController extends Controller
             $lead->dob = $request->year."-".$request->month."-".$request->date;
             $lead->mobile = $request->mobile;
             $lead->client_email = $request->email;
+            
             $lead->city_id = $request->city_id;
-            $lead->remarks = $request->remarks;
-            $lead->document = $request->document;
+            $lead->center_id = $request->center_id;
+            $lead->group_id = $request->group_id;
+            
             $lead->lead_for = $request->lead_for;
             $lead->lead_source = 2;
             $lead->client_id = $client_id;
+            
             if($request->visit_date){
                 $lead->action_date = Utilities::convertDateToDB($request->visit_date);
+                $lead->status = 2;
             } else {
                 $lead->action_date = date("Y-m-d");
+                $lead->status = 8;
             }
 
-            Lead::storeOpenLead($lead);
+            $lead->remarks = $request->remarks;
+            $lead->document = $request->document;
+
+            $stored_lead = Lead::storeOpenLead($lead, $request->type);
 
             $data['success'] = true;
             $data["message"] ="Lead is successfully saved";
+            $data["lead"] = $stored_lead;
             
             return Response::json($data, 200, []);
 
@@ -223,10 +247,6 @@ class WebApiController extends Controller
         $data['visit_dates'] = $final_dates;
         $data['visit_time'] = $visit_time;
         return Response::json($data, 200, []);
-    }
-
-    public function storeDemo(Request $request){
-        
     }
 
 }

@@ -29,7 +29,7 @@ class GeneralController extends Controller
             $name = $file->getClientOriginalName();
             $name = preg_replace('/[^A-Za-z0-9_\.\-]/', '', $name);
 
-            $name_final = strtotime("now")."_".$name.".png";
+            $name_final = $name_file = strtotime("now")."_".$name.".png";
             $file->move($destination, $name_final);
 
             if($resize == 1){
@@ -42,7 +42,9 @@ class GeneralController extends Controller
                     if($width){
                         $resizer->resizeToWidth($width);
                     } else {
-                        $resizer->resizeToHeight($height);
+                        if($height){
+                            $resizer->resizeToHeight($height);
+                        }
                     }
                 }
                 $resizer->save($destination.'tn_'.$name_final);

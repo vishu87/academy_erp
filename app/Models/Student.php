@@ -12,7 +12,7 @@ class Student extends Model
     protected $table = 'students';
 
     public static function listing(){
-    	return DB::table("students")->select('students.id','students.school','students.name','students.group_id','students.dob','students.pic','students.doe','students.dos','groups.group_name','groups.center_id','center.center_name','center.city_id','city.city_name','city.state_id','students.mobile','students.email','students.inactive','students.address','states.state_name','cities.city_name as address_city','students.state_id as student_state_id')
+    	return DB::table("students")->select('students.id','students.school','students.name','students.group_id','students.dob','students.pic','students.doe','students.dos','groups.group_name','groups.center_id','center.center_name','center.city_id','city.city_name','city.state_id','students.mobile','students.email','students.inactive','students.address','states.state_name','cities.city_name as address_city','students.state_id as student_state_id','students.client_id')
 	        ->leftJoin('groups', 'students.group_id', '=', 'groups.id')
 	        ->leftJoin('center', 'groups.center_id', '=', 'center.id')
 	        ->leftJoin('city', 'center.city_id', '=', 'city.id')
@@ -25,6 +25,14 @@ class Student extends Model
     //     $this->dos = $this->dos ? date('d-M-Y',strtotime($this->dos)) : "";
     //     $this->doe = $this->doe ? date('d-M-Y',strtotime($this->doe)) : "";
     // }
+
+    public static function mapDates($student){
+        $student->dob = $student->dob ? date('d-M-Y',strtotime($student->dob)) : "";
+        $student->dos = $student->dos ? date('d-M-Y',strtotime($student->dos)) : "";
+        $student->doe = $student->doe ? date('d-M-Y',strtotime($student->doe)) : "";
+        $student->sub_end = $student->doe ? date('d-M-Y',strtotime($student->doe)) : "";
+        return $student;
+    }
 
     public static function getParameters($id){
 
@@ -55,9 +63,9 @@ class Student extends Model
     public static function getPayments($id){
 
         $pay_history =  DB::table('payment_history')->select('payment_history.id',
-        'payment_history.payment_date','payment_history.amount','payment_history.tax','payment_history.total_amount','payment_history.invoice_date')
+        'payment_history.payment_date','payment_history.amount','payment_history.tax','payment_history.total_amount','payment_history.invoice_date','payment_history.p_mode')
         ->where('payment_history.student_id',$id)
-        ->orderBy("payment_date","DESC")
+        ->orderBy("invoice_date","DESC")
         ->get();
 
         foreach ($pay_history as $pay) {
@@ -292,6 +300,30 @@ class Student extends Model
 
     }
 
+    public static function sendWelcomeEmail($student_id, $user, $student_emails){
+
+        $student = Student::listing()->where("students.id",$student_id)->first();
+        $student = Student::mapDates($student);
+
+        $params = Utilities::getSettingParams([17,15], $student->client_id);
+
+        if(sizeof($student_emails) > 0){
+            $mail = new MailQueue;
+            $mail->mailto = implode(', ', $student_emails);
+            $mail->subject = Utilities::replaceText($params->param_17, $student);
+            $mail->content = Utilities::replaceText($params->param_15, $student);
+            $mail->tb_name = "students";
+            $mail->tb_id = $student_id;
+            $mail->student_id = $student_id;
+            if($user){
+                $mail->user_id = $user->id;
+            }
+            $mail->client_id = $student->client_id;
+            $mail->save();
+        }
+
+    }
+
     public static function getPhoto($pic){
         
         $url = "http://192.168.1.38:8888/academy_erp";
@@ -306,6 +338,94 @@ class Student extends Model
 
         }
         return $pic;
+    }
+
+    public static function createFromRegistration($reg_form_id){
+
+        $registration = DB::table("registrations")->find($reg_form_id);
+
+        $student = new Student;
+        $student->name = $registration->name;
+        $student->dob = $registration->dob;
+        $student->gender = $registration->gender;
+        $student->group_id = $registration->group_id;
+        $student->address = $registration->address;
+        $student->state_id = $registration->address_state_id;
+        $student->state_city_id = $registration->address_city_id;
+
+        $student->father = $registration->father;
+        $student->mother = $registration->mother;
+        // $student->kit_size = $registration->kit_size;
+        // $student->pin_code = $registration->pin_code;
+
+        $student->client_id = $registration->client_id;
+
+        $student->save();
+
+        $father_reg = false;
+        $mother_reg = false;
+        //reg parent 1
+        if($registration->prim_relation_to_student != 3){
+            if($registration->prim_relation_to_student == 1){
+                $name = $student->father;
+                $father_reg = true;
+            } else {
+                $name = $student->mother;
+                $mother_reg = true;
+            }
+            DB::table("student_guardians")->insert(array(
+                "student_id" => $student->id,
+                "relation_type" => $registration->prim_relation_to_student,
+                "name" => $name,
+                "email" => $registration->prim_email,
+                "mobile" => $registration->prim_mobile,
+            ));
+        } else {
+            $student->mobile = $registration->prim_mobile;
+            $student->email = $registration->prim_email;
+        }
+
+        //reg parent 2
+
+        if($registration->sec_relation_to_student != 3){
+            if($registration->sec_relation_to_student == 1){
+                $name = $student->father;
+                $father_reg = true;
+            } else {
+                $name = $student->mother;
+                $mother_reg = true;
+            }
+            DB::table("student_guardians")->insert(array(
+                "student_id" => $student->id,
+                "relation_type" => $registration->sec_relation_to_student,
+                "name" => $name,
+                "email" => $registration->sec_email,
+                "mobile" => $registration->sec_mobile,
+            ));
+        } else {
+            $student->mobile = $registration->prim_mobile;
+            $student->email = $registration->prim_email;
+        }
+
+        if(!$father_reg){
+            DB::table("student_guardians")->insert(array(
+                "student_id" => $student->id,
+                "relation_type" => 1,
+                "name" => $student->father
+            ));
+        }
+
+        if(!$mother_reg){
+            DB::table("student_guardians")->insert(array(
+                "student_id" => $student->id,
+                "relation_type" => 2,
+                "name" => $student->mother
+            ));
+        }
+
+        $student->save();
+        return $student;
+
     }
 
 }

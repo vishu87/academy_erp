@@ -27,14 +27,13 @@
       height: 100px;
     }
     header img.bfc{
-      height: 80px;
+      height: 100px;
       width: auto;
     }
     header img.soccer{
       height: 100px;
       width: auto;
       float: right;
-      margin-top: -10px;
     }
     .head h1{
       font-size: 30px;
@@ -155,16 +154,25 @@
   </head>
   <body>
     <header>
-      <img src="http://soccerschools.bengalurufc.com/appsoft/sysadmin/evaluation/bfc_logo.png" class="bfc">
-      <img src="http://soccerschools.bengalurufc.com/appsoft/sysadmin/evaluation/soccer_logo.jpg" class="soccer">
+
+      @if($params->param_5)
+      <img src="{{public_path().'/'.$params->param_5}}" class="bfc">
+      @endif
+
+      @if($params->param_6)
+      <img src="{{public_path().'/'.$params->param_6}}" class="soccer">
+      @endif
+
     </header>
 
     <footer>
       <div>
         <table class="small-font 100-w" style="margin-top:20px;">
           <tr>
-            <td width="36%" style="text-align:left">FC Bengaluru United: Grassroots Development</td>
-            <td style="text-align:right">C. JOHN KENNETH RAJ</td>
+            <td width="36%" style="text-align:left">
+              {{ $params->param_13 }}
+            </td>
+            <td style="text-align:right">{{ $params->param_14 }}</td>
           </tr>
         </table>
       </div>
@@ -172,8 +180,8 @@
     <main>
       <div class="back">
         <div style="text-align:center">
-          <h1 style="text-transform: uppercase;">FC Bengaluru United</h1>
-          <h2>PLAYER DEVELOPMENT EVALUATION</h2>
+          <h1 style="text-transform: uppercase;">{{ $params->param_7 }}</h1>
+          <h2>{{ $params->param_8 }}</h2>
         </div>
         <div>
           <div>
@@ -265,10 +273,14 @@
           </table>
         </div>
         <div class="right">
-            <img src="http://soccerschools.bengalurufc.com/appsoft/sysadmin/evaluation/john_sign.png" class="bfc">
-            <b>C. JOHN KENNETH RAJ</b><br>
-            Technical Head<br>
-            <span style="font-size:12px">Grassroots &amp; BFC Soccer Schools</span>
+            @if($params->param_9)
+            <img src="{{ public_path().'/'.$params->param_9}}" class="bfc">
+            @endif
+            <div style="margin-top: 5px;">
+              <b>{{ $params->param_10 }}</b><br>
+              {{ $params->param_11 }}<br>
+              <span style="font-size:12px">{{ $params->param_12 }}</span>
+            </div>
         </div>
       </div>
     </main>

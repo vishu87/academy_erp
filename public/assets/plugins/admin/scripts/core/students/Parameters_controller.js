@@ -1,16 +1,27 @@
 app.controller("Parameters_controller", function($scope, $http, DBService) {
     
+    $scope.group_type_id = 0;
     $scope.sport_id = 0;
     $scope.loading = true;
     $scope.processing = false;
     $scope.formData = {};
     $scope.attrData = {};
+    $scope.groupSkillAttribute = {};
+    $scope.skillAttributeId = [];
 
     $scope.init = function(){
       DBService.getCall('/api/parameters/get-parameters/'+$scope.sport_id)
       .then(function(data){
         $scope.parameters = data.skill_categories;
+        $scope.groupTypes();
         $scope.loading = false;
+      });
+    }  
+
+    $scope.groupTypes = function(){
+      DBService.getCall('/api/parameters/get-group-types')
+      .then(function(data){
+        $scope.group_types = data.group_types;
       });
     }  
 
@@ -98,6 +109,36 @@ app.controller("Parameters_controller", function($scope, $http, DBService) {
 
       }
       });
+    }
 
+    $scope.toggleAttr = function(att){
+      $scope.groupSkillAttribute.skill_attribute_id = att.id;
+      $scope.groupSkillAttribute.group_type_id = $scope.group_type_id;
+      DBService.postCall($scope.groupSkillAttribute,'/api/parameters/save-group-skill-attribute').then(function(data){
+        if(data.success){
+          att.value = data.value;
+        }
+      });
+    }
+
+    $scope.changeGroup = function(){
+      if($scope.group_type_id == 0) return;
+      DBService.getCall('/api/parameters/get-group-skill-attribute/'+$scope.group_type_id).then(function(data){
+        if(data.success){
+          ids = data.skillAttributeIds;
+
+          for (var i = 0; i < $scope.parameters.length; i++) {
+            for (var j = 0; j < $scope.parameters[i].attributes.length; j++) {
+              console.log(ids.indexOf($scope.parameters[i].attributes[j].id));
+              if( ids.indexOf($scope.parameters[i].attributes[j].id) > -1 ){
+                $scope.parameters[i].attributes[j].value = 1;
+              } else {
+                $scope.parameters[i].attributes[j].value = 0;
+              }
+            }
+          }
+
+        }
+      });
     }
 });

@@ -36,6 +36,8 @@ use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\AccountsController;
 use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\SignUpController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\DropDownMasterController;
 
 use App\Http\Controllers\ParentController;
 
@@ -85,6 +87,10 @@ Route::group([], function(){
 
         Route::post('/add-student',[StudentController::class, 'add_student_data']);
         Route::post('/change-profile-pic',[StudentController::class, 'changeProfilePicture']);
+
+        Route::post('/send-welcome-email',[StudentController::class, 'sendWelcomeEmail']);
+
+        Route::post('/payment-email',[PaymentController::class, 'sendEmail']);
         
         // Route::post('/getfull-details',[StudentController::class, 'student_full_detail']);
         // Route::post('/delete-group-shift',[StudentController::class, 'deleteGroupShift']); 
@@ -125,6 +131,12 @@ Route::group([], function(){
             Route::post('/approve',[PaymentController::class, 'approvePauseRequest']);
             Route::post('/delete',[PaymentController::class, 'deletePauseRequest']);
         });
+
+        Route::post('/attendance/{student_id}',[StudentController::class, 'studentAttendance']);
+        Route::post('/reports/{student_id}',[StudentController::class, 'studentReports']);
+        Route::post('/performance-graph/{student_id}',[StudentPerformanceController::class, 'graphData']);
+
+
     });
 
     Route::group(["prefix"=>"payments"], function(){
@@ -193,6 +205,7 @@ Route::group([], function(){
         Route::get('/coach',[CenterController::class,'all_coach']);
         Route::post('/save-coach',[CenterController::class,'save_coach']);
         Route::get('/remove-coach/{id}',[CenterController::class,'remove_coach']);
+        Route::get('/group-types',[CenterController::class, 'groupTypes']);
 
         });
 
@@ -314,7 +327,16 @@ Route::group([], function(){
         Route::get('/delete-category/{id}',[ParameterController::class, 'deleteCategory']);
         Route::post('/save-attribute',[ParameterController::class, 'saveAttribute']);
         Route::get('/delete-attribute/{id}',[ParameterController::class, 'deleteAttribute']);
+        Route::get('/get-group-types',[ParameterController::class, 'getGroupTypes']);
+        Route::post('/save-group-skill-attribute',[ParameterController::class, 'saveGroupSkillAttribute']);
+        Route::get('/get-group-skill-attribute/{group_type_id}',[ParameterController::class, 'getGroupSkillAttribute']);
     });
+
+    Route::group(["prefix"=>"group-type"], function(){
+        Route::get('/init',[DropDownMasterController::class,'init']);
+        Route::post('/save',[DropDownMasterController::class,'store']);
+        Route::get('/delete/{id}',[DropDownMasterController::class,'delete']);
+    }); 
 
 });
 
@@ -324,16 +346,23 @@ Route::get('/get-state-city/{state_id}',[WebApiController::class, 'stateCity']);
 
 Route::group(["prefix"=>"registrations"], function(){
     Route::post('/store',[WebApiController::class, 'store']);
-    Route::post('/store-demo',[WebApiController::class, 'storeDemo']);
+});
+
+
+Route::group(["prefix"=>"open-lead"], function(){
     Route::post('/store-lead',[WebApiController::class, 'storeLead']);
     Route::get('/get-schedule/{group_id}',[WebApiController::class, 'getSchedule']);
 });
 
 Route::group(["prefix"=>"subscriptions"], function(){
     Route::post('/get-payment-options',[SubscriptionController::class, 'getPaymentOptions']);
+    Route::post('/check-coupon',[SubscriptionController::class, 'checkCoupon']);
     Route::post('/get-payment-items',[SubscriptionController::class, 'paymentItems']);
+    
     Route::post('/create-order',[SubscriptionController::class, 'createOrder']);
     Route::post('/process-order',[SubscriptionController::class, 'processWebOrder']);
+
+    Route::post('/get-payment',[SubscriptionController::class, 'getPayment']);
 });
 
 
@@ -341,6 +370,11 @@ Route::group(["prefix"=>"renewal"], function(){
     Route::post('/search',[RenewalWebController::class, 'searchStudent']);
 });
 
+
+Route::group(["prefix"=>"settings"], function(){
+    Route::post('/init',[SettingsController::class, 'init']);
+    Route::post('/save',[SettingsController::class, 'saveSettings']);
+});
 
 
 Route::group(["prefix"=>"sign-up"], function(){
@@ -450,7 +484,6 @@ Route::group(["prefix"=>"app"], function(){
         Route::get('/guest-student-remove/{student_id}',[AppAPIController::class, 'guestStudentRemove']);
 
     });
-
 
     // Route::group(["prefix"=>"performance"], function(){
     //     Route::get('/get-student-list/{group_id}',[AppAPIController::class, 'performStudentList']);

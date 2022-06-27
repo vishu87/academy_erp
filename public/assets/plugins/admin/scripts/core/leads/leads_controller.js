@@ -29,6 +29,8 @@ app.controller('leads_controller', function($scope,$http,DBService,Upload){
 	$scope.parameters = [];
 	$scope.loading = true;
 
+	$scope.noteData = {};
+
 	$scope.filter = init_filters;
 
 	$scope.selectedLeads = [];
@@ -162,7 +164,14 @@ app.controller('leads_controller', function($scope,$http,DBService,Upload){
 	$scope.addNote = function(index){
 		$scope.lead_index = index;
 		$scope.leadData = JSON.parse(JSON.stringify($scope.dataset[index]));
-		$scope.noteData = JSON.parse(JSON.stringify($scope.dataset[index]));
+		
+		// $scope.noteData = JSON.parse(JSON.stringify($scope.dataset[index]));
+		$scope.noteData.lead_id = $scope.leadData.id;
+		$scope.noteData.assigned_to = $scope.leadData.assigned_to;
+		$scope.noteData.status = 0;
+		$scope.noteData.action_date = "";
+		$scope.noteData.reason_id = "";	
+		
 		$scope.edit_loading = false;
 		$("#addNote").modal("show");
 		$scope.leadHistory();

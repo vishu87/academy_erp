@@ -7,7 +7,7 @@
 </li>
 @endif
 
-<?php $condition = in_array(13, $access_rights["leads"]) ; ?>
+<?php $condition = in_array(11, $access_rights["leads"]) ; ?>
 @if($condition)
 <li class="parent @if($sidebar == 'master-lead') active @endif">
 	<a href="{{url('/master-leads')}}">

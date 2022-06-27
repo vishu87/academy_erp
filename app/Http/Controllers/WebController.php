@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Redirect, Validator, Hash, Response, Session, DB;
-use App\Models\Lead, App\Models\Client, App\Models\Registration;
+use App\Models\Lead, App\Models\Client, App\Models\Registration, App\Models\Utilities;
 
 class WebController extends Controller
 {	
@@ -13,17 +13,23 @@ class WebController extends Controller
     public function registrations(){
         $heading = "Academy Registration Form";
         $description = "";
+
+        $payment_code = "1,2,3||21";
+
         return view('web.registrations',[
             "heading" => $heading,
             "description" => $description,
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => "BU_CODE",
-            "payment_gateway" => "razorpay"
+            "client_id" => env('APP_CLIENT_CODE'),
+            "payment_gateway" => "razorpay",
+            "payment_code" => $payment_code
         ]);
     }
 
     public function renewals(){
+
+        $payment_code = "2|3|";
 
         $heading = "Renew Subscription";
         $description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
@@ -32,7 +38,23 @@ class WebController extends Controller
         return view('web.renewals',[
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => "BU_CODE"
+            "client_id" => env('APP_CLIENT_CODE'),
+            "payment_code" => $payment_code,
+            "payment_gateway" => "razorpay"
+        ]);
+    }
+
+    public function payments($payment_code){
+
+        $heading = "";
+        $description = "";
+
+        return view('web.payments',[
+            "logo_url" => url('assets/images/Group-60782.png'),
+            "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
+            "client_id" => env('APP_CLIENT_CODE'),
+            "payment_code" => $payment_code,
+            "payment_gateway" => "razorpay"
         ]);
     }
 
@@ -46,7 +68,7 @@ class WebController extends Controller
             "description" => $description,
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => "BU_CODE"
+            "client_id" => env('APP_CLIENT_CODE')
         ]);
     }
 
@@ -66,7 +88,7 @@ class WebController extends Controller
             "description" => $description,
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => "BU_CODE"
+            "client_id" => env('APP_CLIENT_CODE')
         ]);
     }
 
@@ -80,7 +102,7 @@ class WebController extends Controller
             "description" => $description,
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => "BU_CODE"
+            "client_id" => env('APP_CLIENT_CODE')
         ]);
     }
 
@@ -93,7 +115,30 @@ class WebController extends Controller
             "description" => $description,
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => "BU_CODE"
+            "client_id" => env('APP_CLIENT_CODE')
+        ]);
+    }
+
+    public function webPages($term){
+        
+        $client_code = env('APP_CLIENT_CODE');
+        $client = DB::table("clients")->where("code",$client_code)->first();
+
+        $params = Utilities::getSettingParams([27,28,29],$client->id);
+
+        if($term == "terms-conditions"){
+            $content = $params->param_27;
+        } else if($term == "privacy-policy"){
+            $content = $params->param_28;
+        } else if($term == "refund-policy"){
+            $content = $params->param_29;
+        }
+
+        return view('web.pages',[
+            "content" => $content,
+            "logo_url" => url('assets/images/Group-60782.png'),
+            "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
+            "client_id" => $client_code
         ]);
     }
 }

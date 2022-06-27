@@ -73,7 +73,7 @@
             <tbody>
                 <tr ng-repeat="record in leadData.history">
                     <td>@{{record.status_value}} <small style="display: block;">@{{record.created_at|date}}</small><small style="display: block;">@{{record.assigned_by}}</small></td>
-                    <td>@{{record.action_date|date}}</td>
+                    <td>@{{record.action_date}}</td>
                     <td>@{{record.assigned_member}}</td>
                     <td><small>@{{record.call_note}}</small></td>
                 </tr>

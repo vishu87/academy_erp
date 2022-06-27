@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Redirect, Validator, Hash, Response, Session, DB;
 use Illuminate\Http\Request;
 
-use App\Models\PaymentHistory, App\Models\Client;
+use App\Models\PaymentHistory, App\Models\Client, App\Http\Controllers\PaymentController, App\Models\Student, App\Models\PaymentItem;
 
 class SubscriptionController extends Controller
 {	
@@ -17,27 +17,66 @@ class SubscriptionController extends Controller
         return 'OyIopP4QIeecC1BwqZwQJMDc';
     }
 
+    public function getPayment(Request $request){
+
+        $client_code = $request->header("clientId");
+        $client = Client::AuthenticateClient($client_code);
+
+        $payment_code = $request->payment_code;
+
+        $payment = DB::table("payment_history")->where("payment_history.unique_id",$payment_code)->where("client_id",$client->id)->first();
+        if($payment){
+            $student = Student::listing()->where("students.id",$payment->student_id)->where("students.client_id",$client->id)->first();
+            $items = PaymentItem::getPaymentItems($payment->id);
+
+            $payment->items = $items;
+            $success = true;
+            $data["student"] = $student;
+            $data["total_amount"] = $payment->total_amount;
+        } else {
+            $success = false;
+        }
+        
+        $data["success"] = $success;
+        $data["payment"] = $payment;
+
+        return Response::json($data, 200, []);
+    }
+
     public function getPaymentOptions(Request $request){
 
         $group_id = $request->group_id;
+        $payment_code = $request->payment_code;
 
-        $category_ids = [ 2, 3];
-        $mandatory = [ 2 ];
+        $codes = explode('|',$payment_code);
+        $mandatory = explode(',',$codes[0]);
+        $category_ids = array_merge(explode(',',$codes[0]), explode(',',$codes[1]));
+        $fixed = explode(',',$codes[2]);
+
+        if(sizeof($fixed) > 0){
+            $fix_category_ids = DB::table("payments_type")->whereIn("id",$fixed)->pluck("category_id")->toArray();
+            if(sizeof($fix_category_ids) == 0) $fix_category_ids = [0];
+        } else {
+            $fix_category_ids = [0];
+        }
 
         $payment_categories = [];
 
         foreach($category_ids as $payment_category_id){
             $category = DB::table("payments_type_categories")->select("id","category_name")->where("id",$payment_category_id)->first();
-            $category->label = "Select ".$category->category_name;
-            $category->types = DB::table("payments_type")->select("id as value","name as label")->where("category_id",$category->id)->get();
-            $category->type_id = "";
-            if(in_array($category->id,$mandatory)){
-                $category->required = true;
-            } else {
-                $category->required = false;
+            
+            if($category && !in_array($payment_category_id, $fix_category_ids)){
+                $category->label = "Select ".$category->category_name;
+                $category->types = DB::table("payments_type")->select("id as value","name as label")->where("category_id",$category->id)->get();
+                $category->type_id = "";
+                if(in_array($category->id,$mandatory)){
+                    $category->required = true;
+                } else {
+                    $category->required = false;
+                }
+                $category->group_id = $group_id;
+                $payment_categories[] = $category;
             }
-            $category->group_id = $group_id;
-            $payment_categories[] = $category;
         }
         
         $data["success"] = true;
@@ -48,60 +87,120 @@ class SubscriptionController extends Controller
 
     public function paymentItems(Request $request){
 
+        $client_code = $request->header("clientId");
+        $client = Client::AuthenticateClient($client_code);
+
         $group_id = $request->group_id;
         $categories = $request->categories;
+        $payment_code = $request->payment_code;
 
-        $mandatory = [ 1, 2];
-        $optional = [ 3 ];
-        $fixed = [ 1 => 21 ];
-        
+        $coupon_code = $request->coupon_code;
+        if($coupon_code){
+            $coupon = DB::table("coupons")->where("code",$coupon_code)->where("client_id",$client->id)->first();
+        } else {
+            $coupon = null;
+        }
+
+        $codes = explode('|',$payment_code);
+        $mandatory = explode(',',$codes[0]);
+        $optional = explode(',',$codes[1]);
+        $fixed = explode(',',$codes[2]);
+
         $total_amount = 0;
+        $total_discount = 0;
 
         $payment_items = [];
-        foreach($fixed as $fix_category_id => $fix_type_id){
-            
-            $category = DB::table("payments_type_categories")->select("id","category_name")->where("id",$fix_category_id)->first();
-            
-            $price = PaymentHistory::getAmount($group_id,$fix_type_id);
-
-            if($price){
+        foreach($fixed as $fix_type_id){
+            if($fix_type_id){
+                $category = DB::table("payments_type")->select("category_name")->join("payments_type_categories","payments_type_categories.id","=","payments_type.category_id")->where("payments_type.id",$fix_type_id)->first();
+                
+                $price = PaymentHistory::getAmount($group_id,$fix_type_id,$coupon);
                 $payment_items[] = [
                     "category" => $category->category_name,
-                    "amount" => $price->price,
+                    "type_id" => $fix_type_id,
+                    "amount" => $price->amount,
+                    "discount" => $price->discount,
+                    "discount_code_id" => $price->discount_code_id,
+                    "taxable_amount" => $price->taxable_amount,
                     "tax_perc" => $price->tax_perc,
-                    "total_amount" => round($price->total)
+                    "tax" => $price->tax,
+                    "total_amount" => $price->total_amount
                 ];
-                $total_amount += round($price->total);
-            } else {
-                $payment_items[] = [
-                    "category" => $category->category_name,
-                    "amount" => 0,
-                    "tax_perc" => 0,
-                    "total_amount" => 0
-                ];
+                $total_amount += $price->total_amount;
+                $total_discount += $price->discount;
             }
-            
             
         }
 
         foreach($categories as $category){
             if($category["type_id"]){
-                $price = PaymentHistory::getAmount($group_id,$category["type_id"]);
+                $price = PaymentHistory::getAmount($group_id,$category["type_id"],$coupon);
                 $payment_items[] = [
                     "category" => $category["category_name"],
-                    "amount" => $price->price,
+                    "type_id" => $category["type_id"],
+                    "amount" => $price->amount,
+                    "discount" => $price->discount,
+                    "discount_code_id" => $price->discount_code_id,
+                    "taxable_amount" => $price->taxable_amount,
                     "tax_perc" => $price->tax_perc,
-                    "total_amount" => round($price->total),
+                    "tax" => $price->tax,
+                    "total_amount" => $price->total_amount
                 ];
-                $total_amount += round($price->total);
+                $total_amount += $price->total_amount;
+                $total_discount += $price->discount;
+                
             }
         }
-
-        // foreach($)
         
         $data["success"] = true;
         $data["payment_items"] = $payment_items;
         $data["total_amount"] = $total_amount;
+        $data["total_discount"] = $total_discount;
+
+        if($data["total_discount"] > 0){
+            $data["coupon_code_message"] = "You have recieved a total discount of Rs. ".$total_discount;
+        } else {
+            $data["coupon_code_message"] = "Sorry! No discount is available for the coupon code in selected items";
+        }
+
+        return Response::json($data, 200, []);
+    }
+
+    public function checkCoupon(Request $request){
+
+        $client_code = $request->header("clientId");
+        $client = Client::AuthenticateClient($client_code);
+
+        $success = false;
+        $message = "Invalid coupon code";
+
+        $group_id = $request->group_id;
+        $coupon_code = $request->coupon_code;
+
+        $coupon = DB::table("coupons")->where("code",$coupon_code)->where("client_id",$client->id)->first();
+        if($coupon){
+
+            $group = DB::table("groups")->select("groups.id as group_id","groups.center_id","center.city_id")->join("center","center.id","=","groups.center_id")->where("groups.id",$group_id)->first();
+
+            $group_id = $group->group_id;
+            $center_id = $group->center_id;
+            $city_id = $group->city_id;
+
+            $mapped_coupons = DB::table("coupon_mapping")->where("city_id",-1)->orWhere(function($query) use ($city_id){
+                $query->where("city_id",$city_id)->whereNull("center_id");
+            })->orWhere(function($query) use ($city_id, $center_id){
+                $query->where("city_id",$city_id)->where("center_id",$center_id)->whereNull("group_id");
+            })->orWhere(function($query) use ($group_id){
+                $query->where("group_id",$group_id);
+            })->where("coupon_id",$coupon->id)->first();
+
+            if($mapped_coupons){
+                $success = true;
+            }
+        }
+        
+        $data["success"] = $success;
+        $data["message"] = $message;
 
         return Response::json($data, 200, []);
     }
@@ -114,6 +213,7 @@ class SubscriptionController extends Controller
 
         $student_id = $request->student_id ? $request->student_id : 0;
         $registration_id = $request->registration_id ? $request->registration_id : 0;
+        $payment_id = $request->payment_id ? $request->payment_id : 0;
         $total_amount = $request->total_amount;
         $type = $request->type;
         $payment_gateway = $request->payment_gateway;
@@ -138,9 +238,27 @@ class SubscriptionController extends Controller
                 "order_id" => $order_id,
                 "student_id" => $student_id,
                 "registration_id" => $registration_id,
+                "payment_id" => $payment_id,
                 "total_amount" => $total_amount,
-                "client_id" => $client_id
+                "client_id" => $client_id,
+                "payment_gateway" => $request->payment_gateway
             ));
+
+            if($payment_id == 0){
+                foreach($request->payment_items as $payment_item){
+                    DB::table("order_items")->insert(array(
+                        "order_id" => $table_order_id,
+                        "type_id" => $payment_item["type_id"],
+                        "amount" => $payment_item["amount"],
+                        "discount" => $payment_item["discount"],
+                        "discount_code_id" => isset($payment_item["discount_code_id"])?$payment_item["discount_code_id"] : null,
+                        "taxable_amount" => $payment_item["taxable_amount"],
+                        "tax" => $payment_item["tax"],
+                        "tax_perc" => $payment_item["tax_perc"],
+                        "total_amount" => $payment_item["total_amount"]
+                    ));
+                }
+            }
 
             $data['success'] = true;
             $data['order_id'] = $order_id;
@@ -150,10 +268,10 @@ class SubscriptionController extends Controller
         return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
     }
 
-    public function processWebOrder(){
+    public function processWebOrder(Request $request){
 
-        $order_id = Input::get("order_id");
-        $transaction_id = Input::get("transaction_id");
+        $order_id = $request->order_id;
+        $transaction_id = $request->transaction_id;
 
         $order = DB::table("orders")->where("order_id",$order_id)->where("status",0)->first();
 
@@ -164,51 +282,32 @@ class SubscriptionController extends Controller
                 "status" => 1
             ));
 
-            $student = Student::find($order->student_id);
-
-            $kit_fee = $order->kit_fee;
-            $sub_fee = $order->amount - $kit_fee;
-
-            $sub_fee_tax = round($sub_fee*0.18);
-            $kit_fee_tax = $order->amount_tax - $sub_fee_tax;
-
-            $payment = new PaymentHistory;
-            $payment->student_id = $order->student_id;
-            $payment->group_id = $student->first_group;
-            $payment->payment_category_id = 0;
-            $payment->product_type = 1;
-            $payment->package_type = 3;
-            $payment->dor = strtotime("today");
-            $payment->reg_fee = 0;
-            $payment->sub_fee = $sub_fee;
-            $payment->kit_fee = $kit_fee;
-            $payment->reg_fee_tax = 0;
-            $payment->sub_fee_tax = $sub_fee_tax;
-            $payment->kit_fee_tax = $kit_fee_tax;
-            $payment->payment_mode = 8;
-            $payment->in_favor_of = 'TISMPL';
-            $payment->amount = $order->amount;
-            $payment->total_amount = $order->amount + $order->amount_tax;
-            $payment->months = $order->month_plan;
-            $payment->p_remark = "Razorpay payment - ".$transaction_id;
-            $payment->razorpay_id = $transaction_id;
-            $payment->user_subscription_id = 0;
-            $payment->save();
-
-            if($student->doe){
-                $payment->dos = $student->doe + 86400;
-                $student->doe = $payment->doe = $payment->dos + $order->month_plan*30*86400;
+            if($order->registration_id){
+                $student = Student::createFromRegistration($order->registration_id);
             } else {
-                $payment->dos = $payment->dor;
-                $payment->doe = $payment->dos + $order->month_plan*30*86400;
+                $student = Student::find($order->student_id);
             }
 
-            $student->active = 0;
+            if($order->payment_id == 0){
+                $payment = PaymentHistory::createPaymentFromOrder($order, $student, $transaction_id);
+            } else {
+                $payment = PaymentHistory::find($order->payment_id);
+                $payment->payment_date = date("Y-m-d");
+                $payment->p_mode = 5;
+                $payment->reference_no = $transaction_id;
+                $payment->p_remark = "Razorpay payment - ".$transaction_id;
+                $payment->order_id = $order->id;
+                $payment->save();
+            }
 
+            Student::reCalculateDates($student->id);
+            $student->inactive = 0;
             $student->save();
-            $payment->save();
 
-            // PaymentHistory::sendReceipt($payment->id, true);
+            $student_emails = Student::getContactDetails("email",$student->id);
+            if(sizeof($student_emails) > 0){
+                PaymentController::createPaymentEmail($payment, $student_emails, $user = null);
+            }
 
             $data['success'] = true;
             $data["datetime"] = date("d-m-Y H:i:s");

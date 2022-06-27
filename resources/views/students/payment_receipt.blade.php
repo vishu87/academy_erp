@@ -50,7 +50,11 @@ table#table-right tr:last-child td {
     <table border="0" cellpadding="0" cellspacing="0"><tr><td>
       <table id="logo" border="0" cellpadding="0" cellspacing="0">
         <tr>
-          <td style="width:350px"><img src="{{url('/assets/images/logo.png')}}"></td>
+          <td style="width:350px">
+            @if($gst->logo)
+              <img src="{{public_path().'/'.$gst->logo}}" />
+            @endif
+          </td>
           <td>
             <b> Company's PAN: </b>{{ $gst->pan_no }}<br>
             <b>Company's GST No: </b>{{ $gst->gst_id }}
@@ -143,7 +147,7 @@ table#table-right tr:last-child td {
     @endforeach
 
     <tr>
-      <td>Total</td>
+      <td>Total (INR)</td>
       <td style="text-align: center;">{{ $total_amount }}</td>
       <td style="text-align: center;">{{ $total_discount }}</td>
       <td style="text-align: center;"></td>

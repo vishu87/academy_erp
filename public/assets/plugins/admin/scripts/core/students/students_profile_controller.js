@@ -6,6 +6,16 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
     $scope.loading = true;
     $scope.processing = false;
     $scope.switchContent = 'payments';
+    $scope.performance_category_id = 0;
+
+    $scope.attendance = {
+      weeks: []
+    }
+
+    $scope.p_categories = [];
+
+    $scope.month = "";
+    $scope.year = "";
     
     $scope.myImage = '';
     $scope.myCroppedImage = '';
@@ -38,6 +48,9 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
           $scope.loading = false;
       });
 
+      $scope.getAttendance();
+      $scope.getPerformanceReports();
+      $scope.getPerformanceGraph();
     }
 
     $scope.editStudent = function(id){
@@ -471,6 +484,8 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
 
     $scope.getAmount = function(){
       
+      $scope.getting_amount = true;
+
       if(!$scope.item.type_id) return;
       
       DBService.postCall({
@@ -484,9 +499,12 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
           $scope.item.months = data.months;
           $scope.item.amount = data.price.price;
           $scope.item.discount = 0;
+          $scope.item.taxable_amount = $scope.item.amount - $scope.item.discount;
           $scope.item.tax_perc = data.price.tax_perc;
           $scope.item.tax = Math.round(data.price.price*data.price.tax_perc/100);
           $scope.item.total_amount = $scope.item.amount + $scope.item.tax;
+
+          $scope.getting_amount = false;
       });
 
     }
@@ -504,8 +522,13 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
 
     $scope.applyTax = function(item){
       if (item.amount) {
-        item.tax = Math.round(((parseFloat(item.amount) - parseFloat(item.discount)) * parseFloat(item.tax_perc))/100);
-        item.total_amount = parseFloat(item.amount) - parseFloat(item.discount) + item.tax;
+        
+        item.taxable_amount = parseFloat(item.amount) - parseFloat(item.discount);
+
+        item.tax = Math.round( item.taxable_amount * parseFloat(item.tax_perc) /100 );
+        
+        item.total_amount = item.taxable_amount + item.tax;
+        
         $scope.calculateTotal();
       }
     }
@@ -514,9 +537,8 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
       var amount = 0;
       var tax = 0;
       for (var i = 0; i < $scope.payment.items.length; i++) {
-        if ($scope.payment.items[i].amount) amount += parseFloat($scope.payment.items[i].amount);
-        if ($scope.payment.items[i].discount) amount -= parseFloat($scope.payment.items[i].discount);
-        if ($scope.payment.items[i].tax)tax += parseFloat($scope.payment.items[i].tax);
+        if ($scope.payment.items[i].taxable_amount) amount += parseFloat($scope.payment.items[i].taxable_amount);
+        if ($scope.payment.items[i].tax) tax += parseFloat($scope.payment.items[i].tax);
       }
       $scope.payment.amount = amount;
       $scope.payment.tax = tax;
@@ -676,4 +698,80 @@ app.controller("Students_profile_controller", function($scope, $http, DBService,
       })
     }
 
+    $scope.sendWelcomeEmail = function(){
+      bootbox.confirm("Are you sure to send welcome email for "+$scope.student.name+"?", (check)=>{
+        if(check){
+          $scope.processing_email = true;
+          DBService.postCall({
+            student_id : $scope.student_id
+          },"/api/student/send-welcome-email")
+          .then(function (data){
+            bootbox.alert(data.message);
+            $scope.processing_email = false;
+          });
+        }
+      });
+    }
+
+    $scope.getAttendance = function(){
+
+      DBService.postCall({
+        month : $scope.month,
+        year : $scope.year,
+      },"/api/student/attendance/"+$scope.student_id)
+      .then(function (data){
+          $scope.attendance.month_name = data.month_name;
+          $scope.attendance.year = data.year;
+          $scope.attendance.weeks = data.weeks;
+
+          $scope.month = data.month;
+          $scope.year = data.year;
+          
+      });
+    }
+    $scope.prev_month = function(){
+        $scope.month--;
+        if($scope.month == 0) {
+            $scope.month = 12;
+            $scope.year--;
+        }
+        $scope.getAttendance();
+    }
+
+    $scope.next_month = function(){
+        $scope.month++;
+        if($scope.month == 13) {
+            $scope.month = 1;
+            $scope.year++;
+        }
+        $scope.getAttendance();
+    }
+
+    $scope.getPerformanceReports = function(){
+      DBService.postCall({
+        
+      },"/api/student/reports/"+$scope.student_id)
+      .then(function (data){
+          $scope.reports = data.reports;
+      });
+    }
+
+    $scope.getPerformanceGraph = function(){
+      $scope.p_data = {
+        legends : [],
+        labels : [],
+        values: []
+      };
+      $scope.loading_graph = true;
+      DBService.postCall({
+        category_id: $scope.performance_category_id
+      },"/api/student/performance-graph/"+$scope.student_id)
+      .then(function (data){
+          $scope.p_data = data.p_data;
+          $scope.p_categories = data.categories;
+          $scope.loading_graph = false;
+
+      });
+
+    }
 });

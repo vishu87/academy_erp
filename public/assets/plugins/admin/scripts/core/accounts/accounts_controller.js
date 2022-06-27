@@ -1,4 +1,4 @@
-app.controller("AcountsController", function($scope, $http, DBService) {
+app.controller("AcountsController", function($scope, $http, DBService, Upload) {
 	$scope.states = {};
 	$scope.gst = {};
 	$scope.listData = {};
@@ -22,10 +22,7 @@ app.controller("AcountsController", function($scope, $http, DBService) {
 	$scope.submit = function(gst_data){
 		gst_data.id = 0;
 		$scope.processing = true;
-		DBService.postCall(
-			gst_data
-		, "/api/accounts/save")
-		.then(function(data){
+		DBService.postCall(gst_data, "/api/accounts/save").then(function(data){
 			if (data.success) {
 				bootbox.alert(data.message);
 				$scope.gst = {};
@@ -39,6 +36,7 @@ app.controller("AcountsController", function($scope, $http, DBService) {
 	}
 
 	$scope.edit = function(gst_data){
+		console.log(gst_data);
 		$scope.editForm = true;
 		$("#contact_modal").modal("show");
 		$scope.gst = gst_data;
@@ -51,10 +49,7 @@ app.controller("AcountsController", function($scope, $http, DBService) {
 
 		$scope.processing = true;
 
-		DBService.postCall(
-			gst_data
-		, "/api/accounts/save")
-		.then(function(data){
+		DBService.postCall(gst_data, "/api/accounts/save").then(function(data){
 			if (data.success) {
 				bootbox.alert(data.message);
 				$scope.gst = {};
@@ -89,8 +84,37 @@ app.controller("AcountsController", function($scope, $http, DBService) {
 	}
 
 	$scope.addAcount = function(){
-		// console.log('');
 		$scope.gst = {};
 		$("#contact_modal").modal("show");
 	}
+
+	$scope.uploadGstLogo = function (file) {
+		$scope.logoProcessing = true;
+		if(file){
+			$scope.uploading = true;
+			var url = base_url+'/api/upload/photo';
+	        Upload.upload({
+	            url: url,
+	            data: {
+	            	photo: file,
+	            	resize: 1,
+	              	crop: 0,
+	              	width: 720,
+	              	thumb: 1
+	            }
+	        }).then(function (resp) {
+	            if(resp.data.success){
+	            	$scope.gst.logo = resp.data.path;
+	            } else {
+	            	alert(resp.data.message);
+	            }
+	            $scope.uploading = false;
+	        });
+		}
+		$scope.logoProcessing = false;
+    }
+
+    $scope.removeLogo = function(){
+    	$scope.gst.logo = '';
+    }
 });

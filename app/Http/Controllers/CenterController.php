@@ -319,6 +319,7 @@ class CenterController extends Controller{
 			$group->capacity = $request->capacity;
 			$group->group_dos = Utilities::convertDateToDB($request->group_dos);
 			$group->age_group_category = $request->age_group_category;
+			$group->group_type_id = $request->group_type_id;
 			$group->save();
 			$data['success'] = true;
 
@@ -695,7 +696,13 @@ class CenterController extends Controller{
         return Response::json($data,200,array());
     } 
 
-
+    public function groupTypes(Request $request){
+    	$user = User::AuthenticateUser($request->header("apiToken"));
+        $group_types = DB::table('group_types')->select('id','name')->where('client_id',$user->client_id)->get();
+        $data['group_types'] = $group_types; 
+        $data['success'] = true; 
+        return Response::json($data,200,array());
+    } 
 
 }
 

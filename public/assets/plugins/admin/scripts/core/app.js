@@ -1,7 +1,8 @@
 var app = angular.module('app', [
   'ngFileUpload',
   'jcs-autoValidate',
-  'uiCropper'
+  'uiCropper',
+  'ngSanitize'
 ]);
 
 angular.module('jcs-autoValidate')
@@ -266,6 +267,70 @@ app.directive('eBarChart', ['$compile', function ($compile) {
     }
 }]);
 
+app.directive('eLineChart', ['$compile', function ($compile) {
+    return {
+      restrict: 'EA',
+      template: '<div class="chartarea" style="width:100%; height:250px;"></div>',
+      link: function (scope, element, attrs) {
+          var regions = element[0].querySelectorAll('.chartarea');
+          var division_id = attrs.dataid;
+          var data_link = attrs.datagraph;
+          var data = scope[data_link];
+
+          angular.forEach(regions, function (path, key) {
+            var regionElement = angular.element(path);
+            regionElement.attr("id", division_id);
+          });
+
+          var labels = data.labels;
+          var series = [];
+
+          var legends = data.legends;
+
+          for (var i = 0; i < data.values.length; i++) {
+            series.push({
+                name: legends[i],
+                data: data.values[i],
+                type: 'line'
+            });
+          }
+
+          console.log(series);
+
+          options = {
+              darkMode: 'decal',
+              grid: {
+                  top: '3%',
+                  left: '3%',
+                  right: '4%',
+                  bottom: '15%',
+                  containLabel: true
+              },
+              legend: {
+                data: legends,
+                bottom: -200
+              },
+              xAxis: {
+                  type: 'category',
+                  data: labels
+              },
+              yAxis: {
+                  type: 'value'
+              },
+              tooltip: {
+                  trigger: 'axis'
+              },
+              series: series
+          };
+
+          setTimeout(function(){
+            var myChart = echarts.init(document.getElementById(division_id));
+            myChart.setOption(options);
+          }, 2000);
+      }
+    }
+}]);
+
 app.filter('INR', function () {        
     return function (input) {
         if (! isNaN(input)) {
@@ -292,6 +357,23 @@ app.filter('INR', function () {
         }
     }
 });
+
+app.directive('ckeditor', Directive);
+function Directive($rootScope) {
+    return {
+        require: 'ngModel',
+        link: function (scope, element, attr, ngModel) {
+
+            var id = attr.id;
+
+            var ckeditor = ClassicEditor.create( document.querySelector( '#editor_data' ) ).then(editor => {
+                window.editor = editor;
+                editor.setData(scope.editor_data);
+            });
+        }
+    };
+}
+
 
 app.run(function($rootScope, DBService) {
   
@@ -326,6 +408,28 @@ app.run(function($rootScope, DBService) {
         $rootScope.payment = data.payment;
        $("#viewPaymentModal").modal("show"); 
     })
+  }
+
+  $rootScope.sendPaymentEmail = function(payment_id){
+    DBService.getCall("/api/student/payment/view-payment/"+payment_id)
+      .then(function(data){
+        $rootScope.payment = data.payment;
+       $("#viewPaymentModal").modal("show"); 
+    })
+  }
+
+  $rootScope.sendPaymentEmail =  function(payment_id){
+    
+    bootbox.confirm("Are you sure to mail payment receipt?",(check)=> {
+        if (check) {
+            $rootScope.processing_pay_mail = true;
+            DBService.postCall({ payment_id : payment_id },"/api/student/payment-email")
+            .then(function(data){
+                bootbox.alert(data.message);
+                $rootScope.processing_pay_mail = false;
+            });
+        }
+    });
   }
 
 });

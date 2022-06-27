@@ -62,6 +62,14 @@
             <div class="modal-body">
 
                 <div class="form-group">
+                    <label>Group Type</label>
+                    <select class="form-control" ng-model="group.group_type_id" convert-to-number>
+                        <option value="">Select</option>
+                        <option ng-repeat="group_type in group_types" value="@{{group_type.id}}">@{{group_type.name}}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label>Group Name <span class="text-danger">*</span></label>
                     <input type="text" ng-model="group.group_name" required class="form-control">
                 </div>

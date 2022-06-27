@@ -43,7 +43,8 @@ app.controller("Lead_controller", function($scope, $http, DBService, Upload) {
   $scope.onSubmit = function(){
     $scope.processing = true;
     $scope.formData.lead_for = $scope.lead_for;
-  	DBService.postCall($scope.formData,"/api/registrations/store-lead").then(function(data){
+    $scope.formData.type = 'scholarship';
+  	DBService.postCall($scope.formData,"/api/open-lead/store-demo").then(function(data){
 	  	if (data.success) {
         $scope.tab = 2;
 	  	} else {
