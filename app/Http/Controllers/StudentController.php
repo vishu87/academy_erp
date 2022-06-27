@@ -498,14 +498,25 @@ class StudentController extends Controller
             $data = ["success" => false, "message"=>"Not allowed"]; return Response::json($data, 200 ,[]);
         }
     
-        $cre = [
+        // $cre = [
+        //     "injured_on" => $request->injured_on,
+        //     "last_class" => $request->last_class,
+        //     "remark" => $request->remark,
+        // ];
+
+        // $validator =  Validator::make( $cre, ["injured_on" => "required", "remark" => "required",
+        //     "last_class"=>"required"]);
+
+
+        $validator = Validator::make([
             "injured_on" => $request->injured_on,
             "last_class" => $request->last_class,
             "remark" => $request->remark,
-        ];
-
-        $validator =  Validator::make( $cre, ["injured_on" => "required", "remark" => "required",
-            "last_class"=>"required"]);
+            ],[
+            "injured_on" => "required",
+            "last_class" => "required",
+            "remark" => "required",
+        ]);
 
         if ($validator->passes()) {
             
