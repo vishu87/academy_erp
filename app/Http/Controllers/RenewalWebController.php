@@ -14,7 +14,7 @@ class RenewalWebController extends Controller
         $mobile_number = $request->mobile_number;
 
         $student_ids = [];
-        $student_ids = DB::table("students")->where("mobile",$mobile_number)->pluck("student_id")->toArray();
+        $student_ids = DB::table("students")->where("mobile",$mobile_number)->pluck("students.id")->toArray();
         $guardians = DB::table("student_guardians")->where("mobile",$mobile_number)->pluck("student_id")->toArray();
         $student_ids = array_merge($student_ids,$guardians);
 
