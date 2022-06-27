@@ -153,12 +153,15 @@
 												<tr ng-repeat="item in payment_items">
 													<td>@{{ item.category }}</td>
 													<td>
-														@{{ item.taxable_amount }}
-														<span ng-if="item.discount">Saved Rs. @{{ item.discount }}</span>
+														<span class="d-block">
+															@{{ item.taxable_amount }}
+														</span>
+														<span class="save-tag" ng-if="item.discount">Saved Rs. @{{ item.discount }}</span>
 													</td>
 													<td>@{{ item.tax_perc }}%</td>
 													<td>@{{ item.total_amount }}</td>
 												</tr>
+												
 											</tbody>
 										</table>
 									</div>
