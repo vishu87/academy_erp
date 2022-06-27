@@ -345,7 +345,10 @@ Route::get('/get-state-city/{state_id}',[WebApiController::class, 'stateCity']);
 
 Route::group(["prefix"=>"registrations"], function(){
     Route::post('/store',[WebApiController::class, 'store']);
-    Route::post('/store-demo',[WebApiController::class, 'storeDemo']);
+});
+
+
+Route::group(["prefix"=>"open-lead"], function(){
     Route::post('/store-lead',[WebApiController::class, 'storeLead']);
     Route::get('/get-schedule/{group_id}',[WebApiController::class, 'getSchedule']);
 });
@@ -357,6 +360,8 @@ Route::group(["prefix"=>"subscriptions"], function(){
     
     Route::post('/create-order',[SubscriptionController::class, 'createOrder']);
     Route::post('/process-order',[SubscriptionController::class, 'processWebOrder']);
+
+    Route::post('/get-payment',[SubscriptionController::class, 'getPayment']);
 });
 
 

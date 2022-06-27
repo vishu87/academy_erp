@@ -15,12 +15,16 @@
           <tr ng-repeat="payment in student.payments">
             <td>
               <a href="#" ng-click="viewPayment(payment.id)">@{{ payment.code }}</a>
+              <span ng-if="payment.p_mode == 6">Unpaid</span>
             </td>
             <td>@{{ payment.invoice_date }}</td>
             <td>@{{ payment.payment_date }}</td>
             <td>@{{ payment.amount | INR}}</td>
             <td>@{{ payment.tax | INR }}</td>
             <td>@{{ payment.total_amount | INR }}</td>
+            <td class="text-right">
+              <a class="btn btn-primary" style="color:#fff" ng-if="payment.p_mode == 6">Pay Now</a>
+            </td>
           </tr>
         </tbody>
       </table>

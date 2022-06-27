@@ -36,21 +36,20 @@ use App\Http\Controllers\SettingsController;
 Route::get('/', [UserController::class,'login'])->name("login");
 Route::post('/login', [UserController::class, 'postLogin']);
 Route::get('/logout', [UserController::class, 'logout']);
+Route::get('/forget-password', [WebController::class, 'forgetPassword']);
+Route::post('/forget-password', [UserController::class, 'postForgetPassword']);
+Route::get('/sign-up', [WebController::class, 'signUp']);
 
 Route::post('/uploads/file', [GeneralController::class, 'uploadFile']);
 
+Route::get('/registrations',[WebController::class,'registrations']);
 Route::get('/renewals', [WebController::class,'renewals']);
+Route::get('/payments/{code}', [WebController::class,'payments']);
+
 Route::get('/demo-schedule', [WebController::class,'demoShedule']);
 Route::get('/lead/{type}', [WebController::class,'lead']);
-Route::get('/registrations',[WebController::class,'registrations']);
+
 Route::get('/pages/{type}',[WebController::class,'webPages']);
-
-Route::get('/sign-up', [WebController::class, 'signUp']);
-Route::get('/forget-password', [WebController::class, 'forgetPassword']);
-Route::post('/forget-password', [UserController::class, 'postForgetPassword']);
-
-Route::get('/update-password',[UserController::class,'changePassword']);
-Route::post('/update-password',[UserController::class,'updatePassword']);
 
 Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 
@@ -212,6 +211,9 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 
 
 Route::group(["before"=>"auth","middleware"=>["auth"]], function(){
+
+    Route::get('/update-password',[UserController::class,'changePassword']);
+    Route::post('/update-password',[UserController::class,'updatePassword']);
 
     Route::group(["prefix"=>"parents"], function(){
         Route::get('/',[ParentController::class,'dashboard']);

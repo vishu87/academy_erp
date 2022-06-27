@@ -63,9 +63,9 @@ class Student extends Model
     public static function getPayments($id){
 
         $pay_history =  DB::table('payment_history')->select('payment_history.id',
-        'payment_history.payment_date','payment_history.amount','payment_history.tax','payment_history.total_amount','payment_history.invoice_date')
+        'payment_history.payment_date','payment_history.amount','payment_history.tax','payment_history.total_amount','payment_history.invoice_date','payment_history.p_mode')
         ->where('payment_history.student_id',$id)
-        ->orderBy("payment_date","DESC")
+        ->orderBy("invoice_date","DESC")
         ->get();
 
         foreach ($pay_history as $pay) {

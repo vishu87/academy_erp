@@ -153,14 +153,19 @@ class PaymentController extends Controller{
 
         $cre = [
             "invoice_date" => $request->invoice_date,
-            "mode" => $request->p_mode,
-            "payment_date" => $request->payment_date
+            "mode" => $request->p_mode
         ];
-        $validator = Validator::make($cre, [
+        $rules = [
             "invoice_date" => "required",
-            "mode" => "required",
-            "payment_date" => "required",
-        ]);
+            "mode" => "required"
+        ];
+
+        if($request->p_mode != 6){
+            $cre["payment_date"] = $request->payment_date;
+            $rules["payment_date"] = "required";
+        }
+
+        $validator = Validator::make($cre, $rules);
 
         if ($validator->passes()) {
 

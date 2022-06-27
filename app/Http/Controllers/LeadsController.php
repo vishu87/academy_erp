@@ -138,7 +138,7 @@ class LeadsController extends Controller{
             $lead->rel_color = '#ffbf00';
         }
         
-        $lead->action_date_dmy = Utilities::convertDate($lead->action_date);
+        $lead->action_date = Utilities::convertDate($lead->action_date);
 
         if($lead->assigned_to == 0) $lead->assigned_to = "";
 
@@ -192,13 +192,11 @@ class LeadsController extends Controller{
         $values = [
             "mobile" => $request->mobile,
             "name" => $request->name,
-            "status" => $request->status,
-            "assigned_to" => $request->assigned_to
+            "status" => $request->status
         ];
         $rules = [
             "name" => "required",
-            "status" => "required",
-            "assigned_to" => "required"
+            "status" => "required"
         ];
 
         if( $request->id ){
@@ -239,6 +237,13 @@ class LeadsController extends Controller{
                     if(!$request->reason_id){
                         $success = false;
                         $message = "Reason is required";
+                    }
+                }
+
+                if($request->status == 2 || $request->status == 3){
+                    if(!$request->group_id){
+                        $success = false;
+                        $message = "Please select a group for the demo";
                     }
                 }
             }
@@ -353,131 +358,14 @@ class LeadsController extends Controller{
         }
 
         $history_data = Lead::listingHistory()->where('lead_id',$lead_id)->where("leads.client_id",$user->client_id)->orderBy('id','desc')->get();
+        foreach($history_data as $history){
+            $history->action_date = date("d-m-Y",strtotime($history->action_date));
+        }
 
         $data['history'] = $history_data;
         $data['success'] = true;
         return Response::json($data,200,array());
     }
-
-    // public function updateLead(){
-        
-    //     $user = User::AuthenticateUser(Request::header("apiToken"));
-
-    //     $request = Input::get('data');
-
-    //     $check_duplicate_mobile = Lead::where('id','!=',$request['id'])->where('mobile',$request['mobile'])->first();
-    //     $messages = ["age_group.not_in"=>"Please select age group"];
-        
-    //     $check = [
-    //         "name"=>$request['name'],
-    //         "gender"=>$request['gender'],
-    //         "dob"=>$request['dob'],
-    //         "mobile"=>$request['mobile'],
-    //         "city_id"=>$request['city_id'],
-    //         "age_group"=>$request['city_id'],
-    //     ];
-    //     $validator = Validator::make($check,[
-    //         "name" => "required",
-    //         "gender" => "required",
-    //         "dob" => "required|date",
-    //         "mobile" => "required|regex:/^([0-9\s\-\+\(\)]*)$/|digits:10|unique:leads,mobile,".$request['id'],
-    //         "city_id" => "required",
-    //         "age_group" => "required|not_in:0",
-    //     ],$messages);
-    //     if($validator->fails()){
-    //         $data['success'] = false;
-    //         $data['message'] = $validator->errors()->first();
-    //     }else{
-
-    //         if($request["city_id"] != -1 && (!isset($request["center_id"])) ) {
-    //             $data['success'] = false;
-    //             $data['message'] = "Kindly select center";
-    //             return Response::json($data,200,array());
-    //         }
-    //         $dob = date("Y-m-d",strtotime($request['dob']));
-    //         $age = (date("Y") - date("Y",strtotime($dob)));
-
-    //         $lead = Lead::find($request['id']);
-    //         $lead->name = $request['name'];
-    //         $lead->age = $age;
-    //         $lead->dob = $dob;
-    //         $lead->mobile = $request['mobile'];
-    //         $lead->gender = $request['gender'];
-
-    //         $lead->lead_source = $request['lead_source'];
-    //         $lead->lead_sub_source = $request['lead_sub_source'];
-            
-    //         $lead->client_email = $request['client_email'];
-    //         $lead->client_address = $request['client_address'];
-    //         $lead->client_city = $request['client_city'];
-
-    //         $lead->client_city_id = $request['client_city_id'];
-    //         $lead->client_state_id = $request['client_state_id'];
-
-    //         $lead->last_updated_by = $user->id;
-    //         $lead->city_id = $request['city_id'];
-    //         $lead->other_city_id = $request['other_city_id'];
-    //         $lead->center_id = $request['center_id'];
-    //         $lead->age_group = $request['age_group'];
-    //         $lead->lead_cost = $request['lead_cost'];
-    //         $lead->relevance = $request['relevance'];
-    //         $lead->lead_for = $request['lead_for'];
-
-    //         if(Input::has('campaign_code')){
-    //             if(Input::get('campaign_code') != ''){
-    //                 $check_campaign = DB::table('campaign_filters')->where('code',strtoupper(Input::get('campaign_code')))->first();
-    //                 if(!$check_campaign){
-    //                     $data['success'] = false;
-    //                     $data['message'] = "Invalid campaign id";
-    //                     return Response::json($data,200,[]);
-    //                 }else{
-    //                     $lead->campaign_id = $check_campaign->id;
-    //                 }
-    //             }
-    //         }
-
-    //         $lead->save();
-            
-    //         $data['message'] = 'Lead details are updated successfully';
-
-    //         $lead = Lead::listing()->where('leads.id',$lead->id)->first();
-    //         if($lead){
-
-    //             $lead->mobile_trimmed = "xxxxxx".substr($lead->mobile, 6,4);
-
-    //             if($lead->status == 3){
-    //                 $lead->bgcolor = '#FFA500';
-    //                 $lead->fontcolor = 'color:#fff';
-    //             }elseif($lead->status == 4){
-    //                 $lead->bgcolor = '#9aed9a';
-    //                 $lead->fontcolor = 'color:#fff';
-    //             }elseif($lead->status == 5){
-    //                 $lead->bgcolor = '#f26a6a';
-    //                 $lead->fontcolor = 'color:#fff';
-    //             }
-
-    //             if($lead->relevance == 1){
-    //                 $lead->rel_color = 'green';
-    //             }elseif($lead->relevance == 2){
-    //                 $lead->rel_color = 'red';
-    //             }elseif($lead->relevance == 3){
-    //                 $lead->rel_color = '#ffbf00';
-    //             }
-    //         }
-    //         $lead->history = LeadHistory::select('lead_history.*','lead_status.status_value','users.name as assigned_member','m2.name as assigned_by')
-    //         ->leftJoin('lead_status','lead_status.id','=','lead_history.status')
-    //         ->leftJoin('users','users.id','=','lead_history.assign_to')
-    //         ->leftJoin('users as m2','m2.id','=','lead_history.created_by')
-    //         ->where('lead_id',$lead->id)
-    //         ->orderBy('id','desc')
-    //         ->get();
-
-    //         $data['success'] = true;
-    //         $data['message'] = "Lead details updated successfully";
-    //         $data['lead'] = $lead;
-    //     }
-    //     return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
-    // }
 
 
     public function addNote(Request $request){
@@ -490,7 +378,7 @@ class LeadsController extends Controller{
         }
 
         $values = [
-            "lead_id" => $request->id,
+            "lead_id" => $request->lead_id,
             "status" => $request->status,
             "assigned_to" => $request->assigned_to
         ];
@@ -509,7 +397,9 @@ class LeadsController extends Controller{
             $message = $validator->errors()->first();
         } else {
 
-            $lead = Lead::where("id",$request->id)->where("client_id",$user->client_id)->first();
+            $lead_id = $request->lead_id;
+
+            $lead = Lead::where("id",$lead_id)->where("client_id",$user->client_id)->first();
             if(!$lead) {
                 $data = ["success" => false, "message"=>"Not allowed"]; return Response::json($data, 200 ,[]);
             }
@@ -534,6 +424,12 @@ class LeadsController extends Controller{
                 if(!$request->reason_id){
                     $success = false;
                     $message = "Reason is required";
+                }
+            }
+            if($request->status == 2 || $request->status == 3){
+                if(!$lead->group_id){
+                    $success = false;
+                    $message = "Please update the group for the demo in the lead details";
                 }
             }
 

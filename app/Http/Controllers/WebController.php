@@ -44,6 +44,20 @@ class WebController extends Controller
         ]);
     }
 
+    public function payments($payment_code){
+
+        $heading = "";
+        $description = "";
+
+        return view('web.payments',[
+            "logo_url" => url('assets/images/Group-60782.png'),
+            "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
+            "client_id" => env('APP_CLIENT_CODE'),
+            "payment_code" => $payment_code,
+            "payment_gateway" => "razorpay"
+        ]);
+    }
+
     public function demoShedule(){
 
         $heading = "Schedule a demo";

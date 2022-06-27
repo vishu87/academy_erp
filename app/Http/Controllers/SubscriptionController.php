@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Redirect, Validator, Hash, Response, Session, DB;
 use Illuminate\Http\Request;
 
-use App\Models\PaymentHistory, App\Models\Client, App\Http\Controllers\PaymentController, App\Models\Student;
+use App\Models\PaymentHistory, App\Models\Client, App\Http\Controllers\PaymentController, App\Models\Student, App\Models\PaymentItem;
 
 class SubscriptionController extends Controller
 {	
@@ -15,6 +15,32 @@ class SubscriptionController extends Controller
     }
     private function get_secret(){
         return 'OyIopP4QIeecC1BwqZwQJMDc';
+    }
+
+    public function getPayment(Request $request){
+
+        $client_code = $request->header("clientId");
+        $client = Client::AuthenticateClient($client_code);
+
+        $payment_code = $request->payment_code;
+
+        $payment = DB::table("payment_history")->where("payment_history.unique_id",$payment_code)->where("client_id",$client->id)->first();
+        if($payment){
+            $student = Student::listing()->where("students.id",$payment->student_id)->where("students.client_id",$client->id)->first();
+            $items = PaymentItem::getPaymentItems($payment->id);
+
+            $payment->items = $items;
+            $success = true;
+            $data["student"] = $student;
+            $data["total_amount"] = $payment->total_amount;
+        } else {
+            $success = false;
+        }
+        
+        $data["success"] = $success;
+        $data["payment"] = $payment;
+
+        return Response::json($data, 200, []);
     }
 
     public function getPaymentOptions(Request $request){
@@ -187,6 +213,7 @@ class SubscriptionController extends Controller
 
         $student_id = $request->student_id ? $request->student_id : 0;
         $registration_id = $request->registration_id ? $request->registration_id : 0;
+        $payment_id = $request->payment_id ? $request->payment_id : 0;
         $total_amount = $request->total_amount;
         $type = $request->type;
         $payment_gateway = $request->payment_gateway;
@@ -211,22 +238,26 @@ class SubscriptionController extends Controller
                 "order_id" => $order_id,
                 "student_id" => $student_id,
                 "registration_id" => $registration_id,
+                "payment_id" => $payment_id,
                 "total_amount" => $total_amount,
-                "client_id" => $client_id
+                "client_id" => $client_id,
+                "payment_gateway" => $request->payment_gateway
             ));
 
-            foreach($request->payment_items as $payment_item){
-                DB::table("order_items")->insert(array(
-                    "order_id" => $table_order_id,
-                    "type_id" => $payment_item["type_id"],
-                    "amount" => $payment_item["amount"],
-                    "discount" => $payment_item["discount"],
-                    "discount_code_id" => isset($payment_item["discount_code_id"])?$payment_item["discount_code_id"] : null,
-                    "taxable_amount" => $payment_item["taxable_amount"],
-                    "tax" => $payment_item["tax"],
-                    "tax_perc" => $payment_item["tax_perc"],
-                    "total_amount" => $payment_item["total_amount"]
-                ));
+            if($payment_id == 0){
+                foreach($request->payment_items as $payment_item){
+                    DB::table("order_items")->insert(array(
+                        "order_id" => $table_order_id,
+                        "type_id" => $payment_item["type_id"],
+                        "amount" => $payment_item["amount"],
+                        "discount" => $payment_item["discount"],
+                        "discount_code_id" => isset($payment_item["discount_code_id"])?$payment_item["discount_code_id"] : null,
+                        "taxable_amount" => $payment_item["taxable_amount"],
+                        "tax" => $payment_item["tax"],
+                        "tax_perc" => $payment_item["tax_perc"],
+                        "total_amount" => $payment_item["total_amount"]
+                    ));
+                }
             }
 
             $data['success'] = true;
@@ -257,7 +288,17 @@ class SubscriptionController extends Controller
                 $student = Student::find($order->student_id);
             }
 
-            $payment = PaymentHistory::createPaymentFromOrder($order, $student, $transaction_id);
+            if($order->payment_id == 0){
+                $payment = PaymentHistory::createPaymentFromOrder($order, $student, $transaction_id);
+            } else {
+                $payment = PaymentHistory::find($order->payment_id);
+                $payment->payment_date = date("Y-m-d");
+                $payment->p_mode = 5;
+                $payment->reference_no = $transaction_id;
+                $payment->p_remark = "Razorpay payment - ".$transaction_id;
+                $payment->order_id = $order->id;
+                $payment->save();
+            }
 
             Student::reCalculateDates($student->id);
             $student->inactive = 0;
