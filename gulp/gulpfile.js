@@ -27,6 +27,25 @@ gulp.task('default', () => {
 	.pipe(dest('../public/assets/dist/css'));
 });
 
+function cssWeb() {
+
+	var files = [
+		'../public/assets/plugins/bootstrap/css/bootstrap.min.css',
+		'../public/assets/plugins/simple-ine/css/simple-line-icons.css',
+		'../public/assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css',
+		'../public/assets/css/web_custom.css'
+	];
+
+	gulp
+	.src(files)
+	.pipe(minifyCSS())
+	.pipe(autoprefixer('last 2 version', 'safari 5', 'ie 8', 'ie 9'))
+	.pipe(concat('combined_web.min.css'))
+	.pipe(dest('../public/assets/dist/css'));
+};
+
+exports.cssweb = cssWeb;
+
 function coreJS() {
 
 	var files = [
@@ -108,17 +127,6 @@ exports.jsbundle = pluginJS;
 function coreWebJS() {
 
 	var files = [
-		'../public/assets/plugins/admin/scripts/angular.min.js',
-		'../public/assets/plugins/admin/scripts/angular-sanitize.js',
-		'../public/assets/plugins/popper.js',
-		'../public/assets/plugins/bootstrap/js/bootstrap.min.js',
-		'../public/assets/plugins/bootbox.min.js',
-		'../public/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js',
-		'../public/assets/plugins/admin/scripts/ng-file-upload.min.js',
-		'../public/assets/plugins/admin/scripts/ng-file-upload-shim.min.js',
-		'../public/assets/plugins/admin/scripts/jcs-auto-validate.js',
-		'../public/assets/plugins/admin/scripts/jquery-cropper/croppie.js',
-		'../public/assets/plugins/admin/scripts/ui-cropper.js',
 		'../public/assets/plugins/admin/scripts/core/custom.js',
 		'../public/assets/plugins/admin/scripts/core/app.js',
 		'../public/assets/plugins/admin/scripts/core/services.js',
@@ -154,8 +162,7 @@ function pluginWebJS() {
 		'../public/assets/plugins/admin/scripts/ng-file-upload-shim.min.js',
 		'../public/assets/plugins/admin/scripts/jcs-auto-validate.js',
 		'../public/assets/plugins/admin/scripts/jquery-cropper/croppie.js',
-		'../public/assets/plugins/admin/scripts/ui-cropper.js',
-		'../public/assets/plugins/admin/scripts/core/custom.js',
+		'../public/assets/plugins/admin/scripts/ui-cropper.js'
 	];
 
   gulp

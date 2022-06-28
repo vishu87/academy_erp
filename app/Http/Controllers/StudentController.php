@@ -193,11 +193,6 @@ class StudentController extends Controller
         $id = $request->student_id;
         $student = Student::listing()->where('students.id', '=',$id)->where("students.client_id",$user->client_id)->first();
 
-        $check_access = User::getAccess("st-edit", $user->id, $student->group_id);
-        if(!$check_access) {
-            $data = ["success" => false, "message"=>"Not allowed"]; return Response::json($data, 200 ,[]);
-        }
-
         $check_access = User::getAccess("st-profile", $user->id, $student->group_id);
         if(!$check_access) {
             $data = ["success" => false, "message"=>"Not allowed"]; return Response::json($data, 200 ,[]);
