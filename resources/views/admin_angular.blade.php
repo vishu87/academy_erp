@@ -1,3 +1,4 @@
+<!--student-->
 <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/students/DropDownMasterController.js?v='.env('JS_VERSION')) }}" ></script>
 <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/accounts/accounts_controller.js?v='.env('JS_VERSION'))}}" ></script>
 <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/center/center_controller.js?v='.env('JS_VERSION')) }}" ></script>

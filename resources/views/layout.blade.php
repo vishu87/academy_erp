@@ -10,11 +10,9 @@
     <link rel="stylesheet" type="text/css" href="{{url('assets/plugins/simple-ine/css/simple-line-icons.css')}}" />
 	<link rel="stylesheet" type="text/css" href="{{url('/assets/css/custom.css')}}">
     <link rel="stylesheet" type="text/css" href="{{url('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css')}}" />
-
-    <!--UI-Cropper  -->
-    <!-- <link rel="stylesheet" href="{{url('assets/plugins/admin/scripts/jquery-ui.css')}}" type="text/css"> -->
     <link rel="stylesheet" href="{{url('assets/plugins/admin/scripts/ui-cropper.css')}}" type="text/css">
     <link rel="stylesheet" href="{{url('assets/plugins/admin/scripts/jquery-cropper/croppie.css')}}" type="text/css">
+    
     <style type="text/css">
         .center-images {
             overflow-x: auto;
@@ -82,30 +80,35 @@
         @endif
         
     </script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.0.4/popper.js"></script>
-    <script src="{{url('assets/plugins/bootstrap/js/bootstrap.min.js')}}" type="text/javascript"></script>
-    <script src="{{url('assets/plugins/bootbox.min.js')}}" type="text/javascript"></script>
-    <script src="{{url('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js')}}" type="text/javascript"></script>
-    <script type="text/javascript" src="{{url('assets/plugins/echarts.min.js')}}"></script>
-    
+
     <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
+    
+    @if(env('APP_ENV') == "production")
+        <script type="{{url('assets/dist/js/combined.min.js')}}"></script>
+    @else
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.0.4/popper.js"></script>
+        <script src="{{url('assets/plugins/bootstrap/js/bootstrap.min.js')}}" type="text/javascript"></script>
+        <script src="{{url('assets/plugins/bootbox.min.js')}}" type="text/javascript"></script>
+        <script src="{{url('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js')}}" type="text/javascript"></script>
+        <script type="text/javascript" src="{{url('assets/plugins/echarts.min.js')}}"></script>
 
-    <!--Begin Angular scripts -->
-    <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/angular.min.js')}}" ></script>
-    <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/angular-sanitize.js')}}" ></script>
-    <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/ng-file-upload.min.js')}}" ></script>
-    <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/ng-file-upload-shim.min.js')}}" ></script>
-    <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/jcs-auto-validate.js')}}" ></script>
-    <script src="{{url('assets/plugins/admin/scripts/jquery-cropper/croppie.js')}}" type="text/javascript"></script>
-    <script src="{{url('assets/plugins/admin/scripts/ui-cropper.js')}}" type="text/javascript"></script>
+        <!--Begin Angular scripts -->
+        <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/angular.min.js')}}" ></script>
+        <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/angular-sanitize.js')}}" ></script>
+        <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/ng-file-upload.min.js')}}" ></script>
+        <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/ng-file-upload-shim.min.js')}}" ></script>
+        <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/jcs-auto-validate.js')}}" ></script>
+        <script src="{{url('assets/plugins/admin/scripts/jquery-cropper/croppie.js')}}" type="text/javascript"></script>
+        <script src="{{url('assets/plugins/admin/scripts/ui-cropper.js')}}" type="text/javascript"></script>
 
-    <?php $version = "1.0.1"; ?>
-    <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/custom.js?v='.$version)}}"></script>
-    <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/app.js?v='.$version)}}" ></script>
-    <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/services.js?v='.$version)}}" ></script>
+        <?php $version = "1.0.1"; ?>
+        <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/custom.js?v='.$version)}}"></script>
+        <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/app.js?v='.$version)}}" ></script>
+        <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/services.js?v='.$version)}}" ></script>
 
-    @include('admin_angular')
+        @include('admin_angular')
+
+    @endif
 
     @yield('footer_scripts')
 
