@@ -33,6 +33,8 @@
 
     <div class="col-md-9">
         @include("parents.profile.details")
+        @include("payments.view_payment_modal")
+        @include("students.subscription_modal")
     </div>
   </div>
  

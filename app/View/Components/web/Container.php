@@ -16,13 +16,15 @@ class Container extends Component
     public $logo;
     public $controller;
     public $init;
+    public $footer;
 
-    public function __construct($background, $logo, $controller = null, $init = null)
+    public function __construct($background, $logo, $controller = null, $init = null, $footer)
     {
         $this->background = $background;
         $this->logo = $logo;
         $this->controller = $controller;
         $this->init = $init;
+        $this->footer = $footer;
     }
 
     /**

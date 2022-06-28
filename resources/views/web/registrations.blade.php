@@ -9,7 +9,7 @@
 	</script>
 @endif
 
-<x-web.container :background="$background" :logo="$logo_url" controller="Reg_controller" init="init()">
+<x-web.container :background="$background" :logo="$logo_url" controller="Reg_controller" init="init()" :footer="$params->param_37">
 
 	<h2>{{$heading}}</h2>
 	<p>{{ $description }}</p>

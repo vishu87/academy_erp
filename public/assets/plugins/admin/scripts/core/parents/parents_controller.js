@@ -96,7 +96,55 @@ app.controller('Parents_controller', function($scope, $http, DBService, Upload){
 
   }
 
+  $scope.viewSubscription = function(item_id){
+      $scope.open_subscription = {};
+      DBService.getCall("/api/student/subscription/view/"+item_id)
+      .then(function(data){
+        if (data.success) {
+          $scope.open_subscription = data.subscription;
+          $("#subModal").modal("show");
+        } else {
+          bootbox.alert(data.message);
+        }
+    });
+  }
   
+  $scope.hide_data_modal = function(id){
+    $scope.editModal  = false;
+    $('#'+id).modal('hide');
+  }
+
+  $scope.editSubscription = function(item){
+    $scope.open_subscription = {};
+    DBService.getCall("/api/student/subscription/view/"+item.id)
+      .then(function(data){
+        if (data.success) {
+          $scope.open_subscription = data.subscription;
+          $("#pauseAddModal").modal("show");
+        } else {
+          bootbox.alert(data.message);
+        }
+    });
+
+  }
+
+  $scope.addPause = function(){
+    $scope.adding_pause = true;
+    $scope.pauseData.subscription_id  = $scope.open_subscription.id;
+    $scope.pauseData.student_id  = $scope.student.id;
+    DBService.postCall(
+      $scope.pauseData,
+      "/api/student/subscription/save"
+    )
+    .then(function(data){
+        if (data.success) {
+          $scope.init($scope.student.id);
+          $("#pauseAddModal").modal("hide");
+        }
+        
+        bootbox.alert(data.message);
+        $scope.adding_pause = false;
+    });
+  }  
 
 });
-

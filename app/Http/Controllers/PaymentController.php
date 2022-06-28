@@ -284,13 +284,17 @@ class PaymentController extends Controller{
 
     public function viewPayment(Request $request, $payment_id){
         
-        $user = User::AuthenticateUser($request->header("apiToken"));
+        $user = User::AuthenticateAny($request->header("apiToken"));
 
         $payment = PaymentHistory::listing()->where("payment_history.client_id",$user->client_id)->where("payment_history.id",$payment_id)->first();
 
-        $check_access = User::getAccess("pt-view", $user->id, $payment->group_id);
-        if(!$check_access) {
-            $data = ["success" => false, "message"=>"Not allowed"]; return Response::json($data, 200 ,[]);
+        if($user->user_type == 1){
+            $check_access = User::getAccess("pt-view", $user->id, $payment->group_id);
+            if(!$check_access) {
+                $data = ["success" => false, "message"=>"Not allowed"]; return Response::json($data, 200 ,[]);
+            }
+        } else {
+            
         }
 
         if ($payment) {
@@ -388,7 +392,7 @@ class PaymentController extends Controller{
 
     public function subscriptionDetails(Request $request, $id){
 
-        $user = User::AuthenticateUser($request->header("apiToken"));
+        $user = User::AuthenticateAny($request->header("apiToken"));
 
         $item = DB::table('payment_items')->select('payment_items.*','payment_history.student_id')->join('payment_history', 'payment_items.payment_history_id', '=', 'payment_history.id')->where('payment_items.id',$id)->where("payment_items.client_id",$user->client_id)->first();
 
@@ -410,13 +414,17 @@ class PaymentController extends Controller{
 
     public function subscriptionAdd(Request $request){
 
-        $user = User::AuthenticateUser($request->header("apiToken"));
+        $user = User::AuthenticateAny($request->header("apiToken"));
 
         $student = Student::find($request->student_id);
 
-        $check_access = User::getAccess("add-pause", $user->id, $student->group_id);
-        if(!$check_access) {
-            $data = ["success" => false, "message"=>"Not allowed"]; return Response::json($data, 200 ,[]);
+        if($user->user_type == 1){
+            $check_access = User::getAccess("add-pause", $user->id, $student->group_id);
+            if(!$check_access) {
+                $data = ["success" => false, "message"=>"Not allowed"]; return Response::json($data, 200 ,[]);
+            }
+        } else {
+            $request->requested_by = 2;
         }
 
         $cre = [

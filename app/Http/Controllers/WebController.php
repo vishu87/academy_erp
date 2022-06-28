@@ -11,6 +11,12 @@ class WebController extends Controller
 {	
 
     public function registrations(){
+
+        $client_code = env('APP_CLIENT_CODE');
+        $client = DB::table("clients")->where("code",$client_code)->first();
+
+        $params = Utilities::getSettingParams([36,37],$client->id);
+        
         $heading = "Academy Registration Form";
         $description = "";
 
@@ -21,15 +27,21 @@ class WebController extends Controller
             "description" => $description,
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => env('APP_CLIENT_CODE'),
+            "client_id" => $client_code,
             "payment_gateway" => "razorpay",
-            "payment_code" => $payment_code
+            "payment_code" => $payment_code,
+            "params" => $params,
         ]);
     }
 
     public function renewals(){
 
+        $client_code = env('APP_CLIENT_CODE');
+        $client = DB::table("clients")->where("code",$client_code)->first();
+
         $payment_code = "2|3|";
+
+        $params = Utilities::getSettingParams([36,37],$client->id);
 
         $heading = "Renew Subscription";
         $description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
@@ -38,27 +50,38 @@ class WebController extends Controller
         return view('web.renewals',[
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => env('APP_CLIENT_CODE'),
+            "client_id" => $client_code,
             "payment_code" => $payment_code,
+            "params" => $params,
             "payment_gateway" => "razorpay"
         ]);
     }
 
     public function payments($payment_code){
 
+        $client_code = env('APP_CLIENT_CODE');
+        $client = DB::table("clients")->where("code",$client_code)->first();
+
         $heading = "";
         $description = "";
+
+        $params = Utilities::getSettingParams([36,37],$client->id);
 
         return view('web.payments',[
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => env('APP_CLIENT_CODE'),
+            "client_id" => $client_code,
             "payment_code" => $payment_code,
+            "params" => $params,
             "payment_gateway" => "razorpay"
         ]);
     }
 
     public function demoShedule(){
+
+        $client_code = env('APP_CLIENT_CODE');
+        $client = DB::table("clients")->where("code",$client_code)->first();
+        $params = Utilities::getSettingParams([37],$client->id);
 
         $heading = "Schedule a demo";
         $description = "Please fill the form below to schedule a demo with FCBU";
@@ -68,11 +91,16 @@ class WebController extends Controller
             "description" => $description,
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => env('APP_CLIENT_CODE')
+            "client_id" => $client_code,
+            "params" => $params
         ]);
     }
 
     public function lead($type){
+
+        $client_code = env('APP_CLIENT_CODE');
+        $client = DB::table("clients")->where("code",$client_code)->first();
+        $params = Utilities::getSettingParams([37],$client->id);
 
         $lead_for = DB::table("lead_for")->where("slug",$type)->first();
         if(!$lead_for){
@@ -88,11 +116,16 @@ class WebController extends Controller
             "description" => $description,
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => env('APP_CLIENT_CODE')
+            "client_id" => $client_code,
+            "params" => $params
         ]);
     }
 
     public function signUp(){
+
+        $client_code = env('APP_CLIENT_CODE');
+        $client = DB::table("clients")->where("code",$client_code)->first();
+        $params = Utilities::getSettingParams([37],$client->id);
 
         $heading = "Parent Sign Up";
         $description = "Kindly enter your email linked with your kid's profile";
@@ -102,11 +135,17 @@ class WebController extends Controller
             "description" => $description,
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => env('APP_CLIENT_CODE')
+            "client_id" => $client_code,
+            "params" => $params
         ]);
     }
 
     public function forgetPassword(){
+
+        $client_code = env('APP_CLIENT_CODE');
+        $client = DB::table("clients")->where("code",$client_code)->first();
+        $params = Utilities::getSettingParams([37],$client->id);
+
         $heading = "Forget Password";
         $description = "Please enter your email";
 
@@ -115,7 +154,8 @@ class WebController extends Controller
             "description" => $description,
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => env('APP_CLIENT_CODE')
+            "client_id" => $client_code,
+            "params" => $params
         ]);
     }
 
@@ -124,7 +164,7 @@ class WebController extends Controller
         $client_code = env('APP_CLIENT_CODE');
         $client = DB::table("clients")->where("code",$client_code)->first();
 
-        $params = Utilities::getSettingParams([27,28,29],$client->id);
+        $params = Utilities::getSettingParams([27,28,29,37],$client->id);
 
         if($term == "terms-conditions"){
             $content = $params->param_27;
@@ -138,7 +178,8 @@ class WebController extends Controller
             "content" => $content,
             "logo_url" => url('assets/images/Group-60782.png'),
             "background" => "radial-gradient(at top left, #8E171A 5%, #000000 29%)",
-            "client_id" => $client_code
+            "client_id" => $client_code,
+            "params" => $params
         ]);
     }
 }

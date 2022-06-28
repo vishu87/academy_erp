@@ -1275,3 +1275,17 @@ img.round{
 	  color: #FFF;
 	}
 }
+
+.save-tag{
+	display: inline-block;
+	padding: 2px 4px;
+	border-radius: 4px;
+	color: #fff;
+	font-size: 10px;
+	&.green {
+		background: #28a745;
+	}
+	&.red {
+		background: #e91e63;
+	}
+}

@@ -161,31 +161,49 @@
 					<tr ng-repeat="item in payment_items">
 						<td>@{{ item.category }}</td>
 						<td>
-							@{{ item.taxable_amount }}
-							<span ng-if="item.discount">Saved Rs. @{{ item.discount }}</span>
+							@{{ item.taxable_amount | INR}}
+							<span ng-if="item.discount" class="save-tag green">Saved Rs. @{{ item.discount }}</span>
 						</td>
 						<td>@{{ item.tax_perc }}%</td>
-						<td>@{{ item.total_amount }}</td>
+						<td>@{{ item.total_amount | INR}}</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
 	</div>
 
-	<div class="table-div full">
-		<div >
-			<div ng-if="!coupon_code">
-				<input type="text" ng-model="formData.coupon_code" class="form-control" placeholder="Enter discount code" />
-				<button type="button" ng-click="checkCoupon()">Apply</button>
+	<div class="table-div full" ng-if="total_amount > 0">
+		<div>
+			<div ng-if="!coupon_code" >
+				<div class="table-div apply-div" >
+					<div class="input">
+						<input type="text" ng-model="formData.coupon_code" class="form-control" placeholder="Discount code" />
+					</div>
+					<div class="pl-3">
+						<button type="button" ng-click="checkCoupon()" class="btn btn-sm btn-info">Apply</button>
+						
+					</div>
+				</div>
 			</div>
 			<div ng-if="coupon_code">
-				Coupon applied : @{{ coupon_code }}
-				<small>@{{ coupon_code_message }}</small>
-				<button type="button" ng-click="removeCoupon()">Remove</button>
+				<p class="mt-2 mb-1">
+					Coupon applied 
+				</p>
+				<div class="coupon-code-box table-div">
+					<span class="d-inline-block coupon">
+						@{{ coupon_code }}
+					</span>
+					<button type="button" ng-click="removeCoupon()" class="remove-coupon">
+						<i class="icon-close"></i>
+					</button>
+				</div>
+				<p>
+					<small>@{{ coupon_code_message }}</small>
+				</p>
 			</div>
 		</div>
 		<div class="text-center" style="font-size: 16px; width: 200px">
-			Total Amount: <b>@{{ total_amount }}</b>
+			Total Amount: <b>₹@{{ total_amount | INR}}</b>
 		</div>
 	</div>
 

@@ -112,6 +112,7 @@
 
             <div class="mt-3">
                 <div class="row">
+                  @if(Auth::user()->user_type == 1)
                   <div class="col-12 form-group">
                     <label>Requested By</label>
                     <select ng-model="pauseData.requested_by" class="form-control">
@@ -120,6 +121,7 @@
                       <option value="2">Parent</option>
                     </select>
                   </div>
+                  @endif
                   <div class="col-6 form-group">
                     <label>Start Date</label>
                     <input type="text" class="form-control datepicker" ng-model="pauseData.start_date" required="" />

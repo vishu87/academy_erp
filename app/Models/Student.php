@@ -63,7 +63,7 @@ class Student extends Model
     public static function getPayments($id){
 
         $pay_history =  DB::table('payment_history')->select('payment_history.id',
-        'payment_history.payment_date','payment_history.amount','payment_history.tax','payment_history.total_amount','payment_history.invoice_date','payment_history.p_mode')
+        'payment_history.payment_date','payment_history.amount','payment_history.tax','payment_history.total_amount','payment_history.invoice_date','payment_history.p_mode','payment_history.unique_id')
         ->where('payment_history.student_id',$id)
         ->orderBy("invoice_date","DESC")
         ->get();
@@ -96,7 +96,7 @@ class Student extends Model
             $pay->history_id = $pay->id;
             $pay->code = "PAY".str_pad($pay->id,6,"0",STR_PAD_LEFT);
             $pay->invoice_date = Utilities::convertDate($pay->invoice_date);
-            $pay->invoice_date = Utilities::convertDate($pay->invoice_date);
+            $pay->payment_date = Utilities::convertDate($pay->payment_date);
             // $pay->items = $pay_items;
         }
 

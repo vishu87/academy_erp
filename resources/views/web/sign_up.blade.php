@@ -3,7 +3,7 @@
 @section('content')
 
 
-<x-web.container :background="$background" :logo="$logo_url" controller="SignUp_controller" init="init()">
+<x-web.container :background="$background" :logo="$logo_url" controller="SignUp_controller" init="init()"  footer="">
 
 	<h2>{{$heading}}</h2>
 	<p>{{ $description }}</p>
