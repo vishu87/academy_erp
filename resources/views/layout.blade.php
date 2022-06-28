@@ -86,7 +86,7 @@
     @if(env('APP_ENV') == "production")
         <script type="{{url('assets/dist/js/combined.min.js')}}"></script>
     @else
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.0.4/popper.js"></script>
+        <script src="{{url('assets/plugins/popper.js')}}"></script>
         <script src="{{url('assets/plugins/bootstrap/js/bootstrap.min.js')}}" type="text/javascript"></script>
         <script src="{{url('assets/plugins/bootbox.min.js')}}" type="text/javascript"></script>
         <script src="{{url('assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js')}}" type="text/javascript"></script>
