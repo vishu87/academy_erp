@@ -20,6 +20,7 @@
     </script>
 
     <script src="{{url('assets/plugins/jquery.min.js')}}" type="text/javascript"></script>
+    
     <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/angular.min.js')}}" ></script>
     <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/angular-sanitize.js')}}" ></script>
     
