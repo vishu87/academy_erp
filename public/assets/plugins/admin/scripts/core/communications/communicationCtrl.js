@@ -61,7 +61,7 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 			}
 		}
 
-		$scope.getStudents();
+		$scope.getStudents(1);
 	}
 
 	$scope.init = function(){
@@ -103,7 +103,7 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 			$scope.showFilterGroups();
 		}
 
-		$scope.getStudents();
+		$scope.getStudents(1);
 
 	}
 
@@ -137,7 +137,7 @@ app.controller('communicationCtrl', function($scope,$rootScope,DBService){
 		}
 	}
 
-	$scope.getStudents = function(page_number=1){
+	$scope.getStudents = function(page_number){
 		$scope.filter.pn = page_number;
 		$scope.pn = page_number;
 		$scope.filter.removed_students = $scope.removed_students;
