@@ -43,32 +43,32 @@ class CenterController extends Controller{
 
     	$user = User::AuthenticateUser($request->header("apiToken"));
 
-    	$categories = [];
-		for ($i= 4; $i < 19; $i++) { 
-			if($i > 9){
-				$categories[] = ["id"=>$i , "name"=>'U-'.$i];
-			}else{
-				$categories[] = ["id"=>$i , "name"=>'U-0'.$i];
-			}
-		}
+  //   	$categories = [];
+		// for ($i= 4; $i < 19; $i++) { 
+		// 	if($i > 9){
+		// 		$categories[] = ["id"=>$i , "name"=>'U-'.$i];
+		// 	}else{
+		// 		$categories[] = ["id"=>$i , "name"=>'U-0'.$i];
+		// 	}
+		// }
 
-		$categories[] = ["id"=>"30","name"=>"Senior"];
+		// $categories[] = ["id"=>"30","name"=>"Senior"];
 
-		$even_categories = [];
-		for ($i= 4; $i < 19; $i += 2) { 
-			if($i > 9){
-				$even_categories[] = ["id"=>$i , "name"=>'U-'.$i];
-			}else{
-				$even_categories[] = ["id"=>$i , "name"=>'U-0'.$i];
-			}
-		}
-		$even_categories[] = ["id"=>"30","name"=>"Senior"];
+		// $even_categories = [];
+		// for ($i= 4; $i < 19; $i += 2) { 
+		// 	if($i > 9){
+		// 		$even_categories[] = ["id"=>$i , "name"=>'U-'.$i];
+		// 	}else{
+		// 		$even_categories[] = ["id"=>$i , "name"=>'U-0'.$i];
+		// 	}
+		// }
+		// $even_categories[] = ["id"=>"30","name"=>"Senior"];
 
-		$data['days'] = Center::days();
-    	$data['cities'] = DB::table('city')->select('id','city_name')->where('client_id',$user->client_id)->get();
-    	$data['cordinators'] = DB::table('users')->select('id','name')->where('client_id',$user->client_id)->orderBy("name")->get();
-    	$data['categories'] = $categories;
-		$data['even_categories'] = $even_categories;
+		// $data['days'] = Center::days();
+  //   	$data['cities'] = DB::table('city')->select('id','city_name')->where('client_id',$user->client_id)->get();
+  //   	$data['cordinators'] = DB::table('users')->select('id','name')->where('client_id',$user->client_id)->orderBy("name")->get();
+  //   	$data['categories'] = $categories;
+		// $data['even_categories'] = $even_categories;
     	$data['success'] = true;
     	$data['message'] = "";
 
