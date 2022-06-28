@@ -105,6 +105,8 @@
     <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/app.js?v='.$version)}}" ></script>
     <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/services.js?v='.$version)}}" ></script>
 
+    @include('admin_angular')
+
     @yield('footer_scripts')
 
 </body>
