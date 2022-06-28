@@ -7,15 +7,6 @@ const autoprefixer = require('gulp-autoprefixer');
 const rename = require('gulp-rename');
 const ngAnnotate = require('gulp-ng-annotate')
 
-// gulp.task('default', () => {
-// 	gulp
-// 	.src('input/*.js')
-// 	.pipe(uglify())
-// 	.pipe(rename({ extname: '.min.js' }))
-// 	.pipe(dest('output/'));
-// });
-
-// exports.copy = copy;
 
 gulp.task('default', () => {
 
@@ -36,31 +27,14 @@ gulp.task('default', () => {
 	.pipe(dest('../public/assets/dist/css'));
 });
 
-// exports.css = combineCSS;
-
 function coreJS() {
 
 	var files = [
-		'../public/assets/plugins/bootstrap/js/bootstrap.min.js',
-		'../public/assets/plugins/bootbox.min.js',
-		'../public/assets/plugins/popper.js',
-		'../public/assets/plugins/bootstrap/js/bootstrap.min.js',
-		'../public/assets/plugins/bootbox.min.js',
-		'../public/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js',
-		'../public/assets/plugins/echarts.min.js',
-		'../public/assets/plugins/admin/scripts/angular.min.js',
-		'../public/assets/plugins/admin/scripts/angular-sanitize.js',
-		'../public/assets/plugins/admin/scripts/ng-file-upload.min.js',
-		'../public/assets/plugins/admin/scripts/ng-file-upload-shim.min.js',
-		'../public/assets/plugins/admin/scripts/jcs-auto-validate.js',
-		'../public/assets/plugins/admin/scripts/jquery-cropper/croppie.js',
-		'../public/assets/plugins/admin/scripts/ui-cropper.js',
-		'../public/assets/plugins/admin/scripts/core/custom.js',
 		'../public/assets/plugins/admin/scripts/core/app.js',
 		'../public/assets/plugins/admin/scripts/core/services.js',
 		'../public/assets/plugins/admin/scripts/core/students/students_profile_controller.js',
 		'../public/assets/plugins/admin/scripts/core/students/students_controller.js',
-		'../public/assets/plugins/admin/scripts/core/students/students_attendance_controller',
+		'../public/assets/plugins/admin/scripts/core/students/students_attendance_controller.js',
 		'../public/assets/plugins/admin/scripts/core/students/students_performance_controller.js',
 		'../public/assets/plugins/admin/scripts/core/dropdownMaster/DropDownMasterController.js',
 		'../public/assets/plugins/admin/scripts/core/center/center_controller.js',
@@ -96,48 +70,37 @@ function coreJS() {
 
   gulp
   .src(files)
+  	.pipe(concat('combined.min.js'))
+  	.pipe(ngAnnotate())
 	.pipe(uglify())
-	.pipe(concat('combined.min.js'))
 	.pipe(dest('../public/assets/dist/js'));
 };
 
 exports.js = coreJS;
 
-// exports.js = combineJS;
+function pluginJS() {
 
-// function coreJS() {
+	var files = [
+		'../public/assets/plugins/popper.js',
+		'../public/assets/plugins/bootstrap/js/bootstrap.min.js',
+		'../public/assets/plugins/bootbox.min.js',
+		'../public/assets/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js',
+		'../public/assets/plugins/echarts.min.js',
+		'../public/assets/plugins/admin/scripts/angular.min.js',
+		'../public/assets/plugins/admin/scripts/angular-sanitize.js',
+		'../public/assets/plugins/admin/scripts/ng-file-upload.min.js',
+		'../public/assets/plugins/admin/scripts/ng-file-upload-shim.min.js',
+		'../public/assets/plugins/admin/scripts/jcs-auto-validate.js',
+		'../public/assets/plugins/admin/scripts/jquery-cropper/croppie.js',
+		'../public/assets/plugins/admin/scripts/ui-cropper.js',
+		'../public/assets/plugins/admin/scripts/core/custom.js',
+	];
 
-// 	var files = [
-// 		'../assets/js/jquery.validate.min.js',
-// 		'../assets/js/axios.min.js',
-// 		'../assets/js/vue.min.js',
-// 		'../assets/plugins/bootstrap/js/bootstrap.min.js',
-// 		'../assets/plugins/owlcarousel/owl.carousel.min.js',
-// 		'../assets/plugins/bxslider/dist/jquery.bxslider.min.js',
-// 		'../assets/plugins/fancybox-master/dist/jquery.fancybox.min.js',
-// 		'../assets/js/jquery.ticker.min.js',
-// 	];
+  gulp
+  .src(files)
+  	.pipe(concat('bundle.min.js'))
+	.pipe(uglify())
+	.pipe(dest('../public/assets/dist/js'));
+};
 
-//   	return src(files)
-//   		.pipe(concat('core.min.js'))
-//   		.pipe(ngAnnotate())
-//   		.pipe(uglify())
-//   		.pipe(dest('../assets/js/'));
-// }
-
-// exports.corejs = coreJS;
-
-// function customJS() {
-
-// 	var files = [
-// 		'../assets/js/custom.js'
-// 	];
-
-//   	return src(files)
-//   		.pipe(concat('custom.min.js'))
-//   		.pipe(ngAnnotate())
-//   		.pipe(uglify())
-//   		.pipe(dest('../assets/js/'));
-// }
-
-// exports.customjs = customJS;
+exports.jsbundle = pluginJS;

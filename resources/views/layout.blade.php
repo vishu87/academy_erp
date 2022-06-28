@@ -4,35 +4,23 @@
     <title>Academy</title>
     <meta charset="utf-8">
     <meta name=viewport content="initial-scale=1">
-    <script src="{{url('assets/plugins/jquery.min.js')}}" type="text/javascript"></script>
 
-    <link rel="stylesheet" type="text/css" href="{{url('assets/plugins/bootstrap/css/bootstrap.min.css')}}" />
-    <link rel="stylesheet" type="text/css" href="{{url('assets/plugins/simple-ine/css/simple-line-icons.css')}}" />
-	<link rel="stylesheet" type="text/css" href="{{url('/assets/css/custom.css')}}">
-    <link rel="stylesheet" type="text/css" href="{{url('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css')}}" />
-    <link rel="stylesheet" href="{{url('assets/plugins/admin/scripts/ui-cropper.css')}}" type="text/css">
-    <link rel="stylesheet" href="{{url('assets/plugins/admin/scripts/jquery-cropper/croppie.css')}}" type="text/css">
-    
-    <style type="text/css">
-        .center-images {
-            overflow-x: auto;
-        }
-        .center-images > div {
-            display: inline-block;
-            border: 1px solid #EEE;
-            margin: 5px;
-            position: relative;
-        }
-        .center-images > div img{
-            width: 150px;
-            height: auto;
-        }
-        .center-images > div > .btn-remove{
-            position: absolute;
-            right: 5px;
-            top:  5px;
-        }
-    </style>
+    @if(env('APP_ENV') == "production" || env('APP_ENV') == "online")
+        <link rel="stylesheet" type="text/css" href="{{url('assets/dist/css/fonts.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{url('assets/dist/css/combined.min.css')}}" />
+        <script src="{{url('assets/dist/js/jquery.min.js')}}" type="text/javascript"></script>
+    @else
+
+        <link rel="stylesheet" type="text/css" href="{{url('/assets/css/fonts.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{url('assets/plugins/bootstrap/css/bootstrap.min.css')}}" />
+        <link rel="stylesheet" type="text/css" href="{{url('assets/plugins/simple-ine/css/simple-line-icons.css')}}" />
+    	<link rel="stylesheet" type="text/css" href="{{url('/assets/css/custom.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{url('assets/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css')}}" />
+        <link rel="stylesheet" href="{{url('assets/plugins/admin/scripts/ui-cropper.css')}}" type="text/css">
+        <link rel="stylesheet" href="{{url('assets/plugins/admin/scripts/jquery-cropper/croppie.css')}}" type="text/css">
+        <script src="{{url('assets/plugins/jquery.min.js')}}" type="text/javascript"></script>
+    @endif
+
 </head>
 <body ng-app="app">
     <div class="wrapper">
@@ -83,8 +71,9 @@
 
     <script src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/ckeditor.js"></script>
     
-    @if(env('APP_ENV') == "production")
-        <script type="{{url('assets/dist/js/combined.min.js')}}"></script>
+    @if(env('APP_ENV') == "production" || env('APP_ENV') == "online")
+        <script type="text/javascript" src="{{url('assets/dist/js/bundle.min.js')}}"></script>
+        <script type="text/javascript" src="{{url('assets/dist/js/combined.min.js')}}"></script>
     @else
         <script src="{{url('assets/plugins/popper.js')}}"></script>
         <script src="{{url('assets/plugins/bootstrap/js/bootstrap.min.js')}}" type="text/javascript"></script>
@@ -105,7 +94,6 @@
         <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/custom.js?v='.$version)}}"></script>
         <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/app.js?v='.$version)}}" ></script>
         <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/services.js?v='.$version)}}" ></script>
-
         @include('admin_angular')
 
     @endif
