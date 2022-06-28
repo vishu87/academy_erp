@@ -129,6 +129,19 @@ class Utilities {
         return $content;
     }
 
+    public static function getGender($gender){
+        switch ($gender){
+            case 1:
+                return "Male";
+            case 2:
+                return "Female";
+            case 3:
+                return "Other";
+            default:
+                return "";
+        }
+    }
+
 
 }
 

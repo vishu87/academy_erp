@@ -29,6 +29,7 @@ class AppAPIController extends Controller {
 				$user = new \stdClass;
 				$user->username = Auth::user()->username;
 				$user->apiToken = Auth::user()->api_key;
+                $user->id = Auth::user()->id;
 				$user->name = Auth::user()->name;
 				$user->email = Auth::user()->email;
 				$user->mobile = Auth::user()->mobile;
@@ -104,6 +105,70 @@ class AppAPIController extends Controller {
 
 		return Response::json($data,200,array());		
 	}
+
+    public function saveTags(Request $request){
+        $token  = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
+        $student_id = $request->student_id;
+        $tags_arr = $request->selected_tags_id;
+
+        DB::table('student_tags')->where('student_id',$student_id)->delete();
+
+        foreach($tags_arr as $tag_id){
+            DB::table('student_tags')->insert([
+                'student_id' => $student_id,
+                'tag_id' =>  $tag_id,
+                'user_id' => $user->id,
+            ]);
+        }
+
+        if(sizeof($tags_arr) > 0){
+            $tags = DB::table("tags")->whereIn("id",$tags_arr)->pluck("tag")->toArray();
+            $tag_names = implode(', ',$tags);
+        } else {
+            $tag_names = "";
+        }
+
+        $student = Student::find($student_id);
+        $student->tags = $tag_names;
+        $student->save();
+
+        $data['success'] = true;
+        $data['message'] = "Tags has been inserted successfully.";
+        $data['tag_names'] = $tag_names;
+        return Response::json($data, 200, []);
+    }
+
+    public function uploadStudentPic(Request $request, $student_id){
+        $success = false;
+        $destinationPath = "uploads/";
+        
+        if($request->hasFile('image')){
+
+            $student_id = ($student_id != '') ? $student_id : $request->id;
+
+            $extension = $request->file('image')->getClientOriginalExtension();
+            $filename = 'image-'.$student_id.'-'.strtotime("now").'.'.$extension;
+            $request->file('image')->move($destinationPath,$filename);
+
+            $student = Student::find($student_id);
+            if($student){
+                $student->pic = $filename;
+                $student->save();
+                $success = true;
+            }
+        }
+
+        if($success){
+            // $data['pic'] = $student->pic;
+            $data['details'] = $student_id." - ".$extension;
+            $data['message'] = "The profile image ".$filename." has been uploaded Successfully";
+            return Response::json($data, 200); 
+        } else {
+            $data['message'] = "Not done ".$student_id." - ".$extension;
+            return Response::json($data, 409);
+        }
+    }
 
 // *****************************EVENTS******************************
 
@@ -441,14 +506,16 @@ class AppAPIController extends Controller {
     // ************************Account**************************
 
 
-    public function getUser(Request $request){
+    public function getUser(Request $request, $user_id){
 
-    	$token = $request->header("apiToken");
-    	$user = User::AuthenticateUser($token);
+    	$user = User::AuthenticateUser($request->header("apiToken"));
     	$user->pic = User::getPicture($user->pic);
 
+        $user_row = User::where("id",$user_id)->first();
+        $user_row->pic = Utilities::getPicture($user_row->pic,'user');
+
     	$data["success"] = true;
-    	$data["user"] = $user;
+    	$data["user"] = $user_row;
     	return Response::json($data, 200, array());
     }
 
@@ -494,7 +561,7 @@ class AppAPIController extends Controller {
      public function uploadProfile(Request $request, $user_id){
 
     	$success = false;
-        $destinationPath = "../images";
+        $destinationPath = "uploads/";
         
         if($request->hasFile('image')){
 
@@ -551,7 +618,7 @@ class AppAPIController extends Controller {
             ]);
 
             $data['success'] = true;
-        	$data['message'] = "User has been Udatted successfully.";
+        	$data['message'] = "User has been Updated successfully.";
 
         } else {
         	$data['success'] = false;
@@ -579,7 +646,7 @@ class AppAPIController extends Controller {
 
         if(sizeof($attendance) > 0){
         	foreach($attendance as $att){
-        		$att->date = date('d-m-Y',strtotime($att->date));
+                $att->date = date('d-m-Y',strtotime($att->date));
         		$att->attendance = $att->attendance == 1 ? "P" : "A";
         	}
         }
@@ -587,21 +654,20 @@ class AppAPIController extends Controller {
         $markedDates = new \stdClass;
         $month_attendance = DB::table('staff_attendance')->select('id','date','attendance')->where('user_id',$user_id)->orderBy("date")->get();
 
-        // foreach($month_attendance as $att){
-        //     $d = $att->date < 10 ? '0'.$att->date : $att->date;
-        //     $m = $att->month < 10 ? '0'.$att->month : $att->month;
+        foreach($month_attendance as $att){
+            $date = date('Y-m-d', strtotime($att->date));
+            $d = date('d',strtotime($att->date)) < 10 ? '0'.date('d',strtotime($att->date)) : date('d',strtotime($att->date));
+            $m = date('m',strtotime($att->date)) < 10 ? '0'.date('m',strtotime($att->date)) : date('m',strtotime($att->date));
 
-        //     $date = $att->year.'-'.$m.'-'.$d;
-
-        //     $markedDates->{$date} = new \stdClass;
-        //     if($att->attendance == "A"){
-        //         $markedDates->{$date}->selected = true;
-        //         $markedDates->{$date}->selectedColor = "red";
-        //     } else {
-        //         $markedDates->{$date}->selected = true;
-        //         $markedDates->{$date}->selectedColor = "green";
-        //     }
-        // }
+            $markedDates->{$date} = new \stdClass;
+            if($att->attendance == 0){
+                $markedDates->{$date}->selected = true;
+                $markedDates->{$date}->selectedColor = "red";
+            } else {
+                $markedDates->{$date}->selected = true;
+                $markedDates->{$date}->selectedColor = "green";
+            }
+        }
 
 
         $data['success']= true;

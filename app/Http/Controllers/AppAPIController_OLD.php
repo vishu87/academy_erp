@@ -470,7 +470,6 @@ class AppAPIController extends Controller {
 
         $student_tags = DB::table('student_tags')->select('student_tags.tag_id')->join('tags', 'tags.id','=', 'student_tags.tag_id')->where('student_tags.student_id',$student->id)->pluck("student_tags.tag_id")->toArray();
 
-
         $student->student_tags = $student_tags;
 
         if($student->dob){
