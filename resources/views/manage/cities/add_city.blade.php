@@ -54,7 +54,3 @@
 @endsection
 
 
-@section('footer_scripts')
-  <script type="text/javascript" 
-  src="{{url('assets/plugins/admin/scripts/core/city/city_controller.js?v='.env('JS_VERSION'))}}" ></script>
-@endsection

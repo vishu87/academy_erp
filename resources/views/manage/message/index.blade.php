@@ -31,7 +31,3 @@
 	</div>
 @endsection
 
-@section('footer_scripts')
-	<script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/students/communicationCtrl.js?v='.env('JS_VERSION')) }}" ></script>
-	<script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/students/sendMessageCtrl.js?v='.env('JS_VERSION')) }}" ></script>
-@endsection

@@ -65,8 +65,3 @@
 	</x-web.container>
 
 @endsection
-
-
-@section('footer_scripts')
-
-@endsection

@@ -74,9 +74,3 @@
 	@include("manage.centers.modals")
 </div>
 @endsection
-
-
-@section('footer_scripts')
-  <script type="text/javascript" 
-  src="{{url('assets/plugins/admin/scripts/core/center/center_controller.js?v='.env('JS_VERSION'))}}" ></script>
-@endsection

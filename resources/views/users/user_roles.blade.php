@@ -65,9 +65,3 @@
 @endsection
 
 
-@section('footer_scripts')
-<script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/students/roles_controller.js?v='.env('JS_VERSION'))}}" ></script>
-
-@endsection
-
-
