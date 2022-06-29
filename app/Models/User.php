@@ -62,6 +62,19 @@ class User extends Authenticatable {
         }
     }
 
+    public static function AuthenticateAny($api_key){
+        if(!$api_key || $api_key == NULL){
+            die("user not found");
+        } else {
+            $user = User::where('api_key',$api_key)->first();
+            if($user){
+                return $user;
+            } else {
+                die("user not found");
+            }
+        }
+    }
+
     public static function checkAuth($types){
         $flag = false;
 

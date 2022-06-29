@@ -19,6 +19,7 @@
           <tr ng-repeat="payment in student.payments">
             <td>
               <a href="#" ng-click="viewPayment(payment.id)">@{{ payment.code }}</a>
+              <span class="save-tag red" ng-if="payment.p_mode == 6">Unpaid</span>
             </td>
             <td>@{{ payment.invoice_date }}</td>
             <td>@{{ payment.payment_date }}</td>

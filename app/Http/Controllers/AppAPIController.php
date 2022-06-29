@@ -29,6 +29,7 @@ class AppAPIController extends Controller {
 				$user = new \stdClass;
 				$user->username = Auth::user()->username;
 				$user->apiToken = Auth::user()->api_key;
+                $user->id = Auth::user()->id;
 				$user->name = Auth::user()->name;
 				$user->email = Auth::user()->email;
 				$user->mobile = Auth::user()->mobile;
@@ -149,6 +150,70 @@ class AppAPIController extends Controller {
     }
 
     // *****************************EVENTS******************************
+    public function saveTags(Request $request){
+        $token  = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
+        $student_id = $request->student_id;
+        $tags_arr = $request->selected_tags_id;
+
+        DB::table('student_tags')->where('student_id',$student_id)->delete();
+
+        foreach($tags_arr as $tag_id){
+            DB::table('student_tags')->insert([
+                'student_id' => $student_id,
+                'tag_id' =>  $tag_id,
+                'user_id' => $user->id,
+            ]);
+        }
+
+        if(sizeof($tags_arr) > 0){
+            $tags = DB::table("tags")->whereIn("id",$tags_arr)->pluck("tag")->toArray();
+            $tag_names = implode(', ',$tags);
+        } else {
+            $tag_names = "";
+        }
+
+        $student = Student::find($student_id);
+        $student->tags = $tag_names;
+        $student->save();
+
+        $data['success'] = true;
+        $data['message'] = "Tags has been inserted successfully.";
+        $data['tag_names'] = $tag_names;
+        return Response::json($data, 200, []);
+    }
+
+    public function uploadStudentPic(Request $request, $student_id){
+        $success = false;
+        $destinationPath = "uploads/";
+        
+        if($request->hasFile('image')){
+
+            $student_id = ($student_id != '') ? $student_id : $request->id;
+
+            $extension = $request->file('image')->getClientOriginalExtension();
+            $filename = 'image-'.$student_id.'-'.strtotime("now").'.'.$extension;
+            $request->file('image')->move($destinationPath,$filename);
+
+            $student = Student::find($student_id);
+            if($student){
+                $student->pic = $filename;
+                $student->save();
+                $success = true;
+            }
+        }
+
+        if($success){
+            // $data['pic'] = $student->pic;
+            $data['details'] = $student_id." - ".$extension;
+            $data['message'] = "The profile image ".$filename." has been uploaded Successfully";
+            return Response::json($data, 200); 
+        } else {
+            $data['message'] = "Not done ".$student_id." - ".$extension;
+            return Response::json($data, 409);
+        }
+    }
+
 
 	public function getEventsList(Request $request){
 
@@ -495,7 +560,7 @@ class AppAPIController extends Controller {
     // ************************Account**************************
 
 
-    public function getUser(Request $request){
+    public function getUser(Request $request, $user_id){
 
     	$token = $request->header("apiToken");
     	$user = User::AuthenticateUser($token);
@@ -506,8 +571,11 @@ class AppAPIController extends Controller {
 
     	$user->pic = Utilities::getPicture($user->pic,'student');
 
+        $user_row = User::where("id",$user_id)->first();
+        $user_row->pic = Utilities::getPicture($user_row->pic,'user');
+
     	$data["success"] = true;
-    	$data["user"] = $user;
+    	$data["user"] = $user_row;
     	return Response::json($data, 200, array());
     }
 
@@ -523,24 +591,26 @@ class AppAPIController extends Controller {
         $center = Center::find($center_id);
         // $distance = $this->DistAB($latitude, $longitude, $center->latitude, $center->longitude);
         $distance = 1;
-        
-        if($distance <= 100000){
-       
+
+        if($distance <= 0.8){
             DB::table('staff_attendance')->where('date','=',date('Y-m-d',strtotime('today')))->delete();
 
             DB::table('staff_attendance')->insert([
                 'user_id' => $user->id,
-                'center_id' => $request->center_id,
+                'city_id' => $request->center_id, // cause the feild center_id not in table 
                 'date' => date('Y-m-d',strtotime('today')),
+                'added_by' => $user->id,
                 'attendance' => 1,
                 'latitude' => $latitude,
                 'longitude' => $longitude,
             ]);
 
             $data['success'] = true;
+            $data['color'] = "#32a85a"; //green
             $data['message'] = "Your attendance is successfully marked";
         } else {
             $data['success'] = true;
+            $data['color'] = "#d84a38"; //red
             $data['message'] = "Your attendance can not be marked as you are not at the center ,distance ".$distance;
         }
 
@@ -636,7 +706,7 @@ class AppAPIController extends Controller {
 
         if(sizeof($attendance) > 0){
         	foreach($attendance as $att){
-        		$att->date = date('d-m-Y',strtotime($att->date));
+                $att->date = date('d-m-Y',strtotime($att->date));
         		$att->attendance = $att->attendance == 1 ? "P" : "A";
         	}
         }
@@ -645,13 +715,13 @@ class AppAPIController extends Controller {
         $month_attendance = DB::table('staff_attendance')->select('id','date','attendance')->where('user_id',$user_id)->orderBy("date")->get();
 
         foreach($month_attendance as $att){
-            $d = $att->date < 10 ? '0'.$att->date : $att->date;
-            $m = $att->month < 10 ? '0'.$att->month : $att->month;
-
-            $date = $att->year.'-'.$m.'-'.$d;
+            
+            $date = date('Y-m-d', strtotime($att->date));
+            $d = date('d',strtotime($att->date)) < 10 ? '0'.date('d',strtotime($att->date)) : date('d',strtotime($att->date));
+            $m = date('m',strtotime($att->date)) < 10 ? '0'.date('m',strtotime($att->date)) : date('m',strtotime($att->date));
 
             $markedDates->{$date} = new \stdClass;
-            if($att->attendance == "A"){
+            if($att->attendance == 0){
                 $markedDates->{$date}->selected = true;
                 $markedDates->{$date}->selectedColor = "red";
             } else {

@@ -12,9 +12,14 @@
 
         <div class="modal-body">
           
+          @if(Auth::user()->user_type == 1)
           <div class="text-right">
-            <button class="btn btn-light" ng-click="sendPaymentEmail(payment.id)" ng-disabled="processing_pay_mail" >Send Email <span ng-show="processing_pay_mail" class="spinner-border spinner-border-sm"></span></button>
+            <button class="btn btn-light" ng-click="sendPaymentEmail(payment.id)" ng-disabled="processing_pay_mail" ng-if="payment.p_mode != 6">Send Receipt Email <span ng-show="processing_pay_mail" class="spinner-border spinner-border-sm"></span></button>
+
+            <a class="btn btn-light" href="{{url('/')}}/payments/@{{payment.unique_id}}" ng-if="payment.p_mode == 6" target="_blank">Payment Link</a>
+
           </div>
+          @endif
 
           <form method="POST" name="PaymentForm" ng-submit="savePayment(PaymentForm.$valid)" novalidate="novalidate">
 

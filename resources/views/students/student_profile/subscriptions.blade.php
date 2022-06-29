@@ -43,22 +43,20 @@
         <thead>
           <tr>
             <th>Requestor</th>
-            <th>Start Date</th>
-            <th>End Date</th>
+            <th>Duration</th>
             <th>Days</th>
+            <th>Remarks</th>
             <th>Added By</th>
-            <th>Requested On</th>
             <th ng-if="student.pauses_approve_access" class="text-right">#</th>
           </tr>
         </thead>
         <tbody>
           <tr ng-repeat="pause in student.pauses">
             <td>@{{ pause.requestor }}</td>
-            <td>@{{ pause.start_date }}</td>
-            <td>@{{ pause.end_date }}</td>
+            <td>@{{ pause.start_date }} to @{{ pause.end_date }}</td>
             <td>@{{ pause.days }}</td>
-            <td>@{{ pause.added_by_name }}</td>
-            <td>@{{ pause.created_at }}</td>
+            <td style="font-size: 11px">@{{ pause.remarks }}</td>
+            <td>@{{ pause.added_by_name }} on @{{ pause.created_at }}</td>
             <td ng-if="student.pauses_approve_access" class="text-right">
               <button class="btn btn-light btn-sm" ng-click="approvePause(pause, 1)">
                 Approve

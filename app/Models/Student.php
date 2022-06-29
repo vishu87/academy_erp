@@ -12,7 +12,8 @@ class Student extends Model
     protected $table = 'students';
 
     public static function listing(){
-    	return DB::table("students")->select('students.id','students.school','students.name','students.group_id','students.dob','students.pic','students.doe','students.dos','groups.group_name','groups.center_id','center.center_name','center.city_id','city.city_name','city.state_id','students.mobile','students.email','students.inactive','students.address','states.state_name','cities.city_name as address_city','students.state_id as student_state_id','students.client_id','students.gender')
+
+    	return DB::table("students")->select('students.id','students.school','students.name','students.gender','students.group_id','students.dob','students.pic','students.doe','students.dos','students.tags','groups.group_name','groups.center_id', 'center.center_name', 'center.city_id','city.city_name','city.state_id','students.mobile','students.email','students.inactive','students.address','states.state_name','cities.city_name as address_city','students.state_id as student_state_id','students.client_id')
 	        ->leftJoin('groups', 'students.group_id', '=', 'groups.id')
 	        ->leftJoin('center', 'groups.center_id', '=', 'center.id')
 	        ->leftJoin('city', 'center.city_id', '=', 'city.id')
@@ -63,7 +64,7 @@ class Student extends Model
     public static function getPayments($id){
 
         $pay_history =  DB::table('payment_history')->select('payment_history.id',
-        'payment_history.payment_date','payment_history.amount','payment_history.tax','payment_history.total_amount','payment_history.invoice_date','payment_history.p_mode')
+        'payment_history.payment_date','payment_history.amount','payment_history.tax','payment_history.total_amount','payment_history.invoice_date','payment_history.p_mode','payment_history.unique_id')
         ->where('payment_history.student_id',$id)
         ->orderBy("invoice_date","DESC")
         ->get();
@@ -96,7 +97,7 @@ class Student extends Model
             $pay->history_id = $pay->id;
             $pay->code = "PAY".str_pad($pay->id,6,"0",STR_PAD_LEFT);
             $pay->invoice_date = Utilities::convertDate($pay->invoice_date);
-            $pay->invoice_date = Utilities::convertDate($pay->invoice_date);
+            $pay->payment_date = Utilities::convertDate($pay->payment_date);
             // $pay->items = $pay_items;
         }
 

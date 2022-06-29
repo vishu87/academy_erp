@@ -33,12 +33,10 @@
 
     <div class="col-md-9">
         @include("parents.profile.details")
+        @include("payments.view_payment_modal")
+        @include("students.subscription_modal")
     </div>
   </div>
  
 </div>
-@endsection
-
-@section('footer_scripts')
-	<script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/parents/parents_controller.js?v='.env('JS_VERSION'))}}" ></script>
 @endsection

@@ -2,7 +2,7 @@
 
 @section('content')
 
-	<x-web.container :background="$background" :logo="$logo_url" controller="Demo_controller" init="init()">
+	<x-web.container :background="$background" :logo="$logo_url" controller="Demo_controller" init="init()" footer="">
 		<h2>{{$heading}}</h2>
 		<p>{{ $description }}</p>
 		<x-ngform name="addForm" ng-submit="onSubmit(addForm.$valid)">
@@ -63,10 +63,5 @@
 			</div>
 		</x-ngform>
 	</x-web.container>
-
-@endsection
-
-
-@section('footer_scripts')
 
 @endsection

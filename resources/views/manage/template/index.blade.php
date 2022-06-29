@@ -71,8 +71,3 @@
 	@include('manage.template.add_template_modal')
 </div>
 @endsection
-
-
-@section('footer_scripts')
-	<script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/students/smsTempCtrl.js?v='.env('JS_VERSION')) }}" ></script>
-@endsection

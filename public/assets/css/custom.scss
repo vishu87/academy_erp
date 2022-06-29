@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;400;600&display=swap');
-
 $body_font : 'Poppins', sans-serif;
 $heading_font : 'Poppins', sans-serif;
 
@@ -1274,4 +1272,37 @@ img.round{
 	  background: red;
 	  color: #FFF;
 	}
+}
+
+.save-tag{
+	display: inline-block;
+	padding: 2px 4px;
+	border-radius: 4px;
+	color: #fff;
+	font-size: 10px;
+	&.green {
+		background: #28a745;
+	}
+	&.red {
+		background: #e91e63;
+	}
+}
+
+.center-images {
+    overflow-x: auto;
+}
+.center-images > div {
+    display: inline-block;
+    border: 1px solid #EEE;
+    margin: 5px;
+    position: relative;
+}
+.center-images > div img{
+    width: 150px;
+    height: auto;
+}
+.center-images > div > .btn-remove{
+    position: absolute;
+    right: 5px;
+    top:  5px;
 }

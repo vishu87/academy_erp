@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 use Redirect, Validator, Hash, Response, Session, DB;
 
-use App\Models\User, App\Models\MailQueue;
+use App\Models\User, App\Models\MailQueue, App\Models\Utilities;
 
 class UserController extends Controller {
 
@@ -87,6 +87,9 @@ class UserController extends Controller {
 
 					$student_ids = DB::table("user_students")->where("user_id",Auth::id())->pluck("student_id")->toArray();
 					$students = DB::table("students")->select("id","name","pic")->whereIn("students.id",$student_ids)->get();
+					foreach($students as $student){
+						$student->pic = Utilities::getPicture($student->pic,'student');
+					}
 
 					Session::put("user_students",$students);
 					Session::put("user_student_id",$students[0]->id);

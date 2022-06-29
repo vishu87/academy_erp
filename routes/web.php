@@ -217,6 +217,7 @@ Route::group(["before"=>"auth","middleware"=>["auth"]], function(){
 
     Route::group(["prefix"=>"parents"], function(){
         Route::get('/',[ParentController::class,'dashboard']);
+        Route::get('/switch-student/{id}',[ParentController::class,'switchStudent']);
     }); 
 
 });

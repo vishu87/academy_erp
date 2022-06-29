@@ -9,7 +9,7 @@
 	</script>
 @endif
 
-<x-web.container :background="$background" :logo="$logo_url" controller="RenewalCtrl" init="">
+<x-web.container :background="$background" :logo="$logo_url" controller="RenewalCtrl" init="" :footer="$params->param_37">
 
 	<div ng-show="!show_success">
 		<div>
@@ -153,12 +153,15 @@
 												<tr ng-repeat="item in payment_items">
 													<td>@{{ item.category }}</td>
 													<td>
-														@{{ item.taxable_amount }}
-														<span ng-if="item.discount">Saved Rs. @{{ item.discount }}</span>
+														<span class="d-block">
+															@{{ item.taxable_amount }}
+														</span>
+														<span class="save-tag green" ng-if="item.discount">Saved Rs. @{{ item.discount }}</span>
 													</td>
 													<td>@{{ item.tax_perc }}%</td>
 													<td>@{{ item.total_amount }}</td>
 												</tr>
+												
 											</tbody>
 										</table>
 									</div>
@@ -190,19 +193,12 @@
 												</button>
 											</div>
 											<p>
-												
-												<small>@{{ coupon_code_message }} is the demo  YOur code is added</small>
+												<small>@{{ coupon_code_message }}</small>
 											</p>
-											
-										</div>
-										<div>
-
-				
-											
 										</div>
 									</div>
 									<div class="text-center" style="font-size: 16px; width: 200px">
-										Total Amount: <b>@{{ total_amount }} 2089</b>
+										Total Amount: <b>₹@{{ total_amount | INR}}</b>
 									</div>
 								</div>
 
@@ -225,7 +221,7 @@
 			<div class="step">
 				<div class="body" style="text-align: center; padding: 50px;">
 					<div class="" >
-						<img src="checked.png" style="width: 120px; height: 120px;" />
+						<img src="{{ url('assets/images/checked.png') }}" style="width: 120px; height: 120px;" />
 						<h4 style="font-size: 20px;">Thank you @{{student.name}} for renewing your subscription. We are excited to have you back!</h4>
 						<table class="table" style="width: 100%; margin-top: 20px;">
 							<tr>
@@ -245,9 +241,9 @@
 								<td>@{{ transaction_id }}</td>
 							</tr>
 						</table>
-						<p style="font-size: 14px; margin-bottom: 15px;">
-							With this subscription, you also get unlimited access to the enJogo mobile app which has loads of content curated by our in-house experts especially for you. With enJogo, you can now continue to improve both on the field and at home!
-						</p>
+						<div style="margin-bottom: 15px; font-size: 14px">
+							{!! $params->param_36 !!}
+						</div>
 					</div>
 				</div>
 			</div>
@@ -255,5 +251,9 @@
 	</div>
 
 </x-web.container>
+
+@endsection
+
+@section('footer')
 
 @endsection

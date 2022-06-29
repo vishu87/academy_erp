@@ -71,6 +71,7 @@ Route::group([], function(){
         Route::post('/get-inactive-reason',[StudentController::class, 'getInactiveReason']);
 
         Route::post('/details',[StudentController::class, 'studentDetails']);
+        Route::post('/save-tags',[AppAPIController::class, 'saveTags']);
         
         // Route::post('/get-student-details-for-update',[StudentController::class, 'get_update_student']);
         
@@ -87,6 +88,7 @@ Route::group([], function(){
 
         Route::post('/add-student',[StudentController::class, 'add_student_data']);
         Route::post('/change-profile-pic',[StudentController::class, 'changeProfilePicture']);
+        Route::post('/upload-student-profile/{student_id}',[AppAPIController::class,'uploadStudentPic']);
 
         Route::post('/send-welcome-email',[StudentController::class, 'sendWelcomeEmail']);
 
@@ -438,6 +440,9 @@ Route::group(["prefix"=>"communications"], function(){
     }); 
 }); 
 
+// http://192.168.1.38:8888/academy_erp/public/image-1-1656406297.jpg
+// http://192.168.1.38:8888/academy_erp/public/uploads/tn_1656407727_photo.png
+
 
 Route::group(["prefix"=>"parents"], function(){
 
@@ -450,7 +455,7 @@ Route::group(["prefix"=>"app"], function(){
     Route::post('/login',[AppAPIController::class, 'login']);
     Route::get('/academy-data',[AppAPIController::class, 'academyData']);
     
-    Route::get('/user/profile',[AppAPIController::class, 'getUser']);
+    Route::get('/user/profile/{user_id}',[AppAPIController::class, 'getUser']);
     Route::post('/check-location',[AppAPIController::class, 'getLocation']);
     
     Route::post('/user-profile/upload/{user_id}',[AppAPIController::class, 'uploadProfile']);

@@ -41,7 +41,9 @@ class CenterController extends Controller{
 
     public function getCentersParams(Request $request){
 
-    	$user = User::AuthenticateUser($request->header("apiToken"));
+    	// $user = User::AuthenticateUser($request->header("apiToken"));
+
+    	$user = User::find(16);
 
     	$categories = [];
 		for ($i= 4; $i < 19; $i++) { 

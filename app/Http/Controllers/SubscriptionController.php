@@ -24,7 +24,7 @@ class SubscriptionController extends Controller
 
         $payment_code = $request->payment_code;
 
-        $payment = DB::table("payment_history")->where("payment_history.unique_id",$payment_code)->where("client_id",$client->id)->first();
+        $payment = DB::table("payment_history")->where("payment_history.unique_id",$payment_code)->where("client_id",$client->id)->where("p_mode",6)->first();
         if($payment){
             $student = Student::listing()->where("students.id",$payment->student_id)->where("students.client_id",$client->id)->first();
             $items = PaymentItem::getPaymentItems($payment->id);

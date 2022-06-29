@@ -1,7 +1,7 @@
 @extends('layout_web')
 
 @section('content')
-<x-web.container :background="$background" :logo="$logo_url" controller="Lead_controller" init="lead_for={{$lead_for->id}}; init()">
+<x-web.container :background="$background" :logo="$logo_url" controller="Lead_controller" init="lead_for={{$lead_for->id}}; init()"  footer="">
 	
 	<h2>{{$heading}}</h2>
 	<p>{{ $description }}</p>
@@ -60,9 +60,4 @@
 	</div>
 
 </x-web.container>
-@endsection
-
-
-@section('footer_scripts')
-
 @endsection

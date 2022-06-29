@@ -15,6 +15,13 @@ class ParentController extends Controller{
         return view('parents.index',["sidebar" => "","menu" => "parents"]);
     }
 
+    public function switchStudent($id){
+        
+        Session::put('user_student_id',$id);
+
+        return Redirect::to('/parents');
+    }
+
     public function initStudent(Request $request){
         
         $user = User::AuthenticateParent($request->header("apiToken"));

@@ -29,7 +29,7 @@
 	      		</li>
 
 	      		<li class="@{{switchContent == 'payment_gateway'?'active':''}}">
-	        		<a href="" ng-click="switchContentType('payment_gateway')">External Keys</a>
+	        		<a href="" ng-click="switchContentType('payment_gateway')">Payments</a>
 	      		</li>
 
 	      		<li class="@{{switchContent == 'web_pages'?'active':''}}">
@@ -66,9 +66,4 @@
 	</div>
 
 </div>
-@endsection
-
-
-@section('footer_scripts')
-	<script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/settings/settings_controller.js?v='.env('JS_VERSION'))}}" ></script>
 @endsection
