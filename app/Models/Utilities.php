@@ -84,6 +84,12 @@ class Utilities {
 
     }
 
+    public static function getAge($date){
+
+        return round((strtotime("now") - strtotime($date))/(86400*365));
+
+    }
+
     public static function getUniqueInTable($table_name, $column_name){
         $flag = true;
         while($flag){

@@ -119,16 +119,6 @@ class User extends Authenticatable {
 
     }
 
-    public static function getPicture($pic){
-
-        $url = "http://192.168.1.39:8888/academy_erp";
-        if($pic){
-            $pic = $url."/images/".$pic;
-        } else {
-            $pic = $url."/images/admin.png";
-        }
-        return $pic;
-    }
 
     public static function getAccess($tag, $user_id, $entity_id = null, $check_in = "group_ids"){
 

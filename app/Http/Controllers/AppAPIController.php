@@ -87,8 +87,7 @@ class AppAPIController extends Controller {
 		$rec_students = $rec_students->where("students.client_id",$user->client_id)->orderBy('students.id', 'DESC')->limit(5)->get();
 
 		foreach($rec_students as $student){
-		    // $student->pic = Utilities::getPicture($student->pic,'student');
-            $student->pic = Student::getPhoto($student->pic);
+		    $student->pic = Utilities::getPicture($student->pic,'student');
 		    $student->name = (strlen($student->name) > 25) ? substr($student->name,0,25)."..." : $student->name;
 		}
 
@@ -105,9 +104,54 @@ class AppAPIController extends Controller {
 		return Response::json($data,200,array());		
 	}
 
-// *****************************EVENTS******************************
+    public function studAttndList(Request $request, $student_id){
+        $token  = $request->header('apiToken');
+        $user = User::AuthenticateUser($token);
+
+        $month = $request->month;
+        $year = $request->year;
+
+        if($month == "") {
+            $month = date("n");
+            $year = date("Y");
+        }
+
+        $view_attendance = DB::table('student_attendance')->select('id','date','attendance')->where('student_id',$student_id)->orderBy('date','DESC')->orderBy('date','DESC')->limit(10)->get();
+
+        $markedDates = new \stdClass;
+        
+        $month_attendance = DB::table('student_attendance')->select('id','date','attendance')->where('student_id',$student_id)->orderBy("date", "DESC")->get();
+        
+        foreach($month_attendance as $att){
+
+            $date = date('Y-m-d',strtotime($att->date));
+            $markedDates->{$date} = new \stdClass;
+            if($att->attendance != 1){
+                $markedDates->{$date}->selected = true;
+                $markedDates->{$date}->selectedColor = "red";
+            } else {
+                $markedDates->{$date}->selected = true;
+                $markedDates->{$date}->selectedColor = "green";
+            }
+        }
+
+        foreach($view_attendance as $att){
+            $att->date = date('d-M-Y',strtotime($att->date));
+            $att->attendance = $att->attendance == 1 ? "P" : "A";
+        }
+
+        $data['success']= true;
+        $data['view_attendance'] = $view_attendance;
+        $data['markedDates'] = $markedDates;
+        $data['token'] = $token;
+
+        return Response::json($data, 200, []);
+    }
+
+    // *****************************EVENTS******************************
 
 	public function getEventsList(Request $request){
+
     	$token  = $request->header('apiToken');
 		$user = User::AuthenticateUser($token);
         
@@ -144,9 +188,9 @@ class AppAPIController extends Controller {
 
         for($day_ts = $date_ts; $day_ts  < $no_of_days*86400 + $date_ts; $day_ts = $day_ts + 86400) { 
             
-            $day = date("w",$date_ts) + 1;
+            $day = date("w",$day_ts) + 1;
 
-            $events = DB::table("operation_days")->select("operation_days.id as operation_id","operation_days.from_time","operation_days.to_time","operation_days.group_id","operation_days.center_id","groups.group_name","center.center_name")->join("groups","groups.id","=","operation_days.group_id")->join("center","center.id","=","groups.center_id");
+            $events = DB::table("operation_days")->select("operation_days.id as operation_id","operation_days.day","operation_days.from_time","operation_days.to_time","operation_days.group_id","operation_days.center_id","groups.group_name","center.center_name")->join("groups","groups.id","=","operation_days.group_id")->join("center","center.id","=","groups.center_id");
 
             if($center_id){
                 $events = $events->where('groups.center_id', $center_id);
@@ -156,7 +200,7 @@ class AppAPIController extends Controller {
                 $events = $events->whereIn('operation_days.group_id', $group_ids);
             }
 
-            // $events = $events->where("operation_days.day",$day);
+            $events = $events->where("operation_days.day",$day);
 
             // $group_ids = DB::table("group_coachs")->distinct("group_id")->where("coach_id",$user->id)->pluck("group_id")->toArray();
 
@@ -222,18 +266,28 @@ class AppAPIController extends Controller {
         // }
 
         $validator = Validator::make($cre, $rules);
-        $date = $request->date;
+        $date = date("Y-m-d",strtotime($request->date));
 
         if ($validator->passes()) {
 
-            DB::table('cancel_events')->insert([
-                'date' => date('Y-m-d',strtotime($date)),
-                'cancel_reason' => $request->cancel_reason,
-                'cancel_remarks' => $request->cancel_remarks,
-                'group_id' => $request->group_id,
-                'op_id' => $request->operation_id,
-                'user_id' => $user->id,
-            ]);
+            $check = DB::table("cancel_events")->where("date",$date)->where("group_id",$request->group_id)->first();
+            if($check){
+                DB::table('cancel_events')->where("id",$check->id)->update([
+                    'cancel_reason' => $request->cancel_reason,
+                    'cancel_remarks' => $request->cancel_remarks,
+                    'op_id' => $request->operation_id,
+                    'user_id' => $user->id,
+                ]);
+            } else {
+                DB::table('cancel_events')->insert([
+                    'date' => $date,
+                    'cancel_reason' => $request->cancel_reason,
+                    'cancel_remarks' => $request->cancel_remarks,
+                    'group_id' => $request->group_id,
+                    'op_id' => $request->operation_id,
+                    'user_id' => $user->id,
+                ]);
+            }
             $data["success"] = true;
             $data["message"] ="Event has been Canceled Successfully";
 
@@ -260,7 +314,7 @@ class AppAPIController extends Controller {
         $group_id = $request->group_id;
         $date = date('Y-m-d',strtotime($request->date));
 
-        $players = DB::table('students')->select('students.id','students.name','students.group_id','students.pic','students.doe','students.inactive','students.tags')->where("group_id",$group_id)->where("students.inactive",0)->orderBy("students.name")->get();
+        $players = DB::table('students')->select('students.id','students.name','students.group_id','students.pic','students.doe','students.inactive')->where("group_id",$group_id)->where("students.inactive",0)->orderBy("students.name")->get();
 
         $yellow = "#ffc107";
         $green =  "#03bd0b";
@@ -271,7 +325,7 @@ class AppAPIController extends Controller {
         foreach($players as $player){
             $player->type = "player";
 
-            $player->pic = Student::getPhoto($player->pic);
+            $player->pic = Utilities::getPicture($player->pic,'student');
             $player->name = (strlen($player->name) > 25) ? substr($player->name,0,25)."..." : $player->name;
             $check = DB::table('student_attendance')->select('attendance')->where('student_id',$player->id)->where('group_id',$group_id)->where('date',$date)->first();
 
@@ -445,7 +499,12 @@ class AppAPIController extends Controller {
 
     	$token = $request->header("apiToken");
     	$user = User::AuthenticateUser($token);
-    	$user->pic = User::getPicture($user->pic);
+
+        $user = DB::table("users")->select("id","name","email","mobile","pic")->where("users.id",$user->id)->first();
+        if(!$user->email) $user->email = "";
+        if(!$user->mobile) $user->mobile = "";
+
+    	$user->pic = Utilities::getPicture($user->pic,'student');
 
     	$data["success"] = true;
     	$data["user"] = $user;
@@ -454,8 +513,8 @@ class AppAPIController extends Controller {
 
     public function getLocation(Request $request){
         
-        $token  = $request->header('apiToken');
-        $user = User::AuthenticateUser($token);
+        $user = User::AuthenticateUser($request->header('apiToken'));
+
         $position = $request->position;
         $latitude = $position["latitude"];
         $longitude = $position["longitude"];
@@ -465,7 +524,7 @@ class AppAPIController extends Controller {
         // $distance = $this->DistAB($latitude, $longitude, $center->latitude, $center->longitude);
         $distance = 1;
         
-        if($distance <= 0.8){
+        if($distance <= 100000){
        
             DB::table('staff_attendance')->where('date','=',date('Y-m-d',strtotime('today')))->delete();
 
@@ -473,7 +532,7 @@ class AppAPIController extends Controller {
                 'user_id' => $user->id,
                 'center_id' => $request->center_id,
                 'date' => date('Y-m-d',strtotime('today')),
-                'attendance' => 'P',
+                'attendance' => 1,
                 'latitude' => $latitude,
                 'longitude' => $longitude,
             ]);
@@ -494,7 +553,7 @@ class AppAPIController extends Controller {
      public function uploadProfile(Request $request, $user_id){
 
     	$success = false;
-        $destinationPath = "../images";
+        $destinationPath = "uploads/";
         
         if($request->hasFile('image')){
 
@@ -504,17 +563,15 @@ class AppAPIController extends Controller {
 
             $user = User::find($user_id);
             if($user){
-                $user->pic = $filename;
+                $user->pic = $destinationPath.$filename;
                 $user->save();
                 $success = true;
             }
         }
         if($success){
-            // $data['pic'] = $user->pic;
             $data['success'] = true;
-            $data['details'] = $user_id." - ".$extension;
+            $data['details'] = $user->pic;
             $data['message'] = $filename;
-
             return Response::json($data, 200); 
         } else {
         	$data['success'] = false;
@@ -551,7 +608,7 @@ class AppAPIController extends Controller {
             ]);
 
             $data['success'] = true;
-        	$data['message'] = "User has been Udatted successfully.";
+        	$data['message'] = "Your profile is successfully updated.";
 
         } else {
         	$data['success'] = false;
@@ -587,21 +644,21 @@ class AppAPIController extends Controller {
         $markedDates = new \stdClass;
         $month_attendance = DB::table('staff_attendance')->select('id','date','attendance')->where('user_id',$user_id)->orderBy("date")->get();
 
-        // foreach($month_attendance as $att){
-        //     $d = $att->date < 10 ? '0'.$att->date : $att->date;
-        //     $m = $att->month < 10 ? '0'.$att->month : $att->month;
+        foreach($month_attendance as $att){
+            $d = $att->date < 10 ? '0'.$att->date : $att->date;
+            $m = $att->month < 10 ? '0'.$att->month : $att->month;
 
-        //     $date = $att->year.'-'.$m.'-'.$d;
+            $date = $att->year.'-'.$m.'-'.$d;
 
-        //     $markedDates->{$date} = new \stdClass;
-        //     if($att->attendance == "A"){
-        //         $markedDates->{$date}->selected = true;
-        //         $markedDates->{$date}->selectedColor = "red";
-        //     } else {
-        //         $markedDates->{$date}->selected = true;
-        //         $markedDates->{$date}->selectedColor = "green";
-        //     }
-        // }
+            $markedDates->{$date} = new \stdClass;
+            if($att->attendance == "A"){
+                $markedDates->{$date}->selected = true;
+                $markedDates->{$date}->selectedColor = "red";
+            } else {
+                $markedDates->{$date}->selected = true;
+                $markedDates->{$date}->selectedColor = "green";
+            }
+        }
 
 
         $data['success']= true;

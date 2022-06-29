@@ -67,6 +67,12 @@ class StudentController extends Controller
             }
         }
 
+        if($request->group_ids){
+            if(sizeof($request->group_ids) > 0){
+                $students = $students->whereIn("group_id",$request->group_ids);
+            }
+        }
+
         if($request->center_id){
             $groups = DB::table('groups')->where('center_id',$request->center_id)->pluck('id');
             $students = $students->whereIn("group_id",$groups);
@@ -227,6 +233,11 @@ class StudentController extends Controller
         $student->inactive_history = Student::inactiveHistory($id);
         $student->group_shifts = Student::groupShiftData($id);
         $student->documents = Student::documents($id);
+
+        if($student->gender == 1) $student->gender = "Male";
+        if($student->gender == 2) $student->gender = "Female";
+
+        $student->age = Utilities::getAge($student->dob);
 
         $student->student_tags = [];
 

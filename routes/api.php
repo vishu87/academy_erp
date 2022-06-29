@@ -452,7 +452,9 @@ Route::group(["prefix"=>"app"], function(){
     
     Route::get('/user/profile',[AppAPIController::class, 'getUser']);
     Route::post('/check-location',[AppAPIController::class, 'getLocation']);
+    
     Route::post('/user-profile/upload/{user_id}',[AppAPIController::class, 'uploadProfile']);
+
     Route::post('/user-update',[AppAPIController::class, 'updateUser']);
     Route::get('/coach/attendance-list',[AppAPIController::class, 'coachAttendList']);
     Route::post('/user/update-password/{user_id}',[AppAPIController::class, 'changePassword']);
@@ -474,14 +476,20 @@ Route::group(["prefix"=>"app"], function(){
         
     // });
 
+    Route::group(["prefix"=>"student"], function(){
+        Route::post('/view-attendance/{student_id}',[AppAPIController::class, 'studAttndList']);
+    });
+
     Route::group(["prefix"=>"events"], function(){
         Route::post('/list',[AppAPIController::class, 'getEventsList']);
-        Route::get('/fetct-reason',[AppAPIController::class, 'getReasons']);
-        Route::post('/save-cancelled',[AppAPIController::class, 'cancelEvent']);
+        
         Route::post('/players',[AppAPIController::class, 'eventPlayers']);
         Route::post('/save-player-attendance',[AppAPIController::class, 'savePlayerAttendance']);
         Route::post('/guest-player-save',[AppAPIController::class, 'saveGuestPlayer']);
         Route::get('/guest-student-remove/{student_id}',[AppAPIController::class, 'guestStudentRemove']);
+        
+        Route::get('/fetct-reason',[AppAPIController::class, 'getReasons']);
+        Route::post('/save-cancelled',[AppAPIController::class, 'cancelEvent']);
 
     });
 

@@ -24,13 +24,25 @@ class StudentPerformanceController extends Controller{
 
         $group_id  = $request->group_id;
         $session_id  = $request->session_id;
+        if($session_id == 0){
+            $session = DB::table("sessions")->where("client_id",$user->client_id)->orderBy("end_date","DESC")->first();
+            $session_id = $session->id;
+        }
 
-        $records = DB::table('students as stu')->select('stu.id','stu.name','player_evaluation.status','player_evaluation.uuid','player_evaluation.mailed')->leftJoin("player_evaluation", function($query) use ($session_id) {
+        $records = DB::table('students as stu')->select('stu.id','stu.name','player_evaluation.status','player_evaluation.uuid','player_evaluation.mailed','stu.doe','stu.inactive','stu.pic','stu.dob','groups.group_name','groups.center_id','center.center_name')->leftJoin("player_evaluation", function($query) use ($session_id) {
                 $query->on("player_evaluation.student_id",'=','stu.id')->where("player_evaluation.session_id","=",$session_id);
-            })->where("stu.group_id",$group_id)->where("stu.inactive",0)->where("stu.client_id",$user->client_id)->get();
+            })->leftJoin('groups', 'stu.group_id', '=', 'groups.id')->leftJoin('center', 'groups.center_id', '=', 'center.id')->where("stu.group_id",$group_id)->where("stu.inactive",0)->where("stu.client_id",$user->client_id)->get();
+        foreach($records as $student){
+
+            $student->dob = Utilities::convertDate($student->dob);
+
+            $student->pic = Utilities::getPicture($student->pic,'student');
+            $student->color = Utilities::getColor($student->doe, $student->inactive);
+        }
 
         $data["success"] = true;
         $data["students"] = $records;
+        $data["session_id"] = $session_id;
 
         return Response::json($data, 200, array());
     }
