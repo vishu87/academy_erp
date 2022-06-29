@@ -531,24 +531,26 @@ class AppAPIController extends Controller {
         $center = Center::find($center_id);
         // $distance = $this->DistAB($latitude, $longitude, $center->latitude, $center->longitude);
         $distance = 1;
-        
+
         if($distance <= 0.8){
-       
             DB::table('staff_attendance')->where('date','=',date('Y-m-d',strtotime('today')))->delete();
 
             DB::table('staff_attendance')->insert([
                 'user_id' => $user->id,
-                'center_id' => $request->center_id,
+                'city_id' => $request->center_id, // cause the feild center_id not in table 
                 'date' => date('Y-m-d',strtotime('today')),
-                'attendance' => 'P',
+                'added_by' => $user->id,
+                'attendance' => 1,
                 'latitude' => $latitude,
                 'longitude' => $longitude,
             ]);
 
             $data['success'] = true;
+            $data['color'] = "#32a85a"; //green
             $data['message'] = "Your attendance is successfully marked";
         } else {
             $data['success'] = true;
+            $data['color'] = "#d84a38"; //red
             $data['message'] = "Your attendance can not be marked as you are not at the center ,distance ".$distance;
         }
 
