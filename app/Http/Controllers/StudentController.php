@@ -359,9 +359,20 @@ class StudentController extends Controller
             $student->pic = Utilities::getPicture($student->pic,'student');
 
             $guardians = DB::table('student_guardians')->where("student_id",$student->id)->get();
+
             foreach($guardians as $guardian){
                 $guardian->editable = false;
+
+                if($guardian->relation_type == 1){
+                    $guardian->relation = "Father";
+                } else if($guardian->relation_type == 2){
+                    $guardian->relation = "Mother";
+                } else {
+                    $guardian->relation = "Other";
+                }
             }
+
+
             $student->guardians = $guardians;
 
             $data["success"] = true;
