@@ -84,6 +84,12 @@ class Utilities {
 
     }
 
+    public static function getAge($date){
+
+        return round((strtotime("now") - strtotime($date))/(86400*365));
+
+    }
+
     public static function getUniqueInTable($table_name, $column_name){
         $flag = true;
         while($flag){
@@ -127,6 +133,19 @@ class Utilities {
         }
 
         return $content;
+    }
+
+    public static function getGender($gender){
+        switch ($gender){
+            case 1:
+                return "Male";
+            case 2:
+                return "Female";
+            case 3:
+                return "Other";
+            default:
+                return "";
+        }
     }
 
 

@@ -167,6 +167,7 @@ class UserAPIController extends Controller {
 			$user_row->sports_ids = DB::table('user_sports')->select('sport_id')->where('user_id',$user_id)->pluck("sport_id")->toArray();
 
 			$user_row->doj = Utilities::convertDate($user_row->doj);
+			$user_row->pic = Utilities::getPicture($user_row->pic,'user');
 
 			$success = true;
 
