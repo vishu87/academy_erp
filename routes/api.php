@@ -454,15 +454,6 @@ Route::group(["prefix"=>"app"], function(){
 
     Route::post('/login',[AppAPIController::class, 'login']);
     Route::get('/academy-data',[AppAPIController::class, 'academyData']);
-    
-    Route::get('/user/profile/{user_id}',[AppAPIController::class, 'getUser']);
-    Route::post('/check-location',[AppAPIController::class, 'getLocation']);
-    
-    Route::post('/user-profile/upload/{user_id}',[AppAPIController::class, 'uploadProfile']);
-
-    Route::post('/user-update',[AppAPIController::class, 'updateUser']);
-    Route::get('/coach/attendance-list',[AppAPIController::class, 'coachAttendList']);
-    Route::post('/user/update-password/{user_id}',[AppAPIController::class, 'changePassword']);
 
     // Route::group(["prefix"=>"student"], function(){
     //     Route::post('/get-all-list',[AppAPIController::class, 'allStudentList']);
@@ -496,6 +487,17 @@ Route::group(["prefix"=>"app"], function(){
         Route::get('/fetct-reason',[AppAPIController::class, 'getReasons']);
         Route::post('/save-cancelled',[AppAPIController::class, 'cancelEvent']);
 
+    });
+
+    Route::group(["prefix"=>"user"], function(){
+        Route::get('/profile',[AppAPIController::class, 'getUser']);
+        Route::post('/check-location',[AppAPIController::class, 'getLocation']);
+
+        Route::post('/update',[AppAPIController::class, 'updateUser']);
+        Route::post('/update-password',[AppAPIController::class, 'changePassword']);
+        Route::post('/profile/upload/{user_id}',[AppAPIController::class, 'uploadProfile']);
+
+        Route::get('/attendance',[AppAPIController::class, 'coachAttendList']);
     });
 
     // Route::group(["prefix"=>"performance"], function(){

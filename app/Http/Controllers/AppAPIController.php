@@ -149,7 +149,7 @@ class AppAPIController extends Controller {
         return Response::json($data, 200, []);
     }
 
-    // *****************************EVENTS******************************
+    
     public function saveTags(Request $request){
         $token  = $request->header('apiToken');
         $user = User::AuthenticateUser($token);
@@ -188,25 +188,21 @@ class AppAPIController extends Controller {
         $destinationPath = "uploads/";
         
         if($request->hasFile('image')){
-
-            $student_id = ($student_id != '') ? $student_id : $request->id;
-
             $extension = $request->file('image')->getClientOriginalExtension();
             $filename = 'image-'.$student_id.'-'.strtotime("now").'.'.$extension;
             $request->file('image')->move($destinationPath,$filename);
 
             $student = Student::find($student_id);
             if($student){
-                $student->pic = $filename;
+                $student->pic = $destinationPath.$filename;
                 $student->save();
                 $success = true;
             }
         }
 
         if($success){
-            // $data['pic'] = $student->pic;
             $data['details'] = $student_id." - ".$extension;
-            $data['message'] = "The profile image ".$filename." has been uploaded Successfully";
+            $data['message'] = "The profile image has been uploaded Successfully";
             return Response::json($data, 200); 
         } else {
             $data['message'] = "Not done ".$student_id." - ".$extension;
@@ -214,7 +210,7 @@ class AppAPIController extends Controller {
         }
     }
 
-
+    // *****************************EVENTS******************************
 	public function getEventsList(Request $request){
 
     	$token  = $request->header('apiToken');
@@ -560,19 +556,15 @@ class AppAPIController extends Controller {
     // ************************Account**************************
 
 
-    public function getUser(Request $request, $user_id){
+    public function getUser(Request $request){
 
-    	$token = $request->header("apiToken");
-    	$user = User::AuthenticateUser($token);
+    	$user = User::AuthenticateUser($request->header("apiToken"));
 
-        $user = DB::table("users")->select("id","name","email","mobile","pic")->where("users.id",$user->id)->first();
-        if(!$user->email) $user->email = "";
-        if(!$user->mobile) $user->mobile = "";
+        $user_row = DB::table("users")->select("id","name","email","mobile","pic")->where("users.id",$user->id)->first();
+        if(!$user_row->email) $user->email = "";
+        if(!$user_row->mobile) $user->mobile = "";
 
-    	$user->pic = Utilities::getPicture($user->pic,'student');
-
-        $user_row = User::where("id",$user_id)->first();
-        $user_row->pic = Utilities::getPicture($user_row->pic,'user');
+    	$user_row->pic = Utilities::getPicture($user_row->pic,'student');
 
     	$data["success"] = true;
     	$data["user"] = $user_row;
@@ -738,8 +730,11 @@ class AppAPIController extends Controller {
         return Response::json($data,200,array());
     }
 
-    public function changePassword(Request $request, $user_id){
-          
+    public function changePassword(Request $request){
+
+        $user_auth = User::AuthenticateUser($request->header("apiToken"));
+        $user_id = $user_auth->id;
+        
         $cre = [
             'old_password' => $request->old_password,
             'new_password' => $request->new_password,
