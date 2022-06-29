@@ -820,46 +820,6 @@ class AppAPIController extends Controller {
         return Response::json($data,200,array());
     }
 
-    public function groupDetail(Request $request, $center_id){
-
-        $token  = $request->header('apiToken');
-        $user = User::AuthenticateUser($token);
-
-        $groups  = DB::table('groups')->select("groups.*")->where("center_id",$center_id)->get();
-
-        $days_names = ["","Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-        foreach($groups as $group){
-            $group->timing = "";
-            $group->days = "";
-
-            $operation_days = DB::table("operation_days")->where("group_id",$group->id)->get();
-
-            if(sizeof($operation_days) > 0){
-                $group->timing = $operation_days[0]->from_time." - ".$operation_days[0]->to_time;
-                $days = [];
-                foreach($operation_days as $op_day){
-                    $days[] = isset($days_names[$op_day->day]) ? $days_names[$op_day->day] : "";
-                }
-                $group->days = implode(', ',$days);
-                $group->days = "Monday";
-
-                $coaches = DB::table('group_coachs')->select('users.name')->join('users','group_coachs.coach_id','=','users.id')->where('group_coachs.group_id',$group->id)->pluck('users.name')->toArray();
-                $group->coaches = implode(", ",$coaches);
-            }
-        }
-
-        $plans =[];
-         // DB::table("payment_table")->where("center_id",$center_id)->orderBy("month_plan")->get();
-        
-        $url = "https://www.youtube.com/";
-        $data['success'] = true;
-        $data['groups'] = $groups;
-        $data['plans'] = $plans;
-        $data['url'] = $url;
-
-        return Response::json($data,200,array());
-    }
-
 
     // ************************ PERFORMANCE **********************
 

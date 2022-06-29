@@ -468,12 +468,12 @@ Route::group(["prefix"=>"app"], function(){
     //     Route::post('/view-attendance/{student_id}',[AppAPIController::class, 'studAttndList']);
     //     Route::get('/get-reasion',[AppAPIController::class, 'getInActiveReasons']);
     //     Route::post('/mark-inactive',[AppAPIController::class, 'markInActive']);
-    //     Route::get('/groups-details/{center_id}',[AppAPIController::class, 'groupDetail']);
         
     // });
 
     Route::group(["prefix"=>"student"], function(){
         Route::post('/view-attendance/{student_id}',[AppAPIController::class, 'studAttndList']);
+        Route::get('/groups-details/{center_id}',[AppAPIController::class, 'groupDetail']);
     });
 
     Route::group(["prefix"=>"events"], function(){

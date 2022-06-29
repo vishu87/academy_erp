@@ -495,3 +495,7 @@ ALTER TABLE `order_items`
 ALTER TABLE `order_items`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
+
+// 29-06-2022 by Gulzar
+
+ALTER TABLE `group_coachs` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add PRIMARY KEY (`id`);
