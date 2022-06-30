@@ -3,7 +3,7 @@
 	<?php $access_rights = Session::get("access_rights"); ?>
 	<div class="top-menu">
 		<div class="row">
-			<div class="col-6 ">
+			<div class="col-8 ">
 				<div class="table-div">
 					<div>
 						<div class="toggle-menu-cont">
@@ -74,7 +74,7 @@
 		        	</div> -->
 				</div>
 			</div>
-			<div class="col-6 text-right">
+			<div class="col-4 text-right">
 				<div class="welcome-nav">
 					<span class="name">
 						{{ Auth::user()->name }}
