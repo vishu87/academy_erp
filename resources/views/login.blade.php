@@ -8,7 +8,7 @@
             <div class="row justify-content-center h-100">
                 <div class="col-md-10 h-100">
                     <div class="d-flex h-100 align-items-center">
-                        <div class="w-50">
+                        <div class="w-50 mob-w-100">
                             <div class="text-center mb-5 mob-mt-5">
                                 <img src="{{url('/assets/images/Group-60782.png')}}">
                             </div>
@@ -50,7 +50,7 @@
                                 </div>
                             {{Form::close()}}
                         </div>
-                        <div class="w-50">
+                        <div class="w-50 mob-w-100">
                             
                         </div>
                         

@@ -1087,13 +1087,21 @@ img.round{
 	.mob-mt-5{
 		margin-top: 32px;
 	}
+	.mob-mb-8{
+		margin-bottom: 8px;
+	}
+	.mob-plr-2{
+		padding-left:8px ! important;
+		padding-right:8px ! important;
+	}
 	.login-bg{
 		.d-flex{
 			display: block ! important;
 		}
-		.w-50{
+		.mob-w-100{
 			width: 100% ! important;
 		}
+		
 	}
 }
 .welcome-nav{
