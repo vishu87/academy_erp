@@ -11,6 +11,7 @@ use App\Models\PaymentHistory, App\Models\PaymentItem, App\Models\User;
 class CityController extends Controller{ 
 
     public function getCityPage(){
+        User::pageAccess(25);
        return view('manage.cities.add_city',["sidebar"=>"city","menu" => "admin"]);
     }
 

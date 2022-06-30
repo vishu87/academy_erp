@@ -11,6 +11,7 @@ use App\Models\User, App\Models\Lead, App\Models\LeadHistory, App\Models\Utiliti
 class MasterLeadsController extends Controller
 { 
     public function index(){
+        User::pageAccess(11);
         return view('manage.masterLeads.index',["sidebar"=>"master-lead","menu" => "leads"]);
     }
 

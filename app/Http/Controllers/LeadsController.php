@@ -10,6 +10,7 @@ use App\Models\User, App\Models\Lead, App\Models\LeadHistory, App\Models\Utiliti
 
 class LeadsController extends Controller{ 
     public function getIndexPage(){
+        User::pageAccess(12);
         return view('manage.leads.index',["sidebar"=>"leads","menu" => "leads"]);
     }
 

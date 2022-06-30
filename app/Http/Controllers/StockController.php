@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 class StockController extends Controller {
 
 	public function index(){
+        User::pageAccess(19);
 		return view('manage.stock.index',["sidebar" => "stock", "menu"=>"inventory"]);
 	}
 
@@ -45,8 +46,6 @@ class StockController extends Controller {
     	$data['success'] = true;
 		$data['stocks'] = $stocks;
 		return Response::json($data, 200, array());
-
-		return view('manage.stock.index',["sidebar" => "stock", "menu"=>"inventory"]);
 	}
 
 }

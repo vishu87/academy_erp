@@ -10,6 +10,7 @@ use App\Models\PaymentHistory, App\Models\PaymentItem, App\Models\User, App\Mode
 class ParameterController extends Controller
 {	
     public function index(){  
+        User::pageAccess(17);
         return view('parameters.index', ["id"=>0,'sidebar' => "parameter","menu" => "admin"]);
     }
 

@@ -11,11 +11,11 @@ use App\Models\PaymentHistory, App\Models\PaymentItem, App\Models\User;
 class PayPriceTypeController extends Controller{ 
 
     public function type_price_list(){
+        User::pageAccess(8);
         return view('payments.type_price.payment_type_price',["sidebar" => "p_structure","menu" => "accounts"]);
     }
 
     public function getPayType(Request $request){
-
         $user = User::AuthenticateUser($request->header("apiToken"));
         
         $check_access = User::getAccess("pay_structure",$user->id, -1);
@@ -38,7 +38,6 @@ class PayPriceTypeController extends Controller{
     }
 
     public function getList(Request $request){
-
         $user = User::AuthenticateUser($request->header("apiToken"));
         
         $user_access = User::getAccess("pay_structure",$user->id);
@@ -69,7 +68,6 @@ class PayPriceTypeController extends Controller{
     }
 
     public function add(Request $request){
-
         $user = User::AuthenticateUser($request->header("apiToken"));
         
         $user_access = User::getAccess("pay_structure",$user->id);
@@ -219,7 +217,6 @@ class PayPriceTypeController extends Controller{
     }
 
     public function update(Request $request){
-
         $user = User::AuthenticateUser($request->header("apiToken"));
         $user_access = User::getAccess("pay_structure",$user->id);
 
@@ -245,7 +242,6 @@ class PayPriceTypeController extends Controller{
     }
 
     public function delete(Request $request){
-
         $user = User::AuthenticateUser($request->header("apiToken"));
         
         $check_access = User::getAccess("pay_structure",$user->id, -1);

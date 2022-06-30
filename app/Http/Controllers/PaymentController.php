@@ -13,12 +13,13 @@ use App\Models\PaymentHistory, App\Models\PaymentItem, App\Models\User, App\Mode
 class PaymentController extends Controller{ 
 
     public function payment_list(){
+        User::pageAccess([3,4]);
         return view('payments.payments_list',["sidebar" => "payments","menu" => "accounts"]);
     }
 
-    public function coupons(){
-        return view('payments.coupons.index',["sidebar" => "p_coupons","menu" => "accounts"]);
-    }
+    // public function coupons(){
+    //     return view('payments.coupons.index',["sidebar" => "p_coupons","menu" => "accounts"]);
+    // }
 
     public function paymentList(Request $request){
 

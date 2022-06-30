@@ -11,6 +11,7 @@ use App\Models\User, App\Models\Center, App\Models\Group, App\Models\Student;
 class SettingsController extends Controller{
     
     public function index(){
+        User::pageAccess(25);
         return view('manage.settings.index',["sidebar"=>"settings","menu" => "admin"]);
     }
 

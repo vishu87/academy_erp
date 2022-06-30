@@ -11,11 +11,11 @@ use App\Models\PaymentHistory, App\Models\PaymentItem, App\Models\User;
 class PayTypeCategoryController extends Controller{ 
 
     public function categoryList(){
+        User::pageAccess(7);
         return view('payments.pay_type_category.category_list',["sidebar" => "p_categories","menu" => "accounts"]);
     }
 
     public function getList(Request $request){
-
         $user = User::AuthenticateUser($request->header("apiToken"));
         
         $check_access = User::getAccess("pay_categories",$user->id, -1);
@@ -38,7 +38,6 @@ class PayTypeCategoryController extends Controller{
     }
 
     public function addCategory(Request $request){
-        
         $user = User::AuthenticateUser($request->header("apiToken"));
 
         $check_access = User::getAccess("pay_categories",$user->id, -1);
@@ -75,7 +74,6 @@ class PayTypeCategoryController extends Controller{
     }
 
     public function disableCategory(Request $request){
-        
         $user = User::AuthenticateUser($request->header("apiToken"));
         $check_access = User::getAccess("pay_categories",$user->id, -1);
         if(!$check_access) {
@@ -98,7 +96,6 @@ class PayTypeCategoryController extends Controller{
     }
 
     public function deleteCategory(Request $request){
-
         $user = User::AuthenticateUser($request->header("apiToken"));
         
         $check_access = User::getAccess("pay_categories",$user->id, -1);
@@ -125,7 +122,6 @@ class PayTypeCategoryController extends Controller{
     }
 
     public function add(Request $request){
-
         $user = User::AuthenticateUser($request->header("apiToken"));
 
         $check_access = User::getAccess("pay_categories",$user->id, -1);
@@ -182,7 +178,6 @@ class PayTypeCategoryController extends Controller{
     }
 
     public function delete(Request $request){
-
         $user = User::AuthenticateUser($request->header("apiToken"));
         $check_access = User::getAccess("pay_categories",$user->id, -1);
         if(!$check_access) {

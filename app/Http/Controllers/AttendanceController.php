@@ -11,6 +11,7 @@ use App\Models\StaffAttendance;
 class AttendanceController extends Controller{
 
     public function index(){
+        User::pageAccess(13);
         return view('students.attendance.index',['menu' => "academy","sidebar"=>"attendance"]);
     }
 

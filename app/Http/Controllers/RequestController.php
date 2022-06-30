@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 class RequestController extends Controller {
 
 	public function index(){
+        User::pageAccess(19);
 		return view('manage.request.index',["sidebar" => "request", "menu"=>"inventory"]);
 	}
 
@@ -98,7 +99,7 @@ class RequestController extends Controller {
 	}
 
     public function addRequest($id = 0){
-
+        User::pageAccess(19);
         return view('manage.request.add_request', ["id"=>$id,'sidebar' => "request", "menu"=>"inventory"]);
     }
 

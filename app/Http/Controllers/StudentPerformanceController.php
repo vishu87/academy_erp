@@ -11,10 +11,12 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class StudentPerformanceController extends Controller{
 
     public function index(){
+        User::pageAccess(14);
         return view('students.performance.index',["menu"=>"academy","sidebar"=>"performance"]);
     }
 
     public function session(){
+        User::pageAccess(14);
         return view('students.performance.session',["menu"=>"academy","sidebar"=>"performance"]);
     }
 

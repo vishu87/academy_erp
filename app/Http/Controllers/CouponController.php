@@ -11,11 +11,11 @@ use App\Models\User, App\Models\Coupon, App\Models\Utilities;
 class CouponController extends Controller{ 
 
     public function coupons(){
+        User::pageAccess(9);
         return view('payments.coupons.index',["sidebar" => "p_coupons","menu" => "accounts"]);
     }
 
     public function getCouponList(Request $request){
-
         $user = User::AuthenticateUser($request->header("apiToken"));
 
         $sport_id = $request->sport_id;
@@ -54,7 +54,6 @@ class CouponController extends Controller{
     }
 
     public function addCoupon(Request $request){
-
         $user = User::AuthenticateUser($request->header("apiToken"));
 
         $check_access = User::getAccess("pay_structure",$user->id, -1);
@@ -110,7 +109,6 @@ class CouponController extends Controller{
     } 
 
     public function deleteCoupon(Request $request,$id){
-
         $user = User::AuthenticateUser($request->header("apiToken"));
 
         $check_access = User::getAccess("pay_structure",$user->id, -1);

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 class InventoryController extends Controller {
 
 	public function index(){
+        User::pageAccess(18);
 		return view('manage.inventory.index',["sidebar" => "item", "menu"=>"inventory"]);
 	}
 

@@ -10,8 +10,8 @@ use App\Models\EMAILTemplate;
 class EmailTemplateController extends Controller {
 
 
-	public function index()
-	{
+	public function index(){
+        User::pageAccess(21);
 		return view('manage.emailTemplate.index',["sidebar" => "email-template","menu"=>"communication"]);
 	}
 

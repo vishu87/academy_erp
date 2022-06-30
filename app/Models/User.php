@@ -323,6 +323,20 @@ class User extends Authenticatable {
         }
         
     }
+
+    public static function pageAccess($access){
+        
+        $role_id = Auth::user()->role;
+        $role = DB::table("roles")->find($role_id);
+        $access_rights = explode(',', $role->access_rights);
+
+        if($role_id == 1 || in_array($access, $access_rights)){
+            return true;
+        } else {
+            die("Not authorized");
+        }
+
+    }
     
 }
 

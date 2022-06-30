@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 class CompanyController extends Controller {
 
 	public function index(){
+        User::pageAccess(18);
 		return view('manage.company.index',["sidebar" => "companies", "menu"=>"inventory"]);
 	}
 

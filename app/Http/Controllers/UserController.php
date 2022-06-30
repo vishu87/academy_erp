@@ -113,6 +113,7 @@ class UserController extends Controller {
 	}
 	
 	public function viewUsers(){
+        User::pageAccess(5);
 		return view('users.view_users',["sidebar"=>"users" ,"menu" => "admin"]);
 	}
 
@@ -121,10 +122,12 @@ class UserController extends Controller {
 	}
 
 	public function editUser($id){
+        User::pageAccess(5);
 		return view('users.add_user',["update"=>$id,"sidebar"=>"users" ,"menu" => "admin"]);
 	}
 
 	public function viewUserRoles(){
+        User::pageAccess(25);
 		return view('users.user_roles',["sidebar"=>"users" ,"menu" => "admin"]);
 	}	
 
@@ -133,6 +136,7 @@ class UserController extends Controller {
 	}
 
 	public function staffAttendance(){
+        User::pageAccess(22);
 		return view('users.staff.attendance.index',["sidebar"=>"users" ,"menu" => "admin"]);
 	}
 

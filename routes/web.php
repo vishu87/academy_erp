@@ -114,10 +114,6 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
             Route::get('/',[StockController::class,'index']);
         });
 
-        // Route::group(["prefix"=>"inventory-report"], function(){
-        //     Route::get('/',[InventoryReportController::class,'index']);
-        // });
-
         Route::group(["prefix"=>"request"], function(){
             Route::get('/',[RequestController::class,'index']);
             Route::get('/add-request/{id?}',[RequestController::class,'addRequest']);
@@ -190,11 +186,6 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
 
         Route::group(["prefix"=>"send-message"], function(){
             Route::get('/',[CommunicationController::class,'index']);
-            // Route::post('/init',[CommunicationController::class,'init']);
-            // Route::post('/listing',[CommunicationController::class,'listing']);
-            // Route::post('/comm_students',[CommunicationController::class,'comm_students']);
-            // Route::post("getStudents",[CommunicationController::class,'getStudents']);
-            // Route::post("postMessage",[CommunicationController::class,'postMessage']);
         }); 
 
         Route::group(["prefix"=>"sms-template"], function(){

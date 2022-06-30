@@ -10,8 +10,8 @@ use App\Models\SMSTemplate, App\Models\User;
 class SMSTemplateController extends Controller {
 
 
-	public function index()
-	{
+	public function index(){
+        User::pageAccess(20);
 		return view('manage.template.index',["sidebar" => "template","menu"=>"communication"]);
 	}
 

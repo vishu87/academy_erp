@@ -12,6 +12,7 @@ class StudentController extends Controller
 {	
 
     public function students(){
+        User::pageAccess([1,2]);
         return view('students.students',[
             'menu' => "academy",
             'sidebar' => "students"
@@ -19,7 +20,7 @@ class StudentController extends Controller
     }
 
     public function add_student(){
-        
+        User::pageAccess([1,2]);
         return view('students.add_student', [
             "id"=>0,
             'menu' => "academy",
@@ -28,6 +29,7 @@ class StudentController extends Controller
     }
 
     public function edit_student($id){
+        User::pageAccess([1,2]);
         return view('students.add_student',[
             "id"=>$id,
             'menu' => "academy",
@@ -36,6 +38,7 @@ class StudentController extends Controller
     }
 
     public function student_personal_detail($id){
+        User::pageAccess([1,2]);
         return view('students.student_full_details',[
             'id'=>$id,
             'menu' => "academy",

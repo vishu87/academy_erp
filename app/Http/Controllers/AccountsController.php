@@ -11,11 +11,11 @@ use App\Models\User, App\Models\Center;
 class AccountsController extends Controller{ 
 
 	public function index(){
+        User::pageAccess(10);
 		return view('manage.accounts.gst',['menu' => "accounts","sidebar" => "p_tax"]);
 	}
 
 	public function listData(Request $request){
-
 		$user = User::AuthenticateUser($request->header("apiToken"));
         
         $check_access = User::getAccess("pay_tax",$user->id, -1);
@@ -29,7 +29,6 @@ class AccountsController extends Controller{
 	}
 
 	public function save(Request $request){
-
 		$user = User::AuthenticateUser($request->header("apiToken"));
         
         $check_access = User::getAccess("pay_tax",$user->id, -1);
@@ -91,7 +90,6 @@ class AccountsController extends Controller{
 	}
 
 	public function delete(Request $request){
-
 		$user = User::AuthenticateUser($request->header("apiToken"));
         
         $check_access = User::getAccess("pay_tax",$user->id, -1);

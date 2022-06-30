@@ -12,10 +12,12 @@ use  App\Models\CenterPerson, App\Models\Group, App\Models\OperationDay, App\Mod
 class CenterController extends Controller{ 
 
     public function getCentersList(){
+        User::pageAccess(15);
        	return view('manage.centers.index',["sidebar"=>"center" ,"menu" => "admin"]);
     }
 
     public function addCenter($center_id){ 
+        User::pageAccess(15);
        	return view('manage.centers.add',['center_id'=>$center_id,"sidebar"=>"center" ,"menu" => "admin"]);
     }
 

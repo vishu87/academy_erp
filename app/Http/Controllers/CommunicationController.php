@@ -11,10 +11,12 @@ use App\Models\Lead;
 class CommunicationController extends Controller {
 
 	public function index(){
+        User::pageAccess(21);
 		return view('manage.message.index',["sidebar" => "message", "only_active" => 1,"menu"=>"communication"]);
 	}
 
 	public function communication(){
+        User::pageAccess(21);
 		return view('manage.message.list',["sidebar" => "communication","menu"=>"communication"]);
 	}
 

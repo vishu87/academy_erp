@@ -10,6 +10,7 @@ use App\Models\GroupType, App\Models\User;
 class DropDownMasterController extends Controller
 {	
     public function index(){  
+        User::pageAccess(25);
         return view('dropDownMaster.groupTypes.index', ['sidebar' => "groupType","menu" => "admin"]);
     }
 
