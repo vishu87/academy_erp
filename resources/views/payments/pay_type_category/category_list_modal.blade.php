@@ -66,10 +66,18 @@
                     <label class="label-control">HSN Code</label>
                     <input type="text" class="form-control" ng-model="add_cat_item.hsn_code">
                 </div>
+                <div ng-if="is_sub_type == 1">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label class="label-control">Months</label>
+                            <input type="text" class="form-control" ng-model="add_cat_item.months">
+                        </div>
 
-                <div class="form-group" ng-if="is_sub_type == 1">
-                    <label class="label-control">Months</label>
-                    <input type="text" class="form-control" ng-model="add_cat_item.months">
+                        <div class="col-md-6 form-group">
+                            <label class="label-control">Number Of Pause Days</label>
+                            <input type="number" class="form-control" ng-model="add_cat_item.no_pause">
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -107,6 +115,12 @@
                 <label class="label-control">Months</label>
                 <input type="text" class="form-control" ng-model="edit_cat_item.months">
             </div>
+
+            <div class="form-group" ng-if="edit_cat_item.no_pause">
+                <label class="label-control">Number Of Pause Days</label>
+                <input type="number" class="form-control" ng-model="edit_cat_item.no_pause">
+            </div>
+
             <div class="form-group">
                 <label class="label-control">Tax (%)</label>
                 <input type="text" class="form-control" ng-model="edit_cat_item.tax">

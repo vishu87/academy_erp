@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 
-use Input, Redirect, Validator, Hash, Response, Session, DB, App\Models\User, App\Models\Invrequest, App\Models\InvStock;
+use Input, Redirect, Validator, Hash, Response, Session, DB, App\Models\User, App\Models\Invrequest, App\Models\InvStock, App\Models\Utilities;
 use Illuminate\Http\Request;
 
 class RequestController extends Controller {
@@ -106,16 +106,34 @@ class RequestController extends Controller {
 
     	$user = User::AuthenticateUser($request->header("apiToken"));
 
-    	$request = DB::table('inv_request')->select('inv_request.*','companies.company_name as companyName')->leftJoin('companies','companies.id','=','inv_request.company_id')->where("inv_request.client_id",$user->client_id)->orderBy('id','DESC')->get();
+    	$requestData = DB::table('inv_request')->select('inv_request.*','companies.company_name as companyName')->leftJoin('companies','companies.id','=','inv_request.company_id')->where("inv_request.client_id",$user->client_id)->orderBy('id','DESC');
+
+    	$max_per_page = $request->max_per_page ? $request->max_per_page : 20;
+        $page_no = $request->page_no;
+
+    	if($request->date){
+    		$date = Utilities::convertDateToDB($request->date);
+            $requestData = $requestData->where("inv_request.date",$date);
+        }
+
+    	if($request->type){
+            $requestData = $requestData->where("inv_request.type",$request->type);
+        }
+
+        $total_request = $requestData->count();
+        $data['total'] = $total_request;
+
+
+        $requestData = $requestData->limit($max_per_page)->skip(($page_no - 1)*$max_per_page)->get();
 
     	$status = Invrequest::Status();
 
-    	foreach ($request as $requestData) {
-    		$requestData->status_name = $status[$requestData->status];
+    	foreach ($requestData as $request) {
+    		$requestData->status_name = $status[$request->status];
     	}
 
 		$data['success'] = true;
-		$data['request'] = $request;
+		$data['request'] = $requestData;
 		return Response::json($data, 200, array());
 
     }

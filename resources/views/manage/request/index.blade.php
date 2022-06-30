@@ -18,7 +18,6 @@
 
 	    <div class="portlet-head">
 	      	<div class="row">
-
 		        <div class="col-md-6">
 		          	<ul class="menu">
 			            <li class="active">
@@ -29,11 +28,46 @@
 		        <div class="col-md-6 text-right">
 					<a href="{{url('inventory/request/add-request')}}" class="btn btn-primary"><i class="icons icon-plus"></i> Add Request</a>
 		        </div>
-
 	      	</div>
 	    </div>
 
 		<div class="portlet-body ng-cloak">
+		    <div table-paginate></div>  
+			<div class="filters" ng-if="filter.show">
+
+				<form name="filterForm" ng-submit="" novalidate>
+				
+					<div class="row">
+
+						<div class="col-md-3 form-group ">
+			                <label>Date</label>
+			                <input type="text" ng-model="filter.date" class="form-control datepicker">
+			            </div>
+
+						<div class="col-md-3 form-group">
+			                <label>Type</label>
+			                <select class="form-control" ng-model="filter.type">
+                                <option>Select Type</option>
+                                <option value="1">Purchase</option>
+                                <option value="2">Transfer</option>
+                                <option value="3">Consume</option>
+                            </select>
+			            </div>
+
+			            <div class="col-md-12 mb-5">
+			            	<button  ng-click="searchList()" class="btn btn-primary" ng-disabled="loading">
+			            		Apply
+			            		<div class="spinner-border spinner-border-sm text-light" role="status" ng-if="loading">
+								  <span class="sr-only">Loading...</span>
+								</div>
+			            	</button>
+			            </div>
+					</div>
+				</form>
+
+			</div>
+
+
 			<div ng-if="loading" class="text-center mt-5 mb-5">
 				<div class="spinner-grow" role="status">
 				  <span class="sr-only">Loading...</span>

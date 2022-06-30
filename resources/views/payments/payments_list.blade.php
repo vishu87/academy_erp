@@ -28,6 +28,30 @@
 						<div class="row" style="font-size: 14px">
 
 							<div class="col-md-2 form-group">
+				                <label>City</label>
+				                <select  ng-model="filter.city_id" class="form-control">
+				                    <option value="0" >All</option>
+				                    <option ng-repeat="city in state_city_center.city" value="@{{city.value}}">@{{city.label}}</option>
+				                </select>
+				            </div>
+				            
+				            <div class="col-md-2 form-group">
+				                <label>Center</label>
+				                <select  ng-model="filter.center_id" class="form-control">
+				                    <option value="0">All</option>
+				                    <option ng-repeat="center in state_city_center.center" value="@{{center.value}}" ng-if="filter.city_id == center.city_id ">@{{center.label}}</option>
+				                </select>
+				            </div>
+
+				            <div class="col-md-2 form-group">
+				                <label>Group</label>
+				                <select  ng-model="filter.first_group" class="form-control">
+				                	<option value="0">All</option>
+				                    <option ng-repeat="age_group in state_city_center.group" value="@{{age_group.value}}" ng-if="filter.center_id == age_group.center_id " ng-hide="filter.center_id == 0">@{{age_group.label}}</option>
+				                </select>
+				            </div>
+
+							<div class="col-md-2 form-group">
 								<label class="label-control">Student Name</label>
 								<input type="text" class="form-control" ng-model="filter.student_name" />
 							</div>
@@ -42,7 +66,16 @@
 								<input type="text" class="form-control datepicker" ng-model="filter.end_date" />
 							</div>
 
+							<div class="form-group col-md-2">
+				                <label>Payment Mode </label>
+				                <select class="form-control" ng-model="filter.p_mode">
+				                	<option value="">Select</option>
+				                    <option ng-value="mode.id" ng-repeat="mode in payModes">@{{mode.mode}}</option>
+				                </select>
+				            </div>
+
 						</div>
+
 						<div>
 							<button ng-click="searchList()" class="btn btn-primary">Apply</button>
 						</div>

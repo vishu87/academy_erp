@@ -47,6 +47,32 @@ class PaymentController extends Controller{
             }
         }
 
+        if($request->first_group){
+            if($request->first_group != 0){
+                $payments = $payments->where("students.group_id",$request->first_group);
+            }
+        }
+
+        if($request->center_id){
+            $groups = DB::table('groups')->where('center_id',$request->center_id)->pluck('id');
+            $payments = $payments->whereIn("students.group_id",$groups);
+        }
+
+        if($request->p_mode){
+            $payments = $payments->where("payment_history.p_mode",$request->p_mode);
+        }
+
+        if($request->city_id){
+            if($request->city_id != 0){
+                $center = DB::table('center')->where('city_id',$request->city_id)->pluck('id');
+                $groups = DB::table('groups')->whereIn('center_id',$center)->pluck('id')->toArray();
+                $payments = $payments->whereIn("students.group_id",$groups);
+            }
+        }
+
+        $total_payments = $payments->count();
+        $data['total'] = $total_payments;
+
         $payments = $payments->where("payment_history.client_id",$user->client_id);
 
         $total = $payments->count();
@@ -119,6 +145,16 @@ class PaymentController extends Controller{
 
         return Response::json($data, 200, []);
     }
+
+    public function getPayMode(Request $request){
+            
+        $payModes = DB::table("payment_modes")->get();
+        $data["success"] = true;
+        $data["payModes"] = $payModes;
+        return Response::json($data, 200, []);
+    }
+
+
 
     public function getAmount(Request $request){
 

@@ -160,7 +160,8 @@ class PayTypeCategoryController extends Controller{
                 "category_id" => $request->category_id,
                 "hsn_code" => $request->hsn_code,
                 "months" => $request->months,
-                "tax" => $request->tax
+                "tax" => $request->tax,
+                "no_pause" => $request->no_pause
             ];
             
             if($request->id){

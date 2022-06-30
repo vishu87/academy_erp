@@ -69,7 +69,7 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
   $scope.searchList = function(){
     $scope.filter.page_no = 1;
     $scope.filter.searching = false;
-    $scope.getList();
+    $scope.init();
   }
 
   $scope.clear = function(){

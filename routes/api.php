@@ -118,6 +118,7 @@ Route::group([], function(){
         Route::group(["prefix"=>"payment"], function(){
             Route::post('/init',[PaymentController::class, 'paymentInit']);
             Route::get('/get-type/{sport_id}',[PaymentController::class, 'getPayType']);
+            Route::get('/get-type',[PaymentController::class, 'getPayMode']);
             Route::post('/get-amount',[PaymentController::class, 'getAmount']);
             Route::post('/save-payment',[PaymentController::class, 'savePayment']);
             Route::post('/edit-payment',[PaymentController::class, 'editPayment']);

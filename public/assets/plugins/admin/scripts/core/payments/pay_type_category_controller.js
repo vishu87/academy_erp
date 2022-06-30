@@ -157,6 +157,7 @@ app.controller("payments_type_category_controller", function($scope, $http, DBSe
 	}
 
 	$scope.show_data_modal = function(id, type_data){
+		console.log(type_data);
 		$scope.edit_cat_item = type_data;
 	    $('#'+id).modal('show');
 	}

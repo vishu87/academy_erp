@@ -27,6 +27,8 @@ app.controller("payments_controller", function($scope, $http, DBService) {
     DBService.postCall($scope.filter,'/api/payments')
     .then(function(data){
       if (data.success) {
+        $scope.getPaymentType();
+        $scope.getParams();
         if($scope.filter.export){
           window.open(data.excel_link,'_blank');
         } else {
@@ -46,6 +48,29 @@ app.controller("payments_controller", function($scope, $http, DBService) {
   }
 
   $scope.getList();
+
+
+    $scope.getPaymentType = function(){
+      DBService.getCall("/api/student/payment/get-type").then(function(data){
+        if (data.success) {
+          $scope.payModes = data.payModes;
+        }
+      });
+    }
+
+  $scope.getParams = function(){
+    $scope.getStateCityCenter('pt-view')
+  }
+
+  $scope.getStateCityCenter = function(tag){
+    DBService.postCall({Tag:tag},
+     "/api/get-state-city-center-data")
+    .then(function (data){  
+      if (data.success) {
+        $scope.state_city_center = data;
+      }
+    });
+  }
 
   $scope.searchList = function(){
     $scope.filter.page_no = 1;
