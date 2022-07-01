@@ -69,6 +69,7 @@ app.controller("Parameters_controller", function($scope, $http, DBService) {
     }
 
     $scope.addAttribute = function(parameterId){
+      $scope.attrData = {};
       $scope.parameter_id = parameterId;
       $("#attribute-modal").modal('show');
     }

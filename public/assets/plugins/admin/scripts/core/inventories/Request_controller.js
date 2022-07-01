@@ -95,7 +95,7 @@ app.controller('Request_controller', function($scope, $http, DBService, Upload){
   }
 
   $scope.removeItem = function(index){
-    $scope.items.splice(index,1);
+    $scope.requestData.items.splice(index,1);
   }
 
   $scope.uploadDocument = function (file) {
