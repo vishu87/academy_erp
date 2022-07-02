@@ -10,7 +10,6 @@ class SignUpController extends Controller
 {	
 
     public function searchStudent(Request $request){
-
         $client_code = $request->header("clientId");
         $client = Client::AuthenticateClient($client_code);
         $client_id = $client->id;
@@ -44,6 +43,7 @@ class SignUpController extends Controller
                 }
 
                 $guardians = DB::table("student_guardians")->join("students","students.id","=","student_guardians.student_id")->where("student_guardians.email",$email)->where("students.client_id",$client_id)->get();
+
                 foreach($guardians as $guardian){
                     $found = true;
                     if(!in_array($guardian->student_id, $student_ids)){
@@ -54,7 +54,6 @@ class SignUpController extends Controller
 
                 if($found){
                     $data["success"] = true;
-                    
                     $user = new User;
                     $user->name = $reg_name;
                     $user->username = $email;

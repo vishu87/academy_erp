@@ -530,7 +530,7 @@ class AppAPIController extends Controller {
             'full_name' => 'required',
             'email' => 'required',
             'contact' => 'required',
-            'age' => 'required',
+            'dob' => 'required',
             'remark' => 'required',
         ];
 
@@ -538,7 +538,7 @@ class AppAPIController extends Controller {
             'full_name' => $request->full_name,
             'email' => $request->email,
             'contact' => $request->contact,
-            'age' => $request->age,
+            'dob' => $request->dob,
             'remark' => $request->remark,
         ];
 
@@ -552,7 +552,7 @@ class AppAPIController extends Controller {
                 'full_name' => $request->full_name,
                 'email' => $request->email,
                 'contact' => $request->contact,
-                'age' => $request->age,
+                'dob' => $request->dob,
                 'remark' => $request->remark,
                 'group_id' => $request->group_id,
                 'date' => $request->date,
