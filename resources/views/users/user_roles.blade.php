@@ -5,10 +5,10 @@
 <div class="" ng-controller="Roles_controller" ng-init="roles_init()">
 
 	<div class="page-header row">
-		<div class="col-md-6">
+		<div class="col-md-6 col-6">
 			<h3>Roles</h3>
 		</div>
-		<div class="col-md-6 text-right">
+		<div class="col-md-6 col-6 text-right">
 			<button class="btn btn-primary" ng-click="addUserRoles();"><i class="icons icon-plus"></i> Add New</button>
 		</div>
 	</div>

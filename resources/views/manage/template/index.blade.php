@@ -4,11 +4,11 @@
 <div class="ng-cloak" ng-controller="smsTempCtrl" ng-init="init()">
 
 	<div class="page-header row">
-		<div class="col-md-6">
+		<div class="col-md-6 col-8">
 
 			<h3>SMS Templates</h3>
 		</div>
-		<div class="col-md-6 text-right">
+		<div class="col-md-6 col-4 text-right">
 			<button class="btn btn-primary" type="button" ng-click="add()"><i class="icons icon-plus"></i> Add</button>
 		</div>
 	</div>

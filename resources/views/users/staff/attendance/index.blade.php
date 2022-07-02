@@ -6,10 +6,10 @@
 <div class="ng-cloak" ng-controller="Staff_Attendance_Controller" ng-init="getCityCenter('staff-attendance')"> 
 
   <div class="page-header row">
-    <div class="col-md-6">
+    <div class="col-md-6 col-6">
       <h3>Staff Attendance</h3>
     </div>
-    <div class="col-md-6 text-right">
+    <div class="col-md-6 col-6 text-right">
       <button class="btn btn-primary" ng-click="filterData.show = (filterData.show?false:true)">
       @{{filterData.show?'Hide':'Show'}} Filters</button>
     </div>

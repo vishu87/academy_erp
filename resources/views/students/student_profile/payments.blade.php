@@ -1,5 +1,5 @@
 <div ng-if="switchContent == 'payments'">
-    <div class="text-right">
+    <div class="text-right mob-mt-40">
       <button class="btn btn-primary" ng-click="addPayment()"><i class="icons icon-plus"></i> Add Payment</button>
     </div>
     <div class="table-responsive mt-2">
