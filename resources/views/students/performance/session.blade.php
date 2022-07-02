@@ -27,14 +27,14 @@
 	    <div class="portlet-head">
 	      	<div class="row">
 
-		        <div class="col-md-6">
+		        <div class="col-6">
 		          	<ul class="menu">
 			            <li class="active">
 			              <a href="#">List</a>
 			            </li>
 		          	</ul>
 		        </div>
-		        <div class="col-md-6 text-right">
+		        <div class="text-right col-6">
 		        	<button class="btn btn-primary" ng-click="addSession()"><i class="icons icon-plus"></i> Add</button>
 		        </div>
 

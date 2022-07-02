@@ -25,6 +25,7 @@
   
 
   <div class="portlet-body">
+    <div class="mob-mt-40"></div>
     @include("students.student_profile.subscriptions")
     @include("students.student_profile.payments")
     @include("students.student_profile.documents")

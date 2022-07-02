@@ -4,11 +4,11 @@
 <div class="ng-cloak" ng-controller="CenterController" ng-init="centerList()">
 
 	<div class="page-header row">
-		<div class="col-md-6">
+		<div class="col-md-6 col-6">
 
 			<h3>Centers</h3>
 		</div>
-		<div class="col-md-6 text-right">
+		<div class="col-md-6 col-6 text-right">
 			<button class="btn btn-primary" ng-click="addCenter();"><i class="icons icon-plus"></i> Add Center</button>
 		</div>
 	</div>

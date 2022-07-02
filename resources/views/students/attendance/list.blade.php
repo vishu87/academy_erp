@@ -1,14 +1,14 @@
 <div class="portlet">
   <div class="portlet-head">
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-6 col-8">
         <ul class="menu">
           <li class="active">
             <a href="#">List of Students</a>
           </li>
         </ul>
       </div>
-      <div class="col-md-6 text-right">
+      <div class="col-md-6 col-4 text-right">
           <button class="btn btn-primary" ng-click="saveAttendance()" ng-disabled="saveprocessing">
             Save <span ng-show="saveprocessing" class="spinner-border spinner-border-sm"></span>
           </button>
