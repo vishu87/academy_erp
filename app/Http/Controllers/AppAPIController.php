@@ -52,6 +52,53 @@ class AppAPIController extends Controller {
 		return Response::json($data,200,array());		
 	}
 
+    public function signUp(Request $request){
+        $email = $request->email;
+
+        $user_id = $request->user_id;
+
+        $credentials = [
+
+            'name' => $request->name,
+            'email' => $request->email,
+            'username' => $request->username,
+        ];
+        $rules = [
+            'name' => 'required',
+            'email' => 'required | email',
+            'username' => 'required',
+        ];
+
+        $validator = Validator::make($credentials, $rules);
+        if ($validator->passes()) {
+            
+            $user = User::where("email",$email)->first();
+            if($user){
+                $data["success"] = false;
+                $data["message"] = "This email is already registered with us. Kindly try forget password.";
+            } else {
+                // $user = new User;
+                // $user->name = $request->name;
+                // $user->email = $request->email;
+                // $user->username = $request->username;
+                // $user->password = Hash::make($request->password);
+                // $user->password_check = $request->password;
+                // $user->save();
+
+                $data["success"] = true;
+                $data["user"] = $user;
+                $data["message"] = "Thanks for your intrest, We will verify your Account as soon as possible";
+            }
+
+        } else {
+            $data["success"] = false;
+            $data["message"] ="Please enter required fields";
+
+        }
+
+        return Response::json($data,200,array());       
+    }
+
 	public function academyData(Request $request){
 
 		$user = User::AuthenticateUser($request->header("apiToken"));
