@@ -52,6 +52,53 @@ class AppAPIController extends Controller {
 		return Response::json($data,200,array());		
 	}
 
+    public function signUp(Request $request){
+        $email = $request->email;
+
+        $user_id = $request->user_id;
+
+        $credentials = [
+
+            'name' => $request->name,
+            'email' => $request->email,
+            'username' => $request->username,
+        ];
+        $rules = [
+            'name' => 'required',
+            'email' => 'required | email',
+            'username' => 'required',
+        ];
+
+        $validator = Validator::make($credentials, $rules);
+        if ($validator->passes()) {
+            
+            $user = User::where("email",$email)->first();
+            if($user){
+                $data["success"] = false;
+                $data["message"] = "This email is already registered with us. Kindly try forget password.";
+            } else {
+                // $user = new User;
+                // $user->name = $request->name;
+                // $user->email = $request->email;
+                // $user->username = $request->username;
+                // $user->password = Hash::make($request->password);
+                // $user->password_check = $request->password;
+                // $user->save();
+
+                $data["success"] = true;
+                $data["user"] = $user;
+                $data["message"] = "Thanks for your intrest, We will verify your Account as soon as possible";
+            }
+
+        } else {
+            $data["success"] = false;
+            $data["message"] ="Please enter required fields";
+
+        }
+
+        return Response::json($data,200,array());       
+    }
+
 	public function academyData(Request $request){
 
 		$user = User::AuthenticateUser($request->header("apiToken"));
@@ -530,7 +577,7 @@ class AppAPIController extends Controller {
             'full_name' => 'required',
             'email' => 'required',
             'contact' => 'required',
-            'age' => 'required',
+            'dob' => 'required',
             'remark' => 'required',
         ];
 
@@ -538,7 +585,7 @@ class AppAPIController extends Controller {
             'full_name' => $request->full_name,
             'email' => $request->email,
             'contact' => $request->contact,
-            'age' => $request->age,
+            'dob' => $request->dob,
             'remark' => $request->remark,
         ];
 
@@ -552,7 +599,7 @@ class AppAPIController extends Controller {
                 'full_name' => $request->full_name,
                 'email' => $request->email,
                 'contact' => $request->contact,
-                'age' => $request->age,
+                'dob' => $request->dob,
                 'remark' => $request->remark,
                 'group_id' => $request->group_id,
                 'date' => $request->date,
@@ -818,6 +865,30 @@ class AppAPIController extends Controller {
         }
         
         return Response::json($data,200,array());  
+    }
+
+    public function deleteReason(Request $request){
+        $user = User::AuthenticateUser($request->header('apiToken'));
+
+        $reasons = [
+            array('value'=> 1, 'label'=> 'Terms of service'),
+            array('value'=> 2, 'label'=> 'Security reasons'),
+            array('value'=> 3, 'label'=> 'This is not technically competent enough to be trusted'),
+            array('value'=> 4, 'label'=> 'The Application itself sucks'),
+        ];
+
+        $data['success'] = true;
+        $data['reasons'] = $reasons;
+        return Response::json($data,200,array());
+    } 
+
+    public function deleteAccount(Request $request){
+        $user = User::AuthenticateUser($request->header('apiToken'));
+
+        $data['success'] = true;
+        $data['message'] = "Your profile will be removed within nex 24 hours.";
+        return Response::json($data,200,array());
+
     }
 
 

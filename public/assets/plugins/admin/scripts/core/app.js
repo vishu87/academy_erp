@@ -62,10 +62,10 @@ app.directive('tablePaginate', ['$compile', function ($compile) {
     return {
       restrict: 'EA',
       template: '<div class="row">\
-        <div class="col-md-6" >\
+        <div class="col-md-6 col-6" >\
         <div class="total-count" ng-if="filter.max_page > 0">Showing <span>{{filter.max_per_page*(filter.page_no-1) + 1}} - {{filter.max_per_page*filter.page_no < total ? filter.max_per_page*filter.page_no : total}}</span> of <span>{{total}}</span></div>\
         </div>\
-        <div class="col-md-6" style="text-align: right;">\
+        <div class="col-md-6 col-6" style="text-align: right;">\
           <button class="btn fl-btn" ng-click="filter.show = (filter.show ? false:true )" ng-class=" filter.show ? \'open\' :\'\' "><i class="icons icon-grid"></i> Filter</button>\
           <ul class="pagination" ng-if="filter.max_page > 1">\
             <li class="page-item">\

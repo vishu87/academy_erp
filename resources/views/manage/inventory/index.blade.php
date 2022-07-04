@@ -22,14 +22,14 @@
 	    <div class="portlet-head">
 	      	<div class="row">
 
-		        <div class="col-md-6">
+		        <div class="col-md-6 col-6">
 		          	<ul class="menu">
 			            <li class="active">
 			              <a href="#">List</a>
 			            </li>
 		          	</ul>
 		        </div>
-		        <div class="col-md-6 text-right">
+		        <div class="col-md-6 col-6 text-right">
 		        	<button class="btn btn-primary" ng-click="addItem()"><i class="icons icon-plus"></i> Add Item</button>	
 		        </div>
 

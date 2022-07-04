@@ -13,15 +13,15 @@
 		<div class="portlet-head">
 			<div class="row">
 
-				<div class="col-md-6">
+				<div class="col-md-6 col-6">
 					<ul class="menu">
-						<li class="active">
+						<li class="active mob-hi">
 							<a href="#">List</a>
 						</li>
 					</ul>
 				</div>
 
-				<div class="col-md-6 text-right">
+				<div class="col-md-6 col-6 text-right">
 					<button class="btn btn-primary" ng-click="addAcount()"><i class="icons icon-plus"></i> Add New</button>
 				</div>
 

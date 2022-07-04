@@ -238,6 +238,7 @@ a {
 	font-size: 15px;
 	font-weight: bold;
 	border-radius: 5px;
+	height: 100%;
 	span {
 		font-size: 12px;
 		font-weight: normal;
@@ -945,7 +946,7 @@ img.round{
  		margin-left: 0;
  	}
  	.content {	
-		padding: 20px 0;
+		padding: 20px 5px;
 	}
 	.toggle-menu-cont {
 		display: inline-block;
@@ -1090,6 +1091,9 @@ img.round{
 	.mob-mb-8{
 		margin-bottom: 8px;
 	}
+	.mob-mt-40{
+		margin-top: 40px;
+	}
 	.mob-plr-2{
 		padding-left:8px ! important;
 		padding-right:8px ! important;
@@ -1103,6 +1107,25 @@ img.round{
 		}
 		
 	}
+	// .portlet {
+	// 	.portlet-head {
+	// 		ul.menu {
+	// 			li {
+	// 				a {
+	// 					line-height: 24px;
+	// 				}
+	// 				&.active {
+	// 					a {
+	// 						line-height: 24px;
+	// 					}	
+	// 				}
+	// 				&.mob-hi{
+	// 					line-height: 48px;
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	// }
 }
 .welcome-nav{
 	position:relative;

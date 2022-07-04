@@ -447,9 +447,6 @@ Route::group(["prefix"=>"communications"], function(){
     }); 
 }); 
 
-// http://192.168.1.38:8888/academy_erp/public/image-1-1656406297.jpg
-// http://192.168.1.38:8888/academy_erp/public/uploads/tn_1656407727_photo.png
-
 
 Route::group(["prefix"=>"parents"], function(){
 
@@ -460,6 +457,7 @@ Route::group(["prefix"=>"parents"], function(){
 Route::group(["prefix"=>"app"], function(){
 
     Route::post('/login',[AppAPIController::class, 'login']);
+    Route::post('/sign-up',[AppAPIController::class, 'signUp']);
     Route::get('/academy-data',[AppAPIController::class, 'academyData']);
 
     // Route::group(["prefix"=>"student"], function(){
@@ -499,6 +497,8 @@ Route::group(["prefix"=>"app"], function(){
     Route::group(["prefix"=>"user"], function(){
         Route::get('/profile',[AppAPIController::class, 'getUser']);
         Route::post('/check-location',[AppAPIController::class, 'getLocation']);
+        Route::get('/delete-account-reason',[AppAPIController::class, 'deleteReason']);
+        Route::post('/delete-account',[AppAPIController::class, 'deleteAccount']);
 
         Route::post('/update',[AppAPIController::class, 'updateUser']);
         Route::post('/update-password',[AppAPIController::class, 'changePassword']);

@@ -34,14 +34,14 @@
 			<div class="portlet">
 				<div class="portlet-head">
 					<div class="row">
-					<div class="col-md-6">
+					<div class="col-md-6 col-6">
 						<ul class="menu">
 						  <li class="active">
 						    <a href="#">@{{ parameter.category_name }}</a>
 						  </li>
 						</ul>
 					</div>
-					<div class="col-md-6 text-right" ng-show="group_type_id == 0">
+					<div class="col-md-6 col-6 text-right" ng-show="group_type_id == 0">
 					  	<button type="button" class="btn btn-sm btn-light" ng-click="editCategory(parameter)">Edit</button>&nbsp;
 	            		<button type="button" class="btn btn-sm btn-danger" ng-click="deleteCategory(parameter.id)">Delete</button>
 					</div>

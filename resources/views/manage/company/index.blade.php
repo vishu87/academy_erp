@@ -20,14 +20,14 @@
 		<div class="portlet-head">
 	      	<div class="row">
 
-		        <div class="col-md-6">
+		        <div class="col-md-6 col-4">
 		          	<ul class="menu">
 			            <li class="active">
 			              <a href="#">List</a>
 			            </li>
 		          	</ul>
 		        </div>
-		        <div class="col-md-6 text-right">
+		        <div class="col-md-6 col-8 text-right">
 					<button class="btn btn-primary" ng-click="addCompany()"><i class="icons icon-plus"></i> Add company</button>	
 		        </div>
 

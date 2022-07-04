@@ -86,7 +86,7 @@
 							</li>
 
 							<li>
-								<a href="{{url('/logout')}}"><i class="icons icon-lock-open"></i> <span>Logout</span></a>
+								<a href="{{url('/logout')}}"><i class="icons icon-logout"></i> <span>Logout</span></a>
 							</li>
 						</ul>
 					</div>
