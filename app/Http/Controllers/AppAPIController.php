@@ -886,7 +886,7 @@ class AppAPIController extends Controller {
         $user = User::AuthenticateUser($request->header('apiToken'));
 
         $data['success'] = true;
-        $data['message'] = "Your profile will be removed Within nex 24 hours.";
+        $data['message'] = "Your profile will be removed within nex 24 hours.";
         return Response::json($data,200,array());
 
     }
