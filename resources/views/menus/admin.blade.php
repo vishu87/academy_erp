@@ -60,6 +60,14 @@
 
 <?php $condition = in_array(25, $access_rights["admin"]) ; ?>
 @if($condition)
+<li class="parent @if($sidebar == 'holidays') active @endif">
+    <a href="{{url('/holidays')}}"><i class="icon-people icons "></i> <span>Holidays</span></a>
+</li>
+@endif
+
+
+<?php $condition = in_array(25, $access_rights["admin"]) ; ?>
+@if($condition)
 <li class="parent @if($sidebar == 'settings') active @endif">
     <a href="{{url('/settings')}}"><i class="icon-settings icons "></i> <span>Settings</span></a>
 </li>

@@ -32,6 +32,7 @@ use App\Http\Controllers\QueryController;
 use App\Http\Controllers\DropDownMasterController;
 use App\Http\Controllers\ParentController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\HolidayController;
 
 Route::get('/', [UserController::class,'login'])->name("login");
 Route::post('/login', [UserController::class, 'postLogin']);
@@ -195,6 +196,11 @@ Route::group(["before"=>"auth","middleware"=>["auth","portal"]], function(){
         Route::group(["prefix"=>"email-template"], function(){
             Route::get('/',[EmailTemplateController::class,'index']);
         }); 
+
+    }); 
+
+    Route::group(["prefix"=>"holidays"], function(){
+        Route::get('/',[HolidayController::class,'index']);
 
     }); 
 

@@ -79,6 +79,10 @@
 <!-- events -->
 <script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/events/events_controller.js?v='.env('JS_VERSION'))}}"></script>
 
+<!-- holidays -->
+<script type="text/javascript" src="{{url('assets/plugins/admin/scripts/core/holidays/holidays_controller.js?v='.env('JS_VERSION'))}}"></script>
+
+
 
 
 

@@ -38,7 +38,7 @@ use App\Http\Controllers\ClientsController;
 use App\Http\Controllers\SignUpController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\DropDownMasterController;
-
+use App\Http\Controllers\HolidayController;
 use App\Http\Controllers\ParentController;
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -378,6 +378,12 @@ Route::group(["prefix"=>"settings"], function(){
     Route::post('/init',[SettingsController::class, 'init']);
     Route::post('/save',[SettingsController::class, 'saveSettings']);
 });
+
+    Route::group(["prefix"=>"holidays"], function(){
+        Route::get('/init',[HolidayController::class,'init']);
+        Route::post('/save',[HolidayController::class,'save']);
+        Route::get('/delete/{id}',[HolidayController::class,'delete']);
+    }); 
 
 
 Route::group(["prefix"=>"sign-up"], function(){

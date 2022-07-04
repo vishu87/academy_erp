@@ -502,3 +502,8 @@ ALTER TABLE `group_coachs` CHANGE `id` `id` INT(11) NOT NULL AUTO_INCREMENT, add
 
 // 30-06-2022 by Pradeep
 ALTER TABLE `payments_type` ADD `no_pause` INT NULL DEFAULT NULL AFTER `months`;
+
+// 04-07-2022 by Pradeep
+CREATE TABLE `academy`.`holidays` ( `id` INT NOT NULL AUTO_INCREMENT , `name` VARCHAR(300) NULL , `date` DATE NULL , `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP , `created_at` TIMESTAMP NULL DEFAULT NULL , PRIMARY KEY (`id`)) ENGINE = InnoDB;
+
+ALTER TABLE `holidays` ADD `added_by` INT NULL AFTER `date`, ADD `client_id` INT NULL AFTER `added_by`;
