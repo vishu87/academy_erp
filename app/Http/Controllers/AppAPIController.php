@@ -820,5 +820,29 @@ class AppAPIController extends Controller {
         return Response::json($data,200,array());  
     }
 
+    public function deleteReason(Request $request){
+        $user = User::AuthenticateUser($request->header('apiToken'));
+
+        $reasons = [
+            array('value'=> 1, 'label'=> 'Terms of service'),
+            array('value'=> 2, 'label'=> 'Security reasons'),
+            array('value'=> 3, 'label'=> 'This is not technically competent enough to be trusted'),
+            array('value'=> 4, 'label'=> 'The Application itself sucks'),
+        ];
+
+        $data['success'] = true;
+        $data['reasons'] = $reasons;
+        return Response::json($data,200,array());
+    } 
+
+    public function deleteAccount(Request $request){
+        $user = User::AuthenticateUser($request->header('apiToken'));
+
+        $data['success'] = true;
+        $data['message'] = "Your profile will be removed in nex 24 hours";
+        return Response::json($data,200,array());
+
+    }
+
 
 }
