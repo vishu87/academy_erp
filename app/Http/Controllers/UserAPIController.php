@@ -146,7 +146,7 @@ class UserAPIController extends Controller {
 		}
 
 		$user_list = $user_list->orderBy("users.inactive","ASC")->orderBy("users.name")->get();
-
+		$data["success"] = true; // not declare before
 		$data["users_list"] = $user_list;
 		return Response::json($data,200,array(),JSON_NUMERIC_CHECK);
 	}

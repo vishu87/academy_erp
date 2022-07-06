@@ -26,6 +26,8 @@ class CityController extends Controller{
 
         $city_list = DB::table('city')->select('city.id','city.city_name','city.base_city_id',
             'city.state_id','states.state_name')->leftJoin('states','states.id', '=', 'city.state_id')->where("client_id",$user->client_id)->where("inactive",0)->get();
+        
+        $data['success'] = true;
         $data['city_list'] = $city_list;
 
         return Response::json($data, 200, array());
