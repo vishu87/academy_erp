@@ -128,8 +128,8 @@ class CenterController extends Controller{
 	            $data = ["success" => false, "message"=>"Not allowed"]; return Response::json($data, 200 ,[]);
 	        }
 	        $center->center_dos = Utilities::convertDate($center->center_dos);
-			$data['center'] = $center;
 			$data['success'] = true;
+			$data['center'] = $center;
 			$data['message'] = "";
     	} else {
     		$data['success'] = false;
